@@ -10,7 +10,7 @@ vec4 plas(vec2 v, float time) {
 	return vec4(sin(c * .2 + cos(time)), c * .15, cos(c * .1 + time / .4) * .25, 1);
 }
 
-void main(void ) {
+void main() {
 	vec2 m,
 	     uv = vec2(gl_FragCoord.x / v2Resolution.x, gl_FragCoord.y / v2Resolution.y);
 	uv -= .5;

@@ -414,6 +414,36 @@ namespace UnitTests
 
             Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo("void foo(int, int); void main() { foo(1, 2); } void foo(int a, int b) { }"));
         }
+        
+        [Test]
+        public void CheckVoidParamInFunctionDeclarationsAreRemoved()
+        {
+            var lexer = new Lexer();
+            lexer.Load("void foo(void); void main() { foo(); } void foo() { }");
+
+            var options = CustomOptions.Disabled();
+            options.SimplifyFunctionParams = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo("void foo(); void main() { foo(); } void foo() { }"));
+        }
+
+        [Test]
+        public void CheckVoidParamInFunctionDefinitionsAreRemoved()
+        {
+            var lexer = new Lexer();
+            lexer.Load("void foo(void) { } void main() { foo(); }");
+
+            var options = CustomOptions.Disabled();
+            options.SimplifyFunctionParams = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo("void foo() { } void main() { foo(); }"));
+        }
 
         [Test, Sequential]
         public void CheckInliningConstantDefines([Values("#define AA\n#define NUM 2.3\nfloat main() { return NUM; }", "#define AA\nfloat main() {\n#define NUM 2.3\nreturn NUM; }")] string code)

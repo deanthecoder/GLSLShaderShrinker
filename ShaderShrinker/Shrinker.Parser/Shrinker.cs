@@ -18,7 +18,6 @@ using Shrinker.Lexer;
 // todo - keep header comments.
 // todo - https://www.shadertoy.com/view/tlGfzd main() not inlining col. (Also n = normal(...) earlier in code)
 // todo - 1e3 form can be used if with vecN(...)
-// todo - Bonzo has 'void main(void)'
 // todo - 'fragColor = vec4(col, 1.0)' - Inline 'col'.
 // todo - 'vec3 p = vec3(r, t, ph), f = fract(p * 1.59) - .5;' <- Inline p?
 // todo - ED-209 (float d = .01 * t * .33;)
@@ -670,8 +669,16 @@ namespace Shrinker.Parser
 
                 if (options.SimplifyFunctionParams)
                 {
+                    // Remove any 'in' keywords. ('in' is the default in GLSL.)
                     var inTypes = rootNode.TheTree.Select(o => o.Token).OfType<TypeToken>().Where(o => o.InOut == TypeToken.InOutType.In);
                     inTypes.ToList().ForEach(o => o.SetInOut());
+
+                    // Remove void params from function declarations/definitions.
+                    rootNode.Children
+                        .OfType<FunctionSyntaxNodeBase>()
+                        .Where(o => o.IsVoidParam())
+                        .ToList()
+                        .ForEach(o => o.Params.Children.Single().Remove());
                 }
 
                 if (options.RemoveUnreachableCode)

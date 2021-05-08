@@ -81,7 +81,7 @@
                             </StackPanel>
                         </GroupBox.Header>
 
-                        <UniformGrid Columns="3">
+                        <StackPanel HorizontalAlignment="Left">
                             <!-- Maximum -->
                             <Button Content="Maximum" Command="{Binding OnShrinkCommand}" CommandParameter="Max" Foreground="White" Margin="16,4"/>
 
@@ -89,7 +89,7 @@
                             <Button Content="Minimum (/Reformat)" Command="{Binding OnShrinkCommand}" CommandParameter="Min" Foreground="White" Margin="16,4"/>
 
                             <!-- Custom -->
-                            <Grid Margin="14,4">
+                            <Grid Margin="16,4">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="Auto"/>
@@ -103,7 +103,7 @@
                                     </Button>
                                 </Grid>
                             </Grid>
-                        </UniformGrid>
+                        </StackPanel>
                     </GroupBox>
                 </Grid>
 

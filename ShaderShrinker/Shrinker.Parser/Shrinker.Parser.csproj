@@ -48,6 +48,7 @@
     <Compile Include="FunctionDeclarationSyntaxNode.cs" />
     <Compile Include="FunctionDefinitionSyntaxNode.cs" />
     <Compile Include="FunctionDefinitionSyntaxNodeExtensions.cs" />
+    <Compile Include="FunctionSyntaxNodeBase.cs" />
     <Compile Include="GenericSyntaxNode.cs" />
     <Compile Include="GroupSyntaxNode.cs" />
     <Compile Include="IfSyntaxNode.cs" />

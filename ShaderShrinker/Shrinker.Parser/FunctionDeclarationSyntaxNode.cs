@@ -15,12 +15,8 @@ using Shrinker.Lexer;
 
 namespace Shrinker.Parser
 {
-    public class FunctionDeclarationSyntaxNode : SyntaxNode
+    public class FunctionDeclarationSyntaxNode : FunctionSyntaxNodeBase
     {
-        public TypeToken ReturnType { get; }
-        public string Name { get; }
-        public RoundBracketSyntaxNode Params { get; }
-
         public FunctionDeclarationSyntaxNode(GenericSyntaxNode typeNode, GenericSyntaxNode nameNode, RoundBracketSyntaxNode paramsNode)
         {
             ReturnType = (TypeToken)typeNode?.Token ?? throw new ArgumentNullException(nameof(typeNode));
