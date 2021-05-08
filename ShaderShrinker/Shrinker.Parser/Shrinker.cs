@@ -14,10 +14,11 @@ using System.Collections.Generic;
 using System.Linq;
 using Shrinker.Lexer;
 
-// todo - bigwings cradle bad
+// todo - radians(1.23)
 // todo - keep header comments.
 // todo - auto-reshrink after custom options modded.
 // todo - https://www.shadertoy.com/view/7s2XWh nullref
+// todo - https://www.shadertoy.com/view/tlGfzd main() not inlining col. (Also n = normal(...) earlier in code)
 // todo - 1e3 form can be used if with vecN(...)
 // todo - Bonzo has 'void main(void)'
 // todo - 'fragColor = vec4(col, 1.0)' - Inline 'col'.
@@ -722,15 +723,16 @@ namespace Shrinker.Parser
                                     else
                                         usage.ReplaceWith(assignment.Children.ToArray());
 
+                                    var nodeAfterAssignment = assignment.Next;
                                     assignment.Remove();
 
                                     didChange = true;
 
-                                    if (addBrackets && assignment.Next != null)
+                                    if (addBrackets && nodeAfterAssignment != null)
                                     {
                                         var customOptions = CustomOptions.Disabled();
                                         customOptions.SimplifyArithmetic = true;
-                                        Simplify(assignment.Next, customOptions);
+                                        Simplify(nodeAfterAssignment, customOptions);
                                     }
                                 }
                             }

@@ -739,9 +739,27 @@ namespace UnitTests
             lexer.Load(code);
 
             var options = CustomOptions.Disabled();
-            options.CombineConsecutiveAssignments = true;
             options.CombineAssignmentWithReturn = true;
             options.GroupVariableDeclarations = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(expected));
+        }
+
+        [Test, Sequential]
+        public void CheckCombiningConsecutiveReassignments(
+            [Values("int main() { int a = 1; a = a + 2; a = a - 4; return a; }",
+                    "int main() { int a = 1; a = a * 2; a = a / 4; return a; }")] string code,
+            [Values("int main() { int a = 1; a = (a + 2) - 4; return a; }",
+                    "int main() { int a = 1; a = a * 2 / 4; return a; }")] string expected)
+        {
+            var lexer = new Lexer();
+            lexer.Load(code);
+
+            var options = CustomOptions.Disabled();
+            options.CombineConsecutiveAssignments = true;
             var rootNode = new Parser(lexer)
                 .Parse()
                 .Simplify(options);
