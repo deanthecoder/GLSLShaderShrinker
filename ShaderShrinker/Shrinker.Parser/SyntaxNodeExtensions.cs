@@ -60,8 +60,6 @@ namespace Shrinker.Parser
             return pragmaIfCount > pragmaEndifCount;
         }
 
-        public static SyntaxNode Simplify(this SyntaxNode rootNode, CustomOptions options = null) => Shrinker.Simplify(rootNode, options);
-
         public static string ToCode(this SyntaxNode rootNode) => OutputFormatter.ToCode(rootNode);
 
         public static T FindLastChild<T>(this SyntaxNode node, Func<T, bool> isMatchFunc = null) => isMatchFunc != null ? node.Children.OfType<T>().LastOrDefault(isMatchFunc) : node.Children.OfType<T>().LastOrDefault();
