@@ -661,7 +661,7 @@ namespace UnitTests
         }
 
         [Test]
-        public void CheckRemovalOfCallComments()
+        public void CheckRemovalOfAllComments()
         {
             var lexer = new Lexer();
             lexer.Load("// a comment\n// line 2\nvoid foo() { // another\n }");
@@ -673,6 +673,22 @@ namespace UnitTests
                 .Simplify(options);
 
             Assert.That(rootNode.ToCode(), Is.EqualTo("void foo() { }"));
+        }
+
+        [Test]
+        public void CheckRemovalOfNonHeaderComments()
+        {
+            var lexer = new Lexer();
+            lexer.Load("// a comment\n// line 2\nvoid foo() { // another\n }");
+
+            var options = CustomOptions.Disabled();
+            options.RemoveComments = true;
+            options.KeepHeaderComments = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode(), Is.EqualTo("// a comment\n// line 2\nvoid foo() { }"));
         }
 
         [Test]

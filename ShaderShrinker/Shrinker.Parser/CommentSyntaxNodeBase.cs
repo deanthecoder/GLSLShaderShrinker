@@ -9,6 +9,7 @@
 //  </summary>
 // -----------------------------------------------------------------------
 
+using System.Linq;
 using Shrinker.Lexer;
 
 namespace Shrinker.Parser
@@ -25,5 +26,14 @@ namespace Shrinker.Parser
         }
 
         public override string UiName => Comment;
+
+        public bool IsFileHeaderComment()
+        {
+            if (Parent is not FileSyntaxNode root)
+                return false;
+
+            var previousSiblings = root.Children.Take(NodeIndex);
+            return previousSiblings.All(o => o is CommentSyntaxNodeBase);
+        }
     }
 }

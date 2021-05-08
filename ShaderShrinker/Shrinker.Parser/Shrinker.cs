@@ -14,8 +14,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Shrinker.Lexer;
 
-// todo - radians(1.23)
-// todo - keep header comments.
 // todo - https://www.shadertoy.com/view/tlGfzd main() not inlining col. (Also n = normal(...) earlier in code)
 // todo - 1e3 form can be used if with vecN(...)
 // todo - 'fragColor = vec4(col, 1.0)' - Inline 'col'.
@@ -103,8 +101,14 @@ namespace Shrinker.Parser
                 }
 
                 if (options.RemoveComments)
-                    rootNode.TheTree.OfType<CommentSyntaxNodeBase>().ToList().ForEach(o => o.Remove());
-                
+                {
+                    rootNode.TheTree
+                        .OfType<CommentSyntaxNodeBase>()
+                        .Where(o => !options.KeepHeaderComments || !o.IsFileHeaderComment())
+                        .ToList()
+                        .ForEach(o => o.Remove());
+                }
+
                 if (options.RemoveUnusedVariables)
                 {
                     foreach (var decl in rootNode.TheTree

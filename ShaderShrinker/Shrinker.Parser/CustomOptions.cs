@@ -20,7 +20,12 @@ namespace Shrinker.Parser
     {
         public bool RemoveDisabledCode { get; set; } = true;
         public bool RemoveComments { get; set; } = true;
-        public bool KeepHeaderComments { get; set; } = true;
+
+        /// <summary>
+        /// Requires RemoveComments to be enabled.
+        /// </summary>
+        public bool KeepHeaderComments { get; set; }
+
         public bool RemoveUnusedFunctions { get; set; } = true;
         public bool SimplifyFunctionDeclarations { get; set; } = true;
         public bool SimplifyFunctionParams { get; set; } = true;
