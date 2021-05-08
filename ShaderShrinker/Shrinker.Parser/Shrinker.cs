@@ -17,7 +17,6 @@ using Shrinker.Lexer;
 // todo - radians(1.23)
 // todo - keep header comments.
 // todo - auto-reshrink after custom options modded.
-// todo - https://www.shadertoy.com/view/7s2XWh nullref
 // todo - https://www.shadertoy.com/view/tlGfzd main() not inlining col. (Also n = normal(...) earlier in code)
 // todo - 1e3 form can be used if with vecN(...)
 // todo - Bonzo has 'void main(void)'
@@ -971,6 +970,7 @@ namespace Shrinker.Parser
                                 .Where(
                                        o => o.Parent is not FunctionCallSyntaxNode &&
                                             o.Parent is not IfSyntaxNode &&
+                                            o.Parent is not SwitchSyntaxNode &&
                                             o.Parent is not PragmaDefineSyntaxNode &&
                                             o.Previous?.Token is not AlphaNumToken &&
                                             o.Previous?.Token is not TypeToken &&

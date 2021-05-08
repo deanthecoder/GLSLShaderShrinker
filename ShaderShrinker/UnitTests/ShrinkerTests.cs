@@ -1104,6 +1104,22 @@ namespace UnitTests
             Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo("switch (1) { case 1: break; case 2: { break; } case 3: return; case 4: { return; int a = 1; } default: break; }"));
         }
 
+        [Test, Sequential]
+        public void CheckStatementBracketsNotRemovedWhenSimplifyingArithmetic(
+            [Values("switch (1) { case 1: break; }", "if (1) break;")] string code)
+        {
+            var lexer = new Lexer();
+            lexer.Load(code);
+
+            var options = CustomOptions.Disabled();
+            options.SimplifyArithmetic = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(code));
+        }
+
         [Test]
         public void CheckSupportForTernaryOperator()
         {
