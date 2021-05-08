@@ -9,9 +9,7 @@
 //  </summary>
 // -----------------------------------------------------------------------
 
-using Shrinker.Lexer;
-
-namespace Shrinker.Parser
+namespace Shrinker.Lexer
 {
     public static class TokenExtensions
     {

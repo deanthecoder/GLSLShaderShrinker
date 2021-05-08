@@ -12,6 +12,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Shrinker.Lexer;
+using Shrinker.Parser.SyntaxNodes;
 
 namespace Shrinker.Parser.Optimizations
 {

@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-//  <copyright file="VerbatimLineSyntaxNode.cs">
+//  <copyright file="MultiLineCommentSyntaxNode.cs">
 //      Copyright (c) 2021 Dean Edis. All rights reserved.
 //  </copyright>
 //  <summary>
@@ -9,13 +9,11 @@
 //  </summary>
 // -----------------------------------------------------------------------
 
-using Shrinker.Lexer;
-
-namespace Shrinker.Parser
+namespace Shrinker.Parser.SyntaxNodes
 {
-    public class VerbatimLineSyntaxNode : SyntaxNode
+    public class MultiLineCommentSyntaxNode : CommentSyntaxNodeBase
     {
-        public VerbatimLineSyntaxNode(IToken token) : base(token)
+        public MultiLineCommentSyntaxNode(SyntaxNode commentNode) : base(commentNode)
         {
         }
     }

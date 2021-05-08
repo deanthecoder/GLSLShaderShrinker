@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-//  <copyright file="IStatementSyntaxNode.cs">
+//  <copyright file="SingleLineCommentSyntaxNode.cs">
 //      Copyright (c) 2021 Dean Edis. All rights reserved.
 //  </copyright>
 //  <summary>
@@ -9,9 +9,12 @@
 //  </summary>
 // -----------------------------------------------------------------------
 
-namespace Shrinker.Parser
+namespace Shrinker.Parser.SyntaxNodes
 {
-    public interface IStatementSyntaxNode
+    public class SingleLineCommentSyntaxNode : CommentSyntaxNodeBase
     {
+        public SingleLineCommentSyntaxNode(SyntaxNode commentNode) : base(commentNode)
+        {
+        }
     }
 }

@@ -11,7 +11,7 @@
 
 using System;
 
-namespace Shrinker.Parser
+namespace Shrinker.Parser.SyntaxNodes
 {
     public class ForSyntaxNode : SyntaxNode, IStatementSyntaxNode
     {

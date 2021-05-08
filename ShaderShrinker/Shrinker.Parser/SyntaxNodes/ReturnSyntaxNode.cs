@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-//  <copyright file="MultiLineCommentSyntaxNode.cs">
+//  <copyright file="ReturnSyntaxNode.cs">
 //      Copyright (c) 2021 Dean Edis. All rights reserved.
 //  </copyright>
 //  <summary>
@@ -9,12 +9,12 @@
 //  </summary>
 // -----------------------------------------------------------------------
 
-namespace Shrinker.Parser
+using System.Linq;
+
+namespace Shrinker.Parser.SyntaxNodes
 {
-    public class MultiLineCommentSyntaxNode : CommentSyntaxNodeBase
+    public class ReturnSyntaxNode : GroupSyntaxNode
     {
-        public MultiLineCommentSyntaxNode(SyntaxNode commentNode) : base(commentNode)
-        {
-        }
+        public override string UiName => Children.Any() ? "return ..." : "return";
     }
 }

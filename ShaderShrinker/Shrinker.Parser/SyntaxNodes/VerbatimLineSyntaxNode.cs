@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-//  <copyright file="ReturnSyntaxNode.cs">
+//  <copyright file="VerbatimLineSyntaxNode.cs">
 //      Copyright (c) 2021 Dean Edis. All rights reserved.
 //  </copyright>
 //  <summary>
@@ -9,12 +9,14 @@
 //  </summary>
 // -----------------------------------------------------------------------
 
-using System.Linq;
+using Shrinker.Lexer;
 
-namespace Shrinker.Parser
+namespace Shrinker.Parser.SyntaxNodes
 {
-    public class ReturnSyntaxNode : GroupSyntaxNode
+    public class VerbatimLineSyntaxNode : SyntaxNode
     {
-        public override string UiName => Children.Any() ? "return ..." : "return";
+        public VerbatimLineSyntaxNode(IToken token) : base(token)
+        {
+        }
     }
 }

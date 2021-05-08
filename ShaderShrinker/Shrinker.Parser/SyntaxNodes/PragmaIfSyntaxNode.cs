@@ -13,7 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Shrinker.Parser
+namespace Shrinker.Parser.SyntaxNodes
 {
     public class PragmaIfSyntaxNode : SyntaxNode
     {

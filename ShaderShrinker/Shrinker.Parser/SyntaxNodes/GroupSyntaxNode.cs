@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-//  <copyright file="SingleLineCommentSyntaxNode.cs">
+//  <copyright file="GroupSyntaxNode.cs">
 //      Copyright (c) 2021 Dean Edis. All rights reserved.
 //  </copyright>
 //  <summary>
@@ -9,12 +9,25 @@
 //  </summary>
 // -----------------------------------------------------------------------
 
-namespace Shrinker.Parser
+using System.Collections.Generic;
+using System.Linq;
+
+namespace Shrinker.Parser.SyntaxNodes
 {
-    public class SingleLineCommentSyntaxNode : CommentSyntaxNodeBase
+    /// <summary>
+    /// A generic group of syntax nodes.
+    /// </summary>
+    public class GroupSyntaxNode : SyntaxNode
     {
-        public SingleLineCommentSyntaxNode(SyntaxNode commentNode) : base(commentNode)
+        public GroupSyntaxNode()
         {
         }
+
+        public GroupSyntaxNode(IEnumerable<SyntaxNode> nodes)
+        {
+            Adopt(nodes.ToArray());
+        }
+
+        public override string UiName => "<Group>";
     }
 }

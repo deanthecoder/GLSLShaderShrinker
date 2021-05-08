@@ -12,7 +12,7 @@
 using System.Linq;
 using Shrinker.Lexer;
 
-namespace Shrinker.Parser
+namespace Shrinker.Parser.SyntaxNodes
 {
     public abstract class CommentSyntaxNodeBase : SyntaxNode
     {

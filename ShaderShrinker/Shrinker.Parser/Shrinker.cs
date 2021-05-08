@@ -12,6 +12,7 @@
 using System.Linq;
 using Shrinker.Lexer;
 using Shrinker.Parser.Optimizations;
+using Shrinker.Parser.SyntaxNodes;
 
 // todo - https://www.shadertoy.com/view/tlGfzd main() not inlining col. (Also n = normal(...) earlier in code)
 // todo - 1e3 form can be used if with vecN(...)

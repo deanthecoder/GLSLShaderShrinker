@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-//  <copyright file="GroupSyntaxNode.cs">
+//  <copyright file="FunctionDefinitionSyntaxNodeExtensions.cs">
 //      Copyright (c) 2021 Dean Edis. All rights reserved.
 //  </copyright>
 //  <summary>
@@ -12,22 +12,15 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Shrinker.Parser
+namespace Shrinker.Parser.SyntaxNodes
 {
-    /// <summary>
-    /// A generic group of syntax nodes.
-    /// </summary>
-    public class GroupSyntaxNode : SyntaxNode
+    public static class FunctionDefinitionSyntaxNodeExtensions
     {
-        public GroupSyntaxNode()
+        public static IEnumerable<VariableAssignmentSyntaxNode> LocalVariables(this FunctionDefinitionSyntaxNode functionNode)
         {
+            return functionNode.Braces.TheTree
+                .OfType<VariableDeclarationSyntaxNode>()
+                .SelectMany(o => o.Definitions);
         }
-
-        public GroupSyntaxNode(IEnumerable<SyntaxNode> nodes)
-        {
-            Adopt(nodes.ToArray());
-        }
-
-        public override string UiName => "<Group>";
     }
 }

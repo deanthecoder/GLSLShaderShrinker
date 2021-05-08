@@ -15,6 +15,7 @@ using System.Linq;
 using System.Windows;
 using Shrinker.Lexer;
 using Shrinker.Parser;
+using Shrinker.Parser.SyntaxNodes;
 
 namespace ShaderShrinkerCmd
 {

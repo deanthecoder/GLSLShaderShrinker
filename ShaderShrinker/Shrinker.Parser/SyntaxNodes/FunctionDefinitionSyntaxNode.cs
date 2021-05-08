@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-//  <copyright file="FunctionDeclarationSyntaxNode.cs">
+//  <copyright file="FunctionDefinitionSyntaxNode.cs">
 //      Copyright (c) 2021 Dean Edis. All rights reserved.
 //  </copyright>
 //  <summary>
@@ -13,19 +13,24 @@ using System;
 using System.Linq;
 using Shrinker.Lexer;
 
-namespace Shrinker.Parser
+namespace Shrinker.Parser.SyntaxNodes
 {
-    public class FunctionDeclarationSyntaxNode : FunctionSyntaxNodeBase
+    public class FunctionDefinitionSyntaxNode : FunctionSyntaxNodeBase
     {
-        public FunctionDeclarationSyntaxNode(GenericSyntaxNode typeNode, GenericSyntaxNode nameNode, RoundBracketSyntaxNode paramsNode)
+        public BraceSyntaxNode Braces { get; }
+
+        public FunctionDefinitionSyntaxNode(GenericSyntaxNode typeNode, GenericSyntaxNode nameNode, RoundBracketSyntaxNode paramsNode, BraceSyntaxNode braceNode)
         {
             ReturnType = (TypeToken)typeNode?.Token ?? throw new ArgumentNullException(nameof(typeNode));
             Name = ((AlphaNumToken)nameNode?.Token)?.Content ?? throw new ArgumentNullException(nameof(nameNode));
             Params = paramsNode ?? throw new ArgumentNullException(nameof(paramsNode));
+            Braces = braceNode ?? throw new ArgumentNullException(nameof(braceNode));
 
-            Adopt(nameNode, Params);
+            Adopt(nameNode, Params, Braces);
         }
 
-        public override string UiName => $"{ReturnType.Content} {Name}{(Params.Children.Any() ? "(...)" : "()")};";
+        public override string UiName => $"{ReturnType.Content} {Name}{(Params.Children.Any() ? "(...)" : "()")} {{...}}";
+
+        public bool IsMain() => Name.StartsWith("main");
     }
 }

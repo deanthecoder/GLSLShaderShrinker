@@ -21,6 +21,7 @@ using Microsoft.Win32;
 using Newtonsoft.Json;
 using Shrinker.Lexer;
 using Shrinker.Parser;
+using Shrinker.Parser.SyntaxNodes;
 using Shrinker.WpfApp.ShadertoyApi;
 
 namespace Shrinker.WpfApp

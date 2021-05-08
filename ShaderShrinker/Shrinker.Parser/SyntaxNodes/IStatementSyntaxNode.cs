@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-//  <copyright file="SquareBracketSyntaxNode.cs">
+//  <copyright file="IStatementSyntaxNode.cs">
 //      Copyright (c) 2021 Dean Edis. All rights reserved.
 //  </copyright>
 //  <summary>
@@ -9,10 +9,9 @@
 //  </summary>
 // -----------------------------------------------------------------------
 
-namespace Shrinker.Parser
+namespace Shrinker.Parser.SyntaxNodes
 {
-    public class SquareBracketSyntaxNode : GroupSyntaxNode
+    public interface IStatementSyntaxNode
     {
-        public override string UiName => "[...]";
     }
 }

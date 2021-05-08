@@ -14,7 +14,7 @@ using System.Linq;
 using System.Text;
 using Shrinker.Lexer;
 
-namespace Shrinker.Parser
+namespace Shrinker.Parser.SyntaxNodes
 {
     public class FileSyntaxNode : SyntaxNode
     {
