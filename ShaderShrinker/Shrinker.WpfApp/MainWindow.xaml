@@ -202,63 +202,7 @@
 
         <!-- Custom options dialog -->
         <materialDesign:DialogHost.DialogContent>
-            <Grid Margin="24,16">
-                <Grid.Resources>
-                    <Style TargetType="CheckBox" BasedOn="{StaticResource MaterialDesignCheckBox}">
-                        <Setter Property="Margin" Value="0,4" />
-                    </Style>
-                </Grid.Resources>
-
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="0.5*"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="0.5*"/>
-                </Grid.ColumnDefinitions>
-
-                <StackPanel Grid.Row="0" Grid.Column="0">
-                    <CheckBox x:Name="removeCommentsCheck" Content="Remove comments" ToolTip="TODO" IsChecked="{Binding CustomOptions.RemoveComments}"/>
-                    <CheckBox Content="Keep header comments" ToolTip="TODO" IsChecked="{Binding CustomOptions.KeepHeaderComments}" Margin="16,4" IsEnabled="{Binding IsChecked, ElementName=removeCommentsCheck}"/>
-                    <CheckBox Content="Remove unused functions" ToolTip="TODO" IsChecked="{Binding CustomOptions.RemoveUnusedFunctions}"/>
-                    <CheckBox Content="Remove unused variables" ToolTip="TODO" IsChecked="{Binding CustomOptions.RemoveUnusedVariables}"/>
-                    <CheckBox Content="Remove unreachable code" ToolTip="TODO" IsChecked="{Binding CustomOptions.RemoveUnreachableCode}"/>
-                    <CheckBox Content="Remove disabled code" ToolTip="TODO" IsChecked="{Binding CustomOptions.RemoveDisabledCode}"/>
-                    <CheckBox Content="Simplify function declarations" ToolTip="TODO" IsChecked="{Binding CustomOptions.SimplifyFunctionDeclarations}"/>
-                    <CheckBox Content="Simplify function parameters" ToolTip="TODO" IsChecked="{Binding CustomOptions.SimplifyFunctionParams}"/>
-                    <CheckBox Content="Group variable declarations" ToolTip="TODO" IsChecked="{Binding CustomOptions.GroupVariableDeclarations}"/>
-                    <CheckBox Content="Join variable declarations and assignments" ToolTip="TODO" IsChecked="{Binding CustomOptions.JoinVariableDeclarationsWithAssignments}"/>
-                    <CheckBox Content="Detect new constants" ToolTip="TODO" IsChecked="{Binding CustomOptions.DetectConstants}"/>
-                    <CheckBox Content="Inline constant variables" ToolTip="TODO" IsChecked="{Binding CustomOptions.InlineConstantVariables}"/>
-                    <CheckBox Content="Inline constant #defines" ToolTip="TODO" IsChecked="{Binding CustomOptions.InlineDefines}"/>
-                </StackPanel>
-
-                <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Margin="16,0">
-                    <Separator Width="3" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
-                </StackPanel>
-
-                <StackPanel Grid.Row="0" Grid.Column="2">
-                    <CheckBox Content="Simplify float number format" ToolTip="TODO" IsChecked="{Binding CustomOptions.SimplifyFloatFormat}"/>
-                    <CheckBox Content="Simplify vector construction" ToolTip="TODO" IsChecked="{Binding CustomOptions.SimplifyVectorConstructors}"/>
-                    <CheckBox Content="Simplify vector references" ToolTip="TODO" IsChecked="{Binding CustomOptions.SimplifyVectorReferences}"/>
-                    <CheckBox Content="Simplify branching" ToolTip="TODO" IsChecked="{Binding CustomOptions.SimplifyBranching}"/>
-                    <CheckBox Content="Combine consecutive assignments" ToolTip="TODO" IsChecked="{Binding CustomOptions.CombineConsecutiveAssignments}"/>
-                    <CheckBox Content="Combine assignment with 'return'" ToolTip="TODO" IsChecked="{Binding CustomOptions.CombineAssignmentWithReturn}"/>
-                    <CheckBox Content="Introduce +=, -=, /=, *=" ToolTip="TODO" IsChecked="{Binding CustomOptions.IntroduceMathOperators}"/>
-                    <CheckBox Content="Simplify mathematical expressions" ToolTip="TODO" IsChecked="{Binding CustomOptions.SimplifyArithmetic}"/>
-                    <CheckBox Content="Perform simple arithmetic" ToolTip="TODO" IsChecked="{Binding CustomOptions.PerformArithmetic}"/>
-                </StackPanel>
-
-                <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" Margin="0,16,0,0" VerticalAlignment="Center">
-                    <materialDesign:PackIcon Kind="InfoCircle" Width="16" Height="16" Foreground="{DynamicResource PrimaryHueLightBrush}"/>
-                    <TextBlock Text="See tooltips for more information" Margin="4,0" VerticalAlignment="Center"/>
-                </StackPanel>
-
-                <Button Grid.Row="1" Grid.Column="2" Content="APPLY" Command="{Binding OnCustomOptionsAcceptedCommand}" HorizontalAlignment="Right" Margin="0,16,0,0" Foreground="White"/>
-            </Grid>
+            <local:OptionsDialog Margin="24,16"/>
         </materialDesign:DialogHost.DialogContent>
     </materialDesign:DialogHost>
 </Window>
