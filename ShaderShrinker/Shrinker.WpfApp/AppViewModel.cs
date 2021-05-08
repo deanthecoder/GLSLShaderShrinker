@@ -36,6 +36,7 @@ namespace Shrinker.WpfApp
         private RelayCommand m_saveToClipboardCommand;
         private RelayCommand m_saveToFileCommand;
         private RelayCommand m_shrinkCommand;
+        private RelayCommand m_customOptionsAcceptedCommand;
         private string m_optimizedCode;
         private bool m_showProgress;
         private string m_originalCode;
@@ -48,6 +49,7 @@ namespace Shrinker.WpfApp
         public ICommand OnSaveToClipboardCommand => m_saveToClipboardCommand ??= new RelayCommand(SaveGlslToClipboard, _ => m_optimizedRoot != null);
         public ICommand OnSaveToFileCommand => m_saveToFileCommand ??= new RelayCommand(SaveGlslToFile, _ => m_optimizedRoot != null);
         public ICommand OnShrinkCommand => m_shrinkCommand ??= new RelayCommand(Shrink, _ => m_optimizedRoot != null);
+        public ICommand OnCustomOptionsAcceptedCommand => m_customOptionsAcceptedCommand ??= new RelayCommand(AcceptCustomOptions);
 
         public CustomOptions CustomOptions { get; }
 
@@ -105,6 +107,7 @@ namespace Shrinker.WpfApp
                 OnPropertyChanged();
             }
         }
+
         public SnackbarMessageQueue MyMessageQueue { get; } = new SnackbarMessageQueue();
 
         public AppViewModel()
@@ -180,6 +183,12 @@ namespace Shrinker.WpfApp
         {
             m_originalCode = glsl;
             Shrink("Max");
+        }
+
+        private void AcceptCustomOptions(object obj)
+        {
+            DialogHost.CloseDialogCommand.Execute(null, null);
+            Shrink("Custom");
         }
 
         private async void Shrink(object level)

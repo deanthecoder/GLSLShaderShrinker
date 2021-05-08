@@ -251,7 +251,7 @@
                     <TextBlock Text="See tooltips for more information" Margin="4,0" VerticalAlignment="Center"/>
                 </StackPanel>
 
-                <Button Grid.Row="1" Grid.Column="2" Content="CLOSE" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" HorizontalAlignment="Right" Margin="0,16,0,0" Foreground="White"/>
+                <Button Grid.Row="1" Grid.Column="2" Content="APPLY" Command="{Binding OnCustomOptionsAcceptedCommand}" HorizontalAlignment="Right" Margin="0,16,0,0" Foreground="White"/>
             </Grid>
         </materialDesign:DialogHost.DialogContent>
     </materialDesign:DialogHost>
