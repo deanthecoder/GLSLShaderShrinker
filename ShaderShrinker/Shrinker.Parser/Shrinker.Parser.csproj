@@ -1,103 +1,17 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{4B02CF1B-391C-42C8-84B1-2CA6E5B8F504}</ProjectGuid>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Shrinker.Parser</RootNamespace>
-    <AssemblyName>Shrinker.Parser</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <Deterministic>true</Deterministic>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <LangVersion>latest</LangVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
+    <ProjectReference Include="..\Shrinker.Lexer\Shrinker.Lexer.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BraceSyntaxNode.cs" />
-    <Compile Include="CommentSyntaxNodeBase.cs" />
-    <Compile Include="CustomOptions.cs" />
-    <Compile Include="FileSyntaxNode.cs" />
-    <Compile Include="Optimizations\CombineAssignmentWithReturnExtension.cs" />
-    <Compile Include="Optimizations\CombineConsecutiveAssignmentsExtension.cs" />
-    <Compile Include="Optimizations\DetectConstantsExtension.cs" />
-    <Compile Include="Optimizations\GroupVariableDeclarationsExtension.cs" />
-    <Compile Include="Optimizations\InlineConstantVariablesExtension.cs" />
-    <Compile Include="Optimizations\InlineDefinesExtension.cs" />
-    <Compile Include="Optimizations\IntroduceMathOperatorsExtension.cs" />
-    <Compile Include="Optimizations\JoinVariableDeclarationsWithAssignmentsExtension.cs" />
-    <Compile Include="Optimizations\PerformArithmeticExtension.cs" />
-    <Compile Include="Optimizations\RemoveCommentsExtension.cs" />
-    <Compile Include="Optimizations\RemoveDisabledCodeExtension.cs" />
-    <Compile Include="ForSyntaxNode.cs" />
-    <Compile Include="FunctionCallSyntaxNode.cs" />
-    <Compile Include="FunctionDeclarationSyntaxNode.cs" />
-    <Compile Include="FunctionDefinitionSyntaxNode.cs" />
-    <Compile Include="FunctionDefinitionSyntaxNodeExtensions.cs" />
-    <Compile Include="FunctionSyntaxNodeBase.cs" />
-    <Compile Include="GenericSyntaxNode.cs" />
-    <Compile Include="GroupSyntaxNode.cs" />
-    <Compile Include="IfSyntaxNode.cs" />
-    <Compile Include="IStatementSyntaxNode.cs" />
-    <Compile Include="MultiLineCommentSyntaxNode.cs" />
-    <Compile Include="Optimizations\RemoveUnreachableCodeExtension.cs" />
-    <Compile Include="Optimizations\RemoveUnusedVariablesExtension.cs" />
-    <Compile Include="Optimizations\SimplifyArithmeticExtension.cs" />
-    <Compile Include="Optimizations\SimplifyBranchingExtension.cs" />
-    <Compile Include="Optimizations\SimplifyFunctionDeclarationsExtension.cs" />
-    <Compile Include="Optimizations\SimplifyFunctionParamsExtension.cs" />
-    <Compile Include="Optimizations\SimplifyVectorConstructorsExtension.cs" />
-    <Compile Include="Optimizations\SimplifyVectorReferencesExtension.cs" />
-    <Compile Include="PragmaDefineSyntaxNode.cs" />
-    <Compile Include="PragmaIfSyntaxNode.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Optimizations\RemoveUnusedFunctionsExtension.cs" />
-    <Compile Include="ReturnSyntaxNode.cs" />
-    <Compile Include="RoundBracketSyntaxNode.cs" />
-    <Compile Include="SingleLineCommentSyntaxNode.cs" />
-    <Compile Include="SquareBracketSyntaxNode.cs" />
-    <Compile Include="StructDefinitionSyntaxNode.cs" />
-    <Compile Include="SwitchSyntaxNode.cs" />
-    <Compile Include="SyntaxNode.cs" />
-    <Compile Include="SyntaxNodeExtensions.cs" />
-    <Compile Include="OutputFormatter.cs" />
-    <Compile Include="Parser.cs" />
-    <Compile Include="Shrinker.cs" />
-    <Compile Include="TokenExtensions.cs" />
-    <Compile Include="VariableAssignmentSyntaxNode.cs" />
-    <Compile Include="VariableDeclarationSyntaxNode.cs" />
-    <Compile Include="VerbatimLineSyntaxNode.cs" />
+    <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.2.222702">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Shrinker.Lexer\Shrinker.Lexer.csproj">
-      <Project>{8FF19F6C-6592-4BC8-BA26-5EC14832F754}</Project>
-      <Name>Shrinker.Lexer</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
