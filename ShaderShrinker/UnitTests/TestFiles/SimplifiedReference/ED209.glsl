@@ -38,8 +38,7 @@ float sdCappedCone(vec3 p, vec3 a, vec3 b, float ra, float rb) {
 	      x = sqrt(papa - paba * paba * baba),
 	      cax = max(0., x - ((paba < .5) ? ra : rb)),
 	      cay = abs(paba - .5) - .5,
-	      k = rba * rba + baba,
-	      f = clamp((rba * (x - ra) + paba * baba) / k, 0., 1.),
+	      f = clamp((rba * (x - ra) + paba * baba) / (rba * rba + baba), 0., 1.),
 	      cbx = x - ra - f * rba,
 	      cby = paba - f;
 	return ((cbx < 0. && cay < 0.) ? -1. : 1.) * sqrt(min(cax * cax + cay * cay * baba, cbx * cbx + cby * cby * baba));
@@ -102,9 +101,7 @@ MarchData headVisor(vec3 p, float h, float bump) {
 MarchData headLower(vec3 p) {
 	vec3 op = p;
 	MarchData r = headVisor(p * vec3(.95, -1.4, .95), 1., 0.);
-	float cheeks,
-	      roof = max(max(headVisor((p + vec3(0, .01, 0)) * vec3(.95), 1., 0.).d, p.y - .35), p.y * .625 - p.z - .66);
-	r.d = min(r.d, roof);
+	r.d = min(r.d, max(max(headVisor((p + vec3(0, .01, 0)) * vec3(.95), 1., 0.).d, p.y - .35), p.y * .625 - p.z - .66));
 	p.xy *= rot(.075 * (gunsUp - 1.) * sign(p.x));
 	p.x = abs(p.x) - 1.33;
 	p.y -= .1 - p.x * .1;
@@ -115,8 +112,7 @@ MarchData headLower(vec3 p) {
 	p = op;
 	p.y = abs(p.y + .16) - .06;
 	p.z -= -1.1;
-	cheeks = max(max(sdCappedCylinder(p.xzy, 1., .03), -sdCappedCylinder(p.xzy, .55, 1.)), p.z + .2);
-	r.d = max(r.d, -cheeks);
+	r.d = max(r.d, -max(max(sdCappedCylinder(p.xzy, 1., .03), -sdCappedCylinder(p.xzy, .55, 1.)), p.z + .2));
 	setBodyMaterial(r);
 	return r;
 }

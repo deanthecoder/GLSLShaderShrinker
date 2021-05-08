@@ -40,7 +40,7 @@ namespace Shrinker.Parser
         public bool SimplifyVectorReferences { get; set; } = true;
         public bool RemoveUnreachableCode { get; set; } = true;
         public bool CombineConsecutiveAssignments { get; set; } = true;
-        public bool CombineAssignmentWithReturn { get; set; } = true;
+        public bool CombineAssignmentWithSingleUse { get; set; } = true;
         public bool IntroduceMathOperators { get; set; } = true;
         public bool SimplifyArithmetic { get; set; } = true;
         public bool PerformArithmetic { get; set; } = true;

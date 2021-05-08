@@ -699,7 +699,7 @@ namespace UnitTests
             lexer.Load("int num() { return 3; } void main() { int n = num(); return n; }");
 
             var options = CustomOptions.Disabled();
-            options.CombineAssignmentWithReturn = true;
+            options.CombineAssignmentWithSingleUse = true;
             var rootNode = new Parser(lexer)
                 .Parse()
                 .Simplify(options);
@@ -714,7 +714,7 @@ namespace UnitTests
             lexer.Load("int num() { return 3; } void main() { if (1) { int n, a; a = 10; n = num(); return n; } }");
 
             var options = CustomOptions.Disabled();
-            options.CombineAssignmentWithReturn = true;
+            options.CombineAssignmentWithSingleUse = true;
             var rootNode = new Parser(lexer)
                 .Parse()
                 .Simplify(options);
@@ -729,7 +729,7 @@ namespace UnitTests
             lexer.Load("float smin(float a, float b, float k) { float h = clamp(.5 + .5 * (b - a) / k, 0., 1.); return mix(b, a, h) - k * h * (1. - h); }");
 
             var options = CustomOptions.Disabled();
-            options.CombineAssignmentWithReturn = true;
+            options.CombineAssignmentWithSingleUse = true;
             var rootNode = new Parser(lexer)
                 .Parse()
                 .Simplify(options);
@@ -744,7 +744,7 @@ namespace UnitTests
             lexer.Load("void main() { float n = 1.0; return n + n; }");
 
             var options = CustomOptions.Disabled();
-            options.CombineAssignmentWithReturn = true;
+            options.CombineAssignmentWithSingleUse = true;
             var rootNode = new Parser(lexer)
                 .Parse()
                 .Simplify(options);
@@ -759,7 +759,7 @@ namespace UnitTests
             lexer.Load("int num() { return 3; } void main() { int n = 1; n = min(d, num); return n; }");
 
             var options = CustomOptions.Disabled();
-            options.CombineAssignmentWithReturn = true;
+            options.CombineAssignmentWithSingleUse = true;
             var rootNode = new Parser(lexer)
                 .Parse()
                 .Simplify(options);
@@ -786,7 +786,7 @@ namespace UnitTests
             lexer.Load(code);
 
             var options = CustomOptions.Disabled();
-            options.CombineAssignmentWithReturn = true;
+            options.CombineAssignmentWithSingleUse = true;
             options.GroupVariableDeclarations = true;
             var rootNode = new Parser(lexer)
                 .Parse()

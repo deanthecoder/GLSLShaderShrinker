@@ -122,6 +122,5 @@ void mainImage(out vec4 fragColor, vec2 fc) {
 	vec3 ro = vec3(0, .2, -4);
 	ro.yz *= rot(-sin(t * .3) * .1 - .6);
 	ro.xz *= rot(1.1 + cos(t) * .2);
-	vec2 uv = (fc - .5 * iResolution.xy) / iResolution.y;
-	fragColor = vec4(vignette(pow(march(ro, getRayDir(ro, vec3(0, 0, .8), uv)), vec3(.45)), fc), mix(1.2, 0., (d + 1.) / 8.));
+	fragColor = vec4(vignette(pow(march(ro, getRayDir(ro, vec3(0, 0, .8), (fc - .5 * iResolution.xy) / iResolution.y)), vec3(.45)), fc), mix(1.2, 0., (d + 1.) / 8.));
 }

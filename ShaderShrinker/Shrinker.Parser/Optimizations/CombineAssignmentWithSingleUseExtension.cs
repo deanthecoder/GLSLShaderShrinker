@@ -1,0 +1,110 @@
+﻿// -----------------------------------------------------------------------
+//  <copyright file="CombineAssignmentWithSingleUseExtension.cs">
+//      Copyright (c) 2021 Dean Edis. All rights reserved.
+//  </copyright>
+//  <summary>
+//  This example is provided on an "as is" basis and without warranty of any kind.
+//  We do not warrant or make any representations regarding the use or
+//  results of use of this example.
+//  </summary>
+// -----------------------------------------------------------------------
+
+using System.Linq;
+using Shrinker.Lexer;
+using Shrinker.Parser.SyntaxNodes;
+
+namespace Shrinker.Parser.Optimizations
+{
+    public static class CombineAssignmentWithSingleUseExtension
+    {
+        /// <summary>
+        /// Merge variable assignment with single use in an assignment on the next line.
+        /// </summary>
+        public static void CombineAssignmentWithSingleUse(this SyntaxNode rootNode)
+        {
+            var functionNodes = rootNode.FindFunctionDefinitions().ToList();
+            var functionNames = functionNodes.Select(o => o.Name).ToList();
+            foreach (var functionNode in functionNodes)
+            {
+                while (true)
+                {
+                    var didChange = false;
+
+                    var assignments = functionNode.LocalVariables();
+                    foreach (var assignment in assignments)
+                    {
+                        if (assignment.Name.Contains("."))
+                            continue; // Can't inline a vector field (E.g. v.x)
+
+                        // Variable must only ever be used once.
+                        if (functionNode.Braces.TheTree.OfType<GenericSyntaxNode>().Count(o => o.StartsWithVarName(assignment.Name)) != 1)
+                            continue;
+                        if (functionNode.Braces.TheTree.OfType<GenericSyntaxNode>().Count(o => o.IsVarName(assignment.Name)) != 1)
+                            continue;
+
+                        // Find 'next' node.
+                        var declParent = assignment.Parent as VariableDeclarationSyntaxNode;
+                        var n = assignment.NextNonComment;
+                        if (n == null && declParent != null)
+                            n = declParent.NextNonComment;
+
+                        // If next operation isn't an assignment, ignore...
+                        var nextAssignment = n as VariableAssignmentSyntaxNode;
+                        if (nextAssignment == null)
+                            continue;
+
+                        // The next assignment must be for a different variable.
+                        if (nextAssignment.Name == assignment.Name)
+                            continue;
+
+                        // ...and must use the variable exactly once...
+                        var nextAssignmentUsesOfVar =
+                            nextAssignment
+                                .TheTree
+                                .OfType<GenericSyntaxNode>()
+                                .Where(o => o.IsVarName(assignment.Name))
+                                .ToList();
+                        if (nextAssignmentUsesOfVar.Count != 1)
+                            continue;
+
+                        var usage = nextAssignmentUsesOfVar.Single();
+
+                        // Don't join if the next assignment uses a function call.
+                        // (Just in case it modifies the variable somehow.)
+                        var intermediateNodes = nextAssignment.TheTree.TakeWhile(o => o != usage);
+                        var hasFunctionCall = intermediateNodes.OfType<GenericSyntaxNode>().Any(o => functionNames.Contains(o.Token?.Content));
+                        if (hasFunctionCall)
+                            continue;
+
+                        // Inline the variable!
+                        var addBrackets = assignment.Children.Any(o => o.Token is SymbolOperatorToken);
+                        if (addBrackets)
+                        {
+                            usage.ReplaceWith(new RoundBracketSyntaxNode(assignment.Children));
+
+                            // Try to remove the brackets if we can.
+                            var customOptions = CustomOptions.Disabled();
+                            customOptions.SimplifyArithmetic = true;
+                            nextAssignment.Simplify(customOptions);
+                        }
+                        else
+                        {
+                            usage.ReplaceWith(assignment.Children.ToArray());
+                        }
+
+                        assignment.Remove();
+
+                        // If the declaration isn't declaring any variables any more, remove it.
+                        if (declParent != null && !declParent.Children.Any())
+                            declParent.Remove();
+
+                        didChange = true;
+                    }
+
+                    if (!didChange)
+                        break;
+                }
+            }
+        }
+    }
+}

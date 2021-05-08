@@ -51,7 +51,7 @@
         <CheckBox Content="Simplify vector references" ToolTip="TODO" IsChecked="{Binding CustomOptions.SimplifyVectorReferences}"/>
         <CheckBox Content="Simplify branching" ToolTip="TODO" IsChecked="{Binding CustomOptions.SimplifyBranching}"/>
         <CheckBox Content="Combine consecutive assignments" ToolTip="TODO" IsChecked="{Binding CustomOptions.CombineConsecutiveAssignments}"/>
-        <CheckBox Content="Combine assignment with 'return'" ToolTip="TODO" IsChecked="{Binding CustomOptions.CombineAssignmentWithReturn}"/>
+        <CheckBox Content="Combine assignment with single use" ToolTip="TODO" IsChecked="{Binding CustomOptions.CombineAssignmentWithSingleUse}"/>
         <CheckBox Content="Introduce +=, -=, /=, *=" ToolTip="TODO" IsChecked="{Binding CustomOptions.IntroduceMathOperators}"/>
         <CheckBox Content="Simplify mathematical expressions" ToolTip="TODO" IsChecked="{Binding CustomOptions.SimplifyArithmetic}"/>
         <CheckBox Content="Perform simple arithmetic" ToolTip="TODO" IsChecked="{Binding CustomOptions.PerformArithmetic}"/>

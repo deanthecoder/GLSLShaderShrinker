@@ -17,9 +17,11 @@ namespace Shrinker.Parser.Optimizations
 {
     public static class CombineAssignmentWithReturnExtension
     {
+        /// <summary>
+        /// Merge variable assignment with single use in an return statement on the next line.
+        /// </summary>
         public static void CombineAssignmentWithReturn(this SyntaxNode rootNode)
         {
-            // Merge variable assignment with single use in return statement.
             foreach (var functionNode in rootNode.FindFunctionDefinitions())
             {
                 foreach (var braces in functionNode.TheTree.OfType<BraceSyntaxNode>().ToList())

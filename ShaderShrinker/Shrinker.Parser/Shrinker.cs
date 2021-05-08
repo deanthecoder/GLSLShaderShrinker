@@ -15,6 +15,7 @@ using Shrinker.Parser.Optimizations;
 using Shrinker.Parser.SyntaxNodes;
 
 // todo - https://www.shadertoy.com/view/tlGfzd main() not inlining col. (Also n = normal(...) earlier in code)
+// todo - Support [] (https://www.shadertoy.com/view/Nd2XzG)
 // todo - 1e3 form can be used if with vecN(...)
 // todo - 'fragColor = vec4(col, 1.0)' - Inline 'col'.
 // todo - 'vec3 p = vec3(r, t, ph), f = fract(p * 1.59) - .5;' <- Inline p?
@@ -88,8 +89,11 @@ namespace Shrinker.Parser
                 if (options.CombineConsecutiveAssignments)
                     rootNode.CombineConsecutiveAssignments();
 
-                if (options.CombineAssignmentWithReturn)
+                if (options.CombineAssignmentWithSingleUse)
+                {
                     rootNode.CombineAssignmentWithReturn();
+                    rootNode.CombineAssignmentWithSingleUse();
+                }
 
                 if (options.SimplifyBranching)
                     rootNode.SimplifyBranching();

@@ -142,10 +142,7 @@ namespace Shrinker.Parser.Optimizations
             while (node is T match)
             {
                 group.Add(match);
-                node = node.Next;
-
-                while (node is CommentSyntaxNodeBase)
-                    node = node.Next;
+                node = node.NextNonComment;
             }
 
             return group;
