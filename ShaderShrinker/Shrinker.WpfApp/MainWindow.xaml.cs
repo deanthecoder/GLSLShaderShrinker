@@ -9,7 +9,9 @@
 //  </summary>
 // -----------------------------------------------------------------------
 
+using System.Diagnostics;
 using System.Windows;
+using System.Windows.Navigation;
 
 namespace Shrinker.WpfApp
 {
@@ -38,5 +40,8 @@ namespace Shrinker.WpfApp
         }
 
         private void OnSettingsButtonClicked(object sender, RoutedEventArgs e) => rootHost.IsOpen = true;
+
+        private void OnOpenProjectPage(object sender, RequestNavigateEventArgs e) =>
+            Process.Start("explorer.exe", e.Uri.AbsoluteUri);
     }
 }

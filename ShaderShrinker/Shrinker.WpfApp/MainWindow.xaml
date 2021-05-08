@@ -27,11 +27,17 @@
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
+            <!-- Project web link -->
+            <TextBlock HorizontalAlignment="Right" Margin="8,2">
+                <Hyperlink NavigateUri="https://github.com/deanthecoder/GLSLShaderShrinker" RequestNavigate="OnOpenProjectPage">Project Page</Hyperlink>
+            </TextBlock>
+
             <!-- Import/Export/Options -->
-            <materialDesign:DialogHost x:Name="importHost" Identifier="ImportHost" Grid.Row="0">
+            <materialDesign:DialogHost x:Name="importHost" Identifier="ImportHost" Grid.Row="1">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
@@ -41,7 +47,7 @@
 
                     <UniformGrid Columns="2">
                         <!-- Import options -->
-                        <GroupBox Margin="16,16,8,16">
+                        <GroupBox Margin="16,4,8,16">
                             <GroupBox.Header>
                                 <StackPanel Orientation="Horizontal">
                                     <materialDesign:PackIcon Kind="Import" Width="28" Height="28" Margin="0,0,8,0"/>
@@ -57,7 +63,7 @@
                         </GroupBox>
 
                         <!-- Export options -->
-                        <GroupBox Foreground="White" Margin="16,16,8,16">
+                        <GroupBox Foreground="White" Margin="16,4,8,16">
                             <GroupBox.Header>
                                 <StackPanel Orientation="Horizontal">
                                     <materialDesign:PackIcon Kind="Export" Width="28" Height="28" Margin="0,0,8,0"/>
@@ -73,7 +79,7 @@
                     </UniformGrid>
 
                     <!-- Shrink options -->
-                    <GroupBox Grid.Column="2" Margin="16,16,8,16">
+                    <GroupBox Grid.Column="2" Margin="16,4,8,16">
                         <GroupBox.Header>
                             <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="ArrowCompress" Width="28" Height="28" Margin="0,0,8,0"/>
@@ -127,7 +133,7 @@
             </materialDesign:DialogHost>
 
             <!-- Code preview -->
-            <Grid Grid.Row="1">
+            <Grid Grid.Row="2">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="Auto"/>
@@ -191,7 +197,7 @@
                 </UniformGrid>
             </Grid>
 
-            <materialDesign:Snackbar Grid.Row="1" VerticalAlignment="Bottom" MessageQueue="{Binding MyMessageQueue}" />
+            <materialDesign:Snackbar Grid.Row="2" VerticalAlignment="Bottom" MessageQueue="{Binding MyMessageQueue}" />
         </Grid>
 
         <!-- Custom options dialog -->
