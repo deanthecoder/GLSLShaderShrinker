@@ -150,6 +150,10 @@ namespace Shrinker.Parser
                                 sb.Append(o.Token.Content);
                                 break;
 
+                            case ConstToken:
+                                sb.Append("const ");
+                                break;
+
                             default:
                                 throw new SyntaxErrorException($"Unsupported token: {o.Token.GetType()}");
                         }

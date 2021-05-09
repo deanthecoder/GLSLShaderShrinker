@@ -23,7 +23,7 @@ namespace Shrinker.Parser.Optimizations
 
             foreach (var decl in rootNode.TheTree
                 .OfType<VariableDeclarationSyntaxNode>()
-                .Where(o => !o.VariableType.IsConst && !o.VariableType.IsUniform))
+                .Where(o => !o.VariableType.IsConst && !o.VariableType.IsUniform && o.VariableType.IsGlslType))
             {
                 foreach (var defCandidate in decl.Definitions.Where(o => o.IsSimpleAssignment()))
                 {

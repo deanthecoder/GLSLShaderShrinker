@@ -90,7 +90,7 @@ namespace Shrinker.Parser.Optimizations
                                           }
                                       }
 
-                                      // Move any decls which completely unassigned nearer the definition.
+                                      // Find any variable declarations which are defined later (potentially to move nearer actual the definition).
                                       var declWithNoDefs = node.Children
                                           .OfType<VariableDeclarationSyntaxNode>()
                                           .Where(o => !o.IsWithinIfPragma())

@@ -32,7 +32,7 @@ namespace Shrinker.Parser.Optimizations
                                       // Float all const declarations to the top.
                                       var constDecls =
                                           node.Children.OfType<VariableDeclarationSyntaxNode>()
-                                              .Where(o => o.VariableType.IsConst && !o.IsWithinIfPragma())
+                                              .Where(o => o.VariableType.IsConst && !o.IsWithinIfPragma() && o.VariableType.IsGlslType)
                                               .Reverse()
                                               .ToList();
                                       var firstNonCommentLine = 0;
