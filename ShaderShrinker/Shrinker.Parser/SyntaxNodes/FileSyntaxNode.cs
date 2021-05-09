@@ -97,7 +97,7 @@ namespace Shrinker.Parser.SyntaxNodes
         private void FindPreprocessorDefines()
         {
             var nodes = TheTree.Where(o => o.Token is PreprocessorDefineToken).ToList();
-            if (nodes.Any(o => TryGetMatchingChildren(o.NodeIndex, typeof(PreprocessorDefineToken), typeof(AlphaNumToken)) == null))
+            if (nodes.Any(o => o.TryGetMatchingSiblings(typeof(AlphaNumToken)) == null))
                 throw new SyntaxErrorException("Expected name after #define.");
 
             foreach (var node in nodes)
