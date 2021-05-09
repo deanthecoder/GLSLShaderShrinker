@@ -21,7 +21,7 @@ namespace Shrinker.Parser.Optimizations
             // Remove unreachable code after a 'return' statement.
             foreach (var returnNode in rootNode.TheTree
                 .OfType<ReturnSyntaxNode>()
-                .Where(o => !o.HasAncestor<SwitchSyntaxNode>())
+                .Where(o => !o.HasAncestor<SwitchSyntaxNode>() && !o.IsWithinIfPragma())
                 .Where(o => o.Next?.Next != null)
                 .ToList())
             {
