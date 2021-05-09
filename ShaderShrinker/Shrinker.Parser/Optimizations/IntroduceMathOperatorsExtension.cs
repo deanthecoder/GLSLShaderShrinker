@@ -32,7 +32,7 @@ namespace Shrinker.Parser.Optimizations
 
                     foreach (var assignment in functionContent.TheTree
                         .OfType<VariableAssignmentSyntaxNode>()
-                        .Where(o => o.TheTree.OfType<GenericSyntaxNode>().Any(n => n.Token.Content == o.Name)))
+                        .Where(o => o.TheTree.OfType<GenericSyntaxNode>().Any(n => n.HasNodeContent(o.Name))))
                     {
                         var rhs = assignment.Children.First().IsOnlyChild && assignment.Children.Single() is RoundBracketSyntaxNode bracketNode ? bracketNode.Children : assignment.Children;
 

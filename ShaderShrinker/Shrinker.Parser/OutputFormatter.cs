@@ -197,7 +197,7 @@ namespace Shrinker.Parser
                     sb.Append(')');
                     if (o.Previous?.Token is KeywordToken)
                     {
-                        if (o.Previous.Token.Content == "for")
+                        if (o.Previous.HasNodeContent("for"))
                             sb.AppendLine();
                         else
                             sb.Append(' ');

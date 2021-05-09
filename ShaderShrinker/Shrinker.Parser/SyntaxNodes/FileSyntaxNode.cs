@@ -165,7 +165,7 @@ namespace Shrinker.Parser.SyntaxNodes
 
                 // Is there an 'else' section?
                 IList<SyntaxNode> ifFalseSection = null;
-                if (ifTrueSection.Last().Next.Token.Content == "#else")
+                if (ifTrueSection.Last().Next.HasNodeContent("#else"))
                 {
                     ifFalseSection = ifTrueSection.Last().Next.Next.TakeSiblingsWhile(o => (o.Token as PreprocessorToken)?.Content != "#endif").ToList();
                 }
@@ -427,7 +427,7 @@ namespace Shrinker.Parser.SyntaxNodes
                 .ToList())
             {
                 // Ignore declarations within a 'for (...)'.
-                if (typeNode.Parent is RoundBracketSyntaxNode && typeNode.Parent.Previous.Token.Content == "for")
+                if (typeNode.Parent is RoundBracketSyntaxNode && typeNode.Parent.Previous.HasNodeContent("for"))
                     continue;
 
                 var namesAndValues = new List<List<SyntaxNode>>();
@@ -564,7 +564,7 @@ namespace Shrinker.Parser.SyntaxNodes
         private void FindReturnStatements()
         {
             var nodes = TheTree.OfType<GenericSyntaxNode>()
-                .Where(o => o.Token?.Content == "return")
+                .Where(o => o.HasNodeContent("return"))
                 .ToList();
             foreach (var node in nodes)
             {

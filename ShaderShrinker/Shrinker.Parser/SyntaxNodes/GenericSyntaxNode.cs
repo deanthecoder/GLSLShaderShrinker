@@ -47,6 +47,6 @@ namespace Shrinker.Parser.SyntaxNodes
         }
 
         public bool StartsWithVarName(string varName) => Token?.Content?.StartsWithVarName(varName) == true;
-        public bool IsVarName(string varName) => Token?.Content == varName;
+        public bool IsVarName(string varName) => this.HasNodeContent(varName);
     }
 }

@@ -106,7 +106,7 @@ namespace Shrinker.Parser.Optimizations
                     //                      = 1.2 / 0.51111
                     //                      = 2.3478
                     if (numNodeA.Previous?.Token?.GetMathSymbolType() == TokenExtensions.MathSymbolType.MultiplyDivide &&
-                        numNodeA.Previous.Token.Content == "/")
+                        numNodeA.Previous.HasNodeContent("/"))
                     {
                         symbol = symbol == '*' ? '/' : '*';
                     }
@@ -115,7 +115,7 @@ namespace Shrinker.Parser.Optimizations
                     // E.g. -3.0 + 0.1 = - (3.0 - 0.1)
                     //                 = - (2.9)
                     //                 = -2.9
-                    if (numNodeA.Previous?.Token?.Content == "-" &&
+                    if (numNodeA.Previous.HasNodeContent("-") &&
                         symbolNode.Token.GetMathSymbolType() == TokenExtensions.MathSymbolType.AddSubtract)
                     {
                         symbol = symbol == '+' ? '-' : '+';

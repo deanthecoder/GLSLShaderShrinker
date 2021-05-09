@@ -91,5 +91,7 @@ namespace Shrinker.Parser.SyntaxNodes
             node.Root().Children.OfType<VariableDeclarationSyntaxNode>().SelectMany(o => o.Definitions);
 
         public static bool IsComment(this SyntaxNode node) => node is CommentSyntaxNodeBase || node.Token is CommentTokenBase;
+
+        public static bool HasNodeContent(this SyntaxNode node, string s) => node?.Token?.Content == s;
     }
 }

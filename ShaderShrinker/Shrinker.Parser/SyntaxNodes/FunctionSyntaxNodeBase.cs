@@ -19,6 +19,6 @@ namespace Shrinker.Parser.SyntaxNodes
         public string Name { get; protected set; }
         public RoundBracketSyntaxNode Params { get; protected set; }
 
-        public bool IsVoidParam() => Params.Children.Count == 1 && Params.Children[0].Token.Content == "void";
+        public bool IsVoidParam() => Params.Children.Count == 1 && Params.Children[0].HasNodeContent("void");
     }
 }

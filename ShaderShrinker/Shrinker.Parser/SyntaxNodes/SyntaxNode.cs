@@ -242,5 +242,5 @@ namespace Shrinker.Parser.SyntaxNodes
         }
 
         public List<SyntaxNode> TryGetMatchingSiblings(params Type[] types) => Parent.TryGetMatchingChildren(NodeIndex + 1, types);
-    }
+   }
 }
