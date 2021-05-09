@@ -73,6 +73,7 @@ namespace Shrinker.Parser.Optimizations
                         .Where(
                                o => o.Parent is not FunctionCallSyntaxNode &&
                                     o.Parent is not IfSyntaxNode &&
+                                    o.Parent is not ForSyntaxNode &&
                                     o.Parent is not SwitchSyntaxNode &&
                                     o.Parent is not PragmaDefineSyntaxNode &&
                                     o.Previous?.Token is not AlphaNumToken &&

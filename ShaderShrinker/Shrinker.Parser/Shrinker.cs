@@ -14,11 +14,9 @@ using Shrinker.Lexer;
 using Shrinker.Parser.Optimizations;
 using Shrinker.Parser.SyntaxNodes;
 
-// todo - https://www.shadertoy.com/view/tlGfzd main() not inlining col. (Also n = normal(...) earlier in code)
 // todo - Support [] (https://www.shadertoy.com/view/Nd2XzG)
 // todo - 1e3 form can be used if with vecN(...)
-// todo - 'fragColor = vec4(col, 1.0)' - Inline 'col'.
-// todo - 'vec3 p = vec3(r, t, ph), f = fract(p * 1.59) - .5;' <- Inline p?
+// todo - 'fragColor = vec4(col, 1.0)' - Inline 'col'. (Subway)
 // todo - ED-209 (float d = .01 * t * .33;)
 // todo - Remove 'return;' specifically at end of function.
 namespace Shrinker.Parser

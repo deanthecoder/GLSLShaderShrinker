@@ -110,6 +110,16 @@ namespace Shrinker.Parser.Optimizations
                     {
                         symbol = symbol == '*' ? '/' : '*';
                     }
+                    
+                    // Invert + or - if preceded by a -.
+                    // E.g. -3.0 + 0.1 = - (3.0 - 0.1)
+                    //                 = - (2.9)
+                    //                 = -2.9
+                    if (numNodeA.Previous?.Token?.Content == "-" &&
+                        symbolNode.Token.GetMathSymbolType() == TokenExtensions.MathSymbolType.AddSubtract)
+                    {
+                        symbol = symbol == '+' ? '-' : '+';
+                    }
 
                     double c;
                     switch (symbol)
