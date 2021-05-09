@@ -31,6 +31,10 @@ namespace Shrinker.Parser.Optimizations
                         .Any(o => o.Name == testFunction.Name))
                         continue; // Function was used.
 
+                    // Perhaps used by a #define?
+                    if (rootNode.TheTree.OfType<PragmaDefineSyntaxNode>().Any(o => o.ToCode().Contains(testFunction.Name)))
+                        continue; // Yup - Used.
+
                     // Function not used - Remove it (and any matching declaration).
                     testFunction.Remove();
                     rootNode.Children.OfType<FunctionDeclarationSyntaxNode>().FirstOrDefault(o => o.Name == testFunction.Name)?.Remove();
