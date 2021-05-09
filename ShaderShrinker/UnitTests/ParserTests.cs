@@ -63,7 +63,7 @@ namespace UnitTests
 
         [Test, Sequential]
         public void CheckValidPragmaDefineDoesNotThrow(
-            [Values("#define FOO", "#define FOO 1", "#define FOO(x) x\n", "#define FOO(x, y) (x + y)")]
+            [Values("#define FOO", "#define FOO 1", "#define FOO(x) x\n", "#define FOO(x, y) (x + y)", "#   define FOO")]
             string code)
         {
             var lexer = new Lexer();
@@ -104,7 +104,7 @@ namespace UnitTests
         public void CheckMultiLinePragmaDefineIsReducedToSingleLine()
         {
             var lexer = new Lexer();
-            Assert.That(lexer.Load("#define FOO(x)\\\n if (d < dMin) \\ \n{ dMin = d; idObj = x; }"), Is.True);
+            Assert.That(lexer.Load("#  define FOO(x)\\\n if (d < dMin) \\ \n{ dMin = d; idObj = x; }"), Is.True);
 
             var parser = new Parser(lexer);
             Assert.That(() => parser.Parse(), Throws.Nothing);

@@ -80,5 +80,7 @@ namespace Shrinker.Lexer
             const string Message = "Processed with 'GLSL Shader Shrinker'";
             return glsl.Contains(Message) ? glsl : $"// {Message}\n{glsl}";
         }
+
+        public static string RemoveAllWhitespace(this string s) => new string(s.Where(ch => !char.IsWhiteSpace(ch)).ToArray());
     }
 }

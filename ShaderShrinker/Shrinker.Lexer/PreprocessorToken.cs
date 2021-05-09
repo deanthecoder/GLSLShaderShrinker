@@ -14,11 +14,13 @@ namespace Shrinker.Lexer
                 return null;
 
             var count = 1;
+            while (char.IsWhiteSpace(Peek(code, offset + count)))
+                count++;
             while (char.IsLetter(Peek(code, offset + count)))
                 count++;
 
             var s = Peek(code, offset, count);
-            if (s == "#define")
+            if (s.RemoveAllWhitespace() == "#define")
             {
                 offset += s.Length;
 
@@ -33,7 +35,7 @@ namespace Shrinker.Lexer
                 return new PreprocessorDefineToken(toEndOfLine.ToString());
             }
 
-            if (new[] { "#pragma", "#version" }.Contains(s))
+            if (new[] { "#pragma", "#version" }.Contains(s.RemoveAllWhitespace()))
             {
                 offset += s.Length;
 
@@ -47,7 +49,7 @@ namespace Shrinker.Lexer
                 return new VerbatimToken($"{s}{toEndOfLine}{newLine}");
             }
 
-            return new[] { "#ifdef", "#ifndef", "#if", "#else", "#endif" }.Contains(s) ? new PreprocessorToken { Content = Read(code, ref offset, s.Length) } : null;
+            return new[] { "#ifdef", "#ifndef", "#if", "#else", "#endif" }.Contains(s.RemoveAllWhitespace()) ? new PreprocessorToken { Content = Read(code, ref offset, s.Length) } : null;
         }
     }
 }

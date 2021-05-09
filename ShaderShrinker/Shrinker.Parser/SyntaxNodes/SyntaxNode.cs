@@ -48,9 +48,11 @@ namespace Shrinker.Parser.SyntaxNodes
         {
             get
             {
-                var nodeIndex = NodeIndex;
-                for (var i = nodeIndex + 1; i < Parent.Children.Count; i++)
-                    yield return Parent.Children[i];
+                if (Parent != null)
+                {
+                    for (var i = NodeIndex + 1; i < Parent.Children.Count; i++)
+                        yield return Parent.Children[i];
+                }
             }
         }
 
