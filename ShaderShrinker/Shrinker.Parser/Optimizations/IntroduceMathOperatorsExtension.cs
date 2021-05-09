@@ -21,8 +21,10 @@ namespace Shrinker.Parser.Optimizations
         /// <summary>
         /// Returns true if all optimizations should be re-run.
         /// </summary>
-        public static bool IntroduceMathOperators(this SyntaxNode rootNode, bool repeatSimplifications)
+        public static bool IntroduceMathOperators(this SyntaxNode rootNode)
         {
+            var repeatSimplifications = false;
+
             // Join simple arithmetic into +=, -=, /=, *=.
             foreach (var functionContent in rootNode.FindFunctionDefinitions().Select(o => o.Braces))
             {

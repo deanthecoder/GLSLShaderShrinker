@@ -5,7 +5,7 @@
 float T,
       g = 0.;
 
-#define AA	// Enable this line if your GPU can take it!
+#define AA
 
 struct Hit {
 	float d;

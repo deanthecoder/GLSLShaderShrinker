@@ -14,6 +14,7 @@ using Shrinker.Lexer;
 using Shrinker.Parser.Optimizations;
 using Shrinker.Parser.SyntaxNodes;
 
+// todo - Remember last used optimization method.
 // todo - Support [] (https://www.shadertoy.com/view/Nd2XzG)
 // todo - 1e3 form can be used if with vecN(...)
 // todo - 'fragColor = vec4(col, 1.0)' - Inline 'col'. (Subway)
@@ -97,13 +98,13 @@ namespace Shrinker.Parser
                     rootNode.SimplifyBranching();
 
                 if (options.IntroduceMathOperators)
-                    repeatSimplifications = rootNode.IntroduceMathOperators(repeatSimplifications);
+                    repeatSimplifications |= rootNode.IntroduceMathOperators();
 
                 if (options.SimplifyArithmetic)
-                    repeatSimplifications = rootNode.SimplifyArithmetic(repeatSimplifications);
+                    repeatSimplifications |= rootNode.SimplifyArithmetic();
 
                 if (options.PerformArithmetic)
-                    repeatSimplifications = rootNode.PerformArithmetic(repeatSimplifications);
+                    repeatSimplifications |= rootNode.PerformArithmetic();
             }
 
             return rootNode;

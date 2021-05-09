@@ -4,7 +4,7 @@
 float g = 0.;
 vec4 m;
 
-#define AA	// Enable this line if your GPU can take it!
+#define AA
 
 struct Hit {
 	float d;

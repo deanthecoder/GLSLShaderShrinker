@@ -20,8 +20,10 @@ namespace Shrinker.Parser.Optimizations
         /// <summary>
         /// Returns true if all optimizations should be re-run.
         /// </summary>
-        public static bool SimplifyArithmetic(this SyntaxNode rootNode, bool repeatSimplifications)
+        public static bool SimplifyArithmetic(this SyntaxNode rootNode)
         {
+            var repeatSimplifications = false;
+
             while (true)
             {
                 var didChange = false;

@@ -985,7 +985,8 @@ namespace UnitTests
                     "float a = 1.2, i = a / 10.0 / 1.1;",
                     "float i = (5.0 + 1.1) * 2.2 * 0.1;",
                     "float i = 1.2, b = i * 1.0;",
-                    "float i = -3.0 + 0.2;")] string code,
+                    "float i = -3.0 + 0.2;",
+                    "#define smin(a,b,k) min(a,b)-pow(max(k-abs(a-b),0.)/k,k)*k*(1.0/6.0)")] string code,
             [Values("int i = 3;",
                     "int i; i = 3;",
                     "int i = 6;",
@@ -1005,7 +1006,8 @@ namespace UnitTests
                     "float a = 1.2, i = a / 11.;",
                     "float i = 1.342;",
                     "float i = 1.2, b = i;",
-                    "float i = -2.8;")] string expected)
+                    "float i = -2.8;",
+                    "#define smin(a, b, k) min(a, b) - pow(max(k - abs(a - b), 0.) / k, k) * k * .16667")] string expected)
         {
             var lexer = new Lexer();
             lexer.Load(code);

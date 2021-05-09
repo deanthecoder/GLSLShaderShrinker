@@ -18,23 +18,30 @@ namespace Shrinker.Parser.SyntaxNodes
 {
     public class PragmaDefineSyntaxNode : SyntaxNode
     {
+        private readonly int m_paramsIndex = -1;
+        private readonly int m_valuesIndex = -1;
+
         public string Name { get; }
-        public RoundBracketSyntaxNode Params { get; }
-        public IList<SyntaxNode> ValueNodes { get; }
+        public RoundBracketSyntaxNode Params => m_paramsIndex >= 0 ? (RoundBracketSyntaxNode)Children.Skip(m_paramsIndex).FirstOrDefault() : null;
+        public IList<SyntaxNode> ValueNodes => m_valuesIndex >= 0 ? Children.Skip(m_valuesIndex).ToList() : null;
 
         public PragmaDefineSyntaxNode(GenericSyntaxNode nameNode, RoundBracketSyntaxNode paramsNode = null, IList<SyntaxNode> valueNodes = null)
         {
             Name = ((AlphaNumToken)nameNode?.Token)?.Content.Trim() ?? throw new ArgumentNullException(nameof(nameNode));
-            Params = paramsNode;
-            ValueNodes = valueNodes;
 
             Adopt(nameNode);
 
-            if (Params != null)
-                Adopt(Params);
+            if (paramsNode != null)
+            {
+                m_paramsIndex = 1;
+                Adopt(paramsNode);
+            }
 
-            if (ValueNodes != null)
+            if (valueNodes != null)
+            {
+                m_valuesIndex = paramsNode == null ? 1 : 2;
                 Adopt(valueNodes.ToArray());
+            }
         }
 
         public override string UiName =>
