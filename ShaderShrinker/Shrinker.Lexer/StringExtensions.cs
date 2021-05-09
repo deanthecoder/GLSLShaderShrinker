@@ -17,8 +17,19 @@ namespace Shrinker.Lexer
 {
     public static class StringExtensions
     {
-        public static int GetCodeCharCount(this string glsl) =>
-            glsl.Split('\r', '\n').Sum(o => o.GetCodeCharCountForLine());
+        public static int GetCodeCharCount(this string glsl)
+        {
+            // Remove comment blocks.
+            int startComment;
+            while ((startComment = glsl.IndexOf("/*")) >= 0)
+            {
+                var endComment = glsl.IndexOf("*/");
+                if (endComment > startComment)
+                    glsl = glsl.Remove(startComment, endComment - startComment + 2);
+            }
+
+            return glsl.Split('\r', '\n').Sum(o => o.GetCodeCharCountForLine());
+        }
 
         private static int GetCodeCharCountForLine(this string line)
         {
