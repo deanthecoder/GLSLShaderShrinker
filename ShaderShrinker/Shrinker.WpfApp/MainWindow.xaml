@@ -155,7 +155,9 @@
                                                BorderThickness="4"
                                                OldTextHeader="Original"
                                                NewTextHeader="New"
-                                               IgnoreWhiteSpace="True"/>
+                                               IgnoreWhiteSpace="True"
+                                               OldText="You can use CTRL+V to paste here."
+                                               NewText="You can use CTRL+C to copy from here."/>
 
                     <!-- 'Busy' message -->
                     <materialDesign:DialogHost.DialogContent>
