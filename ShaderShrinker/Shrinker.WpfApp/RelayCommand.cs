@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Windows.Input;
+
 // ReSharper disable All
 
 namespace Shrinker.WpfApp

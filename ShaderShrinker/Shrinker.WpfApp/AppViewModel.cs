@@ -13,6 +13,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -22,6 +23,7 @@ using Newtonsoft.Json;
 using Shrinker.Lexer;
 using Shrinker.Parser;
 using Shrinker.Parser.SyntaxNodes;
+using Shrinker.WpfApp.Properties;
 using Shrinker.WpfApp.ShadertoyApi;
 
 namespace Shrinker.WpfApp
@@ -47,9 +49,9 @@ namespace Shrinker.WpfApp
         public ICommand OnLoadFromClipboardCommand => m_loadFromClipboardCommand ??= new RelayCommand(LoadGlslFromClipboard, _ => Clipboard.ContainsText());
         public ICommand OnLoadFromFileCommand => m_loadFromFileCommand ??= new RelayCommand(LoadGlslFromFile);
         public ICommand OnLoadFromShadertoyCommand => m_loadFromShadertoyCommand ??= new RelayCommand(LoadGlslFromShadertoy);
-        public ICommand OnSaveToClipboardCommand => m_saveToClipboardCommand ??= new RelayCommand(SaveGlslToClipboard, _ => m_optimizedRoot != null);
-        public ICommand OnSaveToFileCommand => m_saveToFileCommand ??= new RelayCommand(SaveGlslToFile, _ => m_optimizedRoot != null);
-        public ICommand OnShrinkCommand => m_shrinkCommand ??= new RelayCommand(Shrink, _ => m_optimizedRoot != null);
+        public ICommand OnSaveToClipboardCommand => m_saveToClipboardCommand ??= new RelayCommand(SaveGlslToClipboard, _ => IsFileOpen);
+        public ICommand OnSaveToFileCommand => m_saveToFileCommand ??= new RelayCommand(SaveGlslToFile, _ => IsFileOpen);
+        public ICommand OnShrinkCommand => m_shrinkCommand ??= new RelayCommand(Shrink, _ => IsFileOpen);
         public ICommand OnCustomOptionsAcceptedCommand => m_customOptionsAcceptedCommand ??= new RelayCommand(AcceptCustomOptions);
 
         public CustomOptions CustomOptions { get; }
@@ -66,6 +68,7 @@ namespace Shrinker.WpfApp
 
                 m_optimizedCode = value;
                 OnPropertyChanged();
+                OnPropertyChanged(nameof(IsFileOpen));
             }
         }
 
@@ -111,10 +114,12 @@ namespace Shrinker.WpfApp
 
         public SnackbarMessageQueue MyMessageQueue { get; } = new SnackbarMessageQueue();
 
+        public bool IsFileOpen => m_optimizedRoot != null;
+
         public AppViewModel()
         {
-            if (!string.IsNullOrWhiteSpace(Properties.Settings.Default.CustomOptions))
-                CustomOptions = JsonConvert.DeserializeObject<CustomOptions>(Properties.Settings.Default.CustomOptions);
+            if (!string.IsNullOrWhiteSpace(Settings.Default.CustomOptions))
+                CustomOptions = JsonConvert.DeserializeObject<CustomOptions>(Settings.Default.CustomOptions);
             CustomOptions ??= new CustomOptions();
         }
 
@@ -183,7 +188,7 @@ namespace Shrinker.WpfApp
         private void LoadGlslFromStringAsync(string glsl)
         {
             m_originalCode = glsl;
-            Shrink("Max");
+            Shrink();
         }
 
         private void AcceptCustomOptions(object obj)
@@ -192,13 +197,19 @@ namespace Shrinker.WpfApp
             Shrink("Custom");
         }
 
-        private async void Shrink(object level)
+        private async void Shrink(object levelParam = null)
         {
             try
             {
+                var level = (string)levelParam ?? Settings.Default.DefaultLevel;
+                Settings.Default.DefaultLevel = level;
                 ShowProgress = true;
 
-                var (originalSize, optimizedSize, optimizedCode) = await Task.Run(() => LoadGlslFromString(m_originalCode, (string)level));
+                var (originalSize, optimizedSize, optimizedCode) = await Task.Run(() =>
+                {
+                    Thread.Sleep(500);
+                    return LoadGlslFromString(m_originalCode, level);
+                });
 
                 OriginalSize = originalSize;
                 OptimizedCode = optimizedCode;
@@ -250,8 +261,8 @@ namespace Shrinker.WpfApp
 
         public void SaveCustomOptions()
         {
-            Properties.Settings.Default.CustomOptions = JsonConvert.SerializeObject(CustomOptions);
-            Properties.Settings.Default.Save();
+            Settings.Default.CustomOptions = JsonConvert.SerializeObject(CustomOptions);
+            Settings.Default.Save();
         }
     }
 }

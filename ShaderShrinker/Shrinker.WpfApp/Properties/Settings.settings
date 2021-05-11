@@ -5,5 +5,8 @@
     <Setting Name="CustomOptions" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="DefaultLevel" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Max</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

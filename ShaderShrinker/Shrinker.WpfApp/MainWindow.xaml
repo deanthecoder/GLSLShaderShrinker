@@ -89,26 +89,32 @@
 
                         <StackPanel HorizontalAlignment="Left">
                             <!-- Maximum -->
-                            <Button Content="Maximum" Command="{Binding OnShrinkCommand}" CommandParameter="Max" Foreground="White" Margin="16,4"/>
+                            <RadioButton Margin="16,4" Loaded="OnMaxRadioButtonLoaded" IsEnabled="{Binding IsFileOpen}">
+                                <Button Content="Maximum" Command="{Binding OnShrinkCommand}" CommandParameter="Max" Foreground="White" MinWidth="170"/>
+                            </RadioButton>
 
                             <!-- Minimum -->
-                            <Button Content="Minimum (/Reformat)" Command="{Binding OnShrinkCommand}" CommandParameter="Min" Foreground="White" Margin="16,4"/>
+                            <RadioButton Margin="16,4" Loaded="OnMinRadioButtonLoaded" IsEnabled="{Binding IsFileOpen}">
+                                <Button Content="Minimum (/Reformat)" Command="{Binding OnShrinkCommand}" CommandParameter="Min" Foreground="White" MinWidth="170"/>
+                            </RadioButton>
 
                             <!-- Custom -->
-                            <Grid Margin="16,4">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
+                            <RadioButton Margin="16,4" Loaded="OnCustomRadioButtonLoaded" IsEnabled="{Binding IsFileOpen}">
+                                <Grid MinWidth="170">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
 
-                                <Button x:Name="customShrinkButton" Content="Custom" Command="{Binding OnShrinkCommand}" CommandParameter="Custom" Foreground="White" Margin="0,0,4,0"/>
-                                <Grid Grid.Column="1" IsEnabled="{Binding IsEnabled, ElementName=customShrinkButton}">
-                                    <Button Foreground="White"
-                                        Click="OnSettingsButtonClicked">
-                                        <materialDesign:PackIcon Kind="Settings"/>
-                                    </Button>
+                                    <Button x:Name="customShrinkButton" Content="Custom" Command="{Binding OnShrinkCommand}" CommandParameter="Custom" Foreground="White" Margin="0,0,4,0"/>
+                                    <Grid Grid.Column="1" IsEnabled="{Binding IsEnabled, ElementName=customShrinkButton}">
+                                        <Button Foreground="White"
+                                                Click="OnSettingsButtonClicked">
+                                            <materialDesign:PackIcon Kind="Settings"/>
+                                        </Button>
+                                    </Grid>
                                 </Grid>
-                            </Grid>
+                            </RadioButton>
                         </StackPanel>
                     </GroupBox>
                 </Grid>
