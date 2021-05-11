@@ -51,7 +51,7 @@ namespace Shrinker.Parser.Optimizations
                 if (brackets.Children.Count <= 1)
                     continue;
                 var components = brackets.Children.Where(o => o.Token is not CommaToken).Select(o => o.Token?.Content).Distinct().ToList();
-                if (components.Count == 1 && brackets.Children.First()?.Token is INumberToken)
+                if (components.Count == 1 && brackets.Children[0]?.Token is INumberToken)
                 {
                     while (brackets.Children.Count > 1)
                         brackets.Children.Last().Remove();

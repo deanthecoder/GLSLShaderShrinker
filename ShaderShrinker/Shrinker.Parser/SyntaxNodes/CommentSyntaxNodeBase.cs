@@ -16,13 +16,16 @@ namespace Shrinker.Parser.SyntaxNodes
 {
     public abstract class CommentSyntaxNodeBase : SyntaxNode
     {
-        public string Comment { get; }
+        public string Comment => Token.Content;
         public bool IsAppendedToLine { get; }
 
-        protected CommentSyntaxNodeBase(SyntaxNode commentNode)
+        protected CommentSyntaxNodeBase(SyntaxNode commentNode) : this(commentNode.Token)
         {
-            Comment = commentNode.Token.Content;
-            IsAppendedToLine = ((CommentTokenBase)commentNode.Token).IsAppendedToLine;
+        }
+
+        protected CommentSyntaxNodeBase(IToken commentToken) : base(commentToken)
+        {
+            IsAppendedToLine = ((CommentTokenBase)commentToken).IsAppendedToLine;
         }
 
         public override string UiName => Comment;

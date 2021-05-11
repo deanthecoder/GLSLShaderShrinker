@@ -36,7 +36,7 @@ namespace Shrinker.Parser.Optimizations
                         .OfType<VariableAssignmentSyntaxNode>()
                         .Where(o => o.TheTree.OfType<GenericSyntaxNode>().Any(n => n.HasNodeContent(o.Name))))
                     {
-                        var rhs = assignment.Children.First().IsOnlyChild && assignment.Children.Single() is RoundBracketSyntaxNode bracketNode ? bracketNode.Children : assignment.Children;
+                        var rhs = assignment.Children[0].IsOnlyChild && assignment.Children.Single() is RoundBracketSyntaxNode bracketNode ? bracketNode.Children : assignment.Children;
 
                         // Must be at least three nodes (Variable name, math op, and more).
                         if (rhs.Count < 3)

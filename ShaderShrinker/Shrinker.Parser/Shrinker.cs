@@ -14,8 +14,9 @@ using Shrinker.Lexer;
 using Shrinker.Parser.Optimizations;
 using Shrinker.Parser.SyntaxNodes;
 
-// todo - Remember last used optimization method.
 // todo - Support [] (https://www.shadertoy.com/view/Nd2XzG)
+// todo - Bad inlining, bad const, and dodgy anim output (https://www.shadertoy.com/view/7s2XR3)
+// todo - Remember last used optimization method.
 // todo - 1e3 form can be used if with vecN(...)
 // todo - 'fragColor = vec4(col, 1.0)' - Inline 'col'. (Subway)
 // todo - ED-209 (float d = .01 * t * .33;)

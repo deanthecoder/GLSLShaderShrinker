@@ -81,6 +81,7 @@ namespace Shrinker.Parser
                             // Format negative references, etc
                             nodeBuilder
                                 .Replace("  - ", " -")
+                                .Replace(", - ", ", -")
                                 .Replace("( - ", "(-")
                                 .Replace("( -", "(-")
                                 .Replace("{  }", "{ }");

@@ -40,21 +40,21 @@ namespace Shrinker.Parser.Optimizations
                 var countIfKept = define.ToCode().GetCodeCharCount() + usages.Count * define.Name.Length;
                 var countIfRemoved = usages.Count * define.ValueNodes.Sum(o => o.ToCode().Length);
 
-                if (countIfRemoved < countIfKept)
+                if (countIfRemoved >= countIfKept)
+                    continue; // Code length increases - Don't inline.
+                
+                define.Remove();
+                foreach (var usage in usages)
                 {
-                    define.Remove();
-                    foreach (var usage in usages)
+                    var newContent = define.ValueNodes.Select(o => o.Clone()).ToList();
+                    if (usage.Token.Content != define.Name)
                     {
-                        var newContent = define.ValueNodes.Select(o => new GenericSyntaxNode(o.Token)).ToList();
-                        if (usage.Token.Content != define.Name)
-                        {
-                            // We have a reference of the form DEFINE.xy, so keep the last '.xy'.
-                            var newLastContent = newContent.Last().Token.Content + usage.Token.Content.Substring(define.Name.Length);
-                            newContent[newContent.Count - 1] = new GenericSyntaxNode(newLastContent);
-                        }
-
-                        usage.ReplaceWith(newContent);
+                        // We have a reference of the form DEFINE.xy, so keep the last '.xy'.
+                        var newLastContent = newContent.Last().Token.Content + usage.Token.Content.Substring(define.Name.Length);
+                        newContent[newContent.Count - 1] = new GenericSyntaxNode(newLastContent);
                     }
+
+                    usage.ReplaceWith(newContent);
                 }
             }
         }

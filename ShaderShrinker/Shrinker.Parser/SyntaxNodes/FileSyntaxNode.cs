@@ -20,6 +20,12 @@ namespace Shrinker.Parser.SyntaxNodes
     {
         public override string UiName => "<ROOT>";
 
+        protected override SyntaxNode CreateSelf() => new FileSyntaxNode();
+
+        private FileSyntaxNode()
+        {
+        }
+
         private FileSyntaxNode(IEnumerable<GenericSyntaxNode> flatSyntaxNodes)
         {
             foreach (var syntaxNode in flatSyntaxNodes)

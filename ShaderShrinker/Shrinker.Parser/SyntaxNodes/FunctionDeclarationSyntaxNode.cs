@@ -19,13 +19,22 @@ namespace Shrinker.Parser.SyntaxNodes
     {
         public FunctionDeclarationSyntaxNode(GenericSyntaxNode typeNode, GenericSyntaxNode nameNode, RoundBracketSyntaxNode paramsNode)
         {
-            ReturnType = (TypeToken)typeNode?.Token ?? throw new ArgumentNullException(nameof(typeNode));
-            Name = ((AlphaNumToken)nameNode?.Token)?.Content ?? throw new ArgumentNullException(nameof(nameNode));
-            Params = paramsNode ?? throw new ArgumentNullException(nameof(paramsNode));
+            if (nameNode == null)
+                throw new ArgumentNullException(nameof(nameNode));
+            if (paramsNode == null)
+                throw new ArgumentNullException(nameof(paramsNode));
 
-            Adopt(nameNode, Params);
+            ReturnType = (TypeToken)typeNode?.Token ?? throw new ArgumentNullException(nameof(typeNode));
+
+            Adopt(nameNode, paramsNode);
+        }
+
+        private FunctionDeclarationSyntaxNode()
+        {
         }
 
         public override string UiName => $"{ReturnType.Content} {Name}{(Params.Children.Any() ? "(...)" : "()")};";
+
+        protected override SyntaxNode CreateSelf() => new FunctionDeclarationSyntaxNode { ReturnType = ReturnType };
     }
 }

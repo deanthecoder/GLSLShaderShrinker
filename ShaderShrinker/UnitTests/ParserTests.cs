@@ -370,7 +370,7 @@ namespace UnitTests
             var declaration = (VariableDeclarationSyntaxNode)funcMainContent.Children.Single();
             var roundBrackets = (RoundBracketSyntaxNode)declaration.Definitions.Single().Children.Single();
             Assert.That(roundBrackets.Children, Has.Count.EqualTo(3));
-            Assert.That(roundBrackets.Children.First(), Is.TypeOf<FunctionCallSyntaxNode>());
+            Assert.That(roundBrackets.Children[0], Is.TypeOf<FunctionCallSyntaxNode>());
         }
 
         [Test]

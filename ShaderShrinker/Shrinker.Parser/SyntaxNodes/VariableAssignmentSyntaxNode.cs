@@ -34,6 +34,8 @@ namespace Shrinker.Parser.SyntaxNodes
 
         public override string UiName => Children.Any() ? $"{Name} = {(Children.Count == 1 ? Children.Single().UiName : "<Children>")}" : Name;
 
+        protected override SyntaxNode CreateSelf() => new VariableAssignmentSyntaxNode(Name);
+
         public bool HasValue => Children.Any();
 
         /// <summary>

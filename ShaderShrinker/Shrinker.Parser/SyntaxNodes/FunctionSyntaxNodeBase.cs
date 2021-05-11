@@ -16,8 +16,8 @@ namespace Shrinker.Parser.SyntaxNodes
     public abstract class FunctionSyntaxNodeBase : SyntaxNode
     {
         public TypeToken ReturnType { get; protected set; }
-        public string Name { get; protected set; }
-        public RoundBracketSyntaxNode Params { get; protected set; }
+        public string Name => Children[0].Token.Content;
+        public RoundBracketSyntaxNode Params => (RoundBracketSyntaxNode)Children[1];
 
         public bool IsVoidParam() => Params.Children.Count == 1 && Params.Children[0].HasNodeContent("void");
     }

@@ -42,6 +42,9 @@ namespace Shrinker.Parser.SyntaxNodes
 
         public override string UiName => FalseBranch == null ? $"{Name}...#endif" : $"{Name}...#else...#endif";
 
+        protected override SyntaxNode CreateSelf() =>
+            new PragmaIfSyntaxNode(Name, TrueBranch.Clone().m_children, FalseBranch?.Clone().m_children);
+
         public bool Is0() => Name.StartsWith("#if 0");
         public bool Is1() => Name.StartsWith("#if 1");
     }

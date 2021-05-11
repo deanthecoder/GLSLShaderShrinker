@@ -26,6 +26,12 @@ namespace Shrinker.Parser.SyntaxNodes
             Adopt(loopSetup, loopCode);
         }
 
+        private ForSyntaxNode()
+        {
+        }
+
         public override string UiName => "for (...) { ... }";
+
+        protected override SyntaxNode CreateSelf() => new ForSyntaxNode();
     }
 }

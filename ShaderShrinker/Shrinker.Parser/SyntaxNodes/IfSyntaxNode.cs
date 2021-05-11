@@ -15,15 +15,16 @@ namespace Shrinker.Parser.SyntaxNodes
 {
     public class IfSyntaxNode : SyntaxNode, IStatementSyntaxNode
     {
-        public RoundBracketSyntaxNode Conditions { get; }
-        public BraceSyntaxNode TrueBranch { get; }
-        public BraceSyntaxNode FalseBranch { get; }
+        public RoundBracketSyntaxNode Conditions => (RoundBracketSyntaxNode)Children[0];
+        public BraceSyntaxNode TrueBranch => (BraceSyntaxNode)Children[1];
+        public BraceSyntaxNode FalseBranch => Children.Count > 2 ? (BraceSyntaxNode)Children[2] : null;
 
         public IfSyntaxNode(RoundBracketSyntaxNode conditions, BraceSyntaxNode trueBranch, BraceSyntaxNode falseBranch)
         {
-            Conditions = conditions ?? throw new ArgumentNullException(nameof(conditions));
-            TrueBranch = trueBranch ?? throw new ArgumentNullException(nameof(trueBranch));
-            FalseBranch = falseBranch;
+            if (conditions == null)
+                throw new ArgumentNullException(nameof(conditions));
+            if (trueBranch == null)
+                throw new ArgumentNullException(nameof(trueBranch));
 
             Adopt(conditions, trueBranch);
 
@@ -31,6 +32,12 @@ namespace Shrinker.Parser.SyntaxNodes
                 Adopt(falseBranch);
         }
 
+        private IfSyntaxNode()
+        {
+        }
+
         public override string UiName => FalseBranch == null ? "if (...) { ... }" : "if (...) { ... } else { ... }";
+
+        protected override SyntaxNode CreateSelf() => new IfSyntaxNode();
     }
 }

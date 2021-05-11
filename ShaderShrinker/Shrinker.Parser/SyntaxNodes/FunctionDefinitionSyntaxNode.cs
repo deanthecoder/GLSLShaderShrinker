@@ -17,19 +17,29 @@ namespace Shrinker.Parser.SyntaxNodes
 {
     public class FunctionDefinitionSyntaxNode : FunctionSyntaxNodeBase
     {
-        public BraceSyntaxNode Braces { get; }
+        public BraceSyntaxNode Braces => (BraceSyntaxNode)Children[2];
 
         public FunctionDefinitionSyntaxNode(GenericSyntaxNode typeNode, GenericSyntaxNode nameNode, RoundBracketSyntaxNode paramsNode, BraceSyntaxNode braceNode)
         {
-            ReturnType = (TypeToken)typeNode?.Token ?? throw new ArgumentNullException(nameof(typeNode));
-            Name = ((AlphaNumToken)nameNode?.Token)?.Content ?? throw new ArgumentNullException(nameof(nameNode));
-            Params = paramsNode ?? throw new ArgumentNullException(nameof(paramsNode));
-            Braces = braceNode ?? throw new ArgumentNullException(nameof(braceNode));
+            if (nameNode == null)
+                throw new ArgumentNullException(nameof(nameNode));
+            if (paramsNode == null)
+                throw new ArgumentNullException(nameof(paramsNode));
+            if (braceNode == null)
+                throw new ArgumentNullException(nameof(braceNode));
 
-            Adopt(nameNode, Params, Braces);
+            ReturnType = (TypeToken)typeNode?.Token ?? throw new ArgumentNullException(nameof(typeNode));
+
+            Adopt(nameNode, paramsNode, braceNode);
+        }
+
+        private FunctionDefinitionSyntaxNode()
+        {
         }
 
         public override string UiName => $"{ReturnType.Content} {Name}{(Params.Children.Any() ? "(...)" : "()")} {{...}}";
+
+        protected override SyntaxNode CreateSelf() => new FunctionDefinitionSyntaxNode { ReturnType = ReturnType };
 
         public bool IsMain() => Name.StartsWith("main");
     }

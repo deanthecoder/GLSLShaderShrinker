@@ -10,23 +10,30 @@
 // -----------------------------------------------------------------------
 
 using System;
-using Shrinker.Lexer;
 
 namespace Shrinker.Parser.SyntaxNodes
 {
     public class StructDefinitionSyntaxNode : SyntaxNode
     {
-        public string Name { get; }
-        public BraceSyntaxNode Braces { get; }
+        public string Name => Children[0].Token.Content;
+        public BraceSyntaxNode Braces => (BraceSyntaxNode)Children[1];
 
         public StructDefinitionSyntaxNode(GenericSyntaxNode nameNode, BraceSyntaxNode braceNode)
         {
-            Name = ((AlphaNumToken)nameNode?.Token)?.Content ?? throw new ArgumentNullException(nameof(nameNode));
-            Braces = braceNode ?? throw new ArgumentNullException(nameof(braceNode));
+            if (nameNode == null)
+                throw new ArgumentNullException(nameof(nameNode));
+            if (braceNode == null)
+                throw new ArgumentNullException(nameof(braceNode));
 
-            Adopt(nameNode, Braces);
+            Adopt(nameNode, braceNode);
+        }
+
+        private StructDefinitionSyntaxNode()
+        {
         }
 
         public override string UiName => $"struct {Name} {{...}}";
+
+        protected override SyntaxNode CreateSelf() => new StructDefinitionSyntaxNode();
     }
 }

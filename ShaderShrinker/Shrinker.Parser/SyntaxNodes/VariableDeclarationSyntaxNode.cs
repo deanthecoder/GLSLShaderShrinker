@@ -23,9 +23,13 @@ namespace Shrinker.Parser.SyntaxNodes
 
         public IEnumerable<VariableAssignmentSyntaxNode> Definitions => Children.OfType<VariableAssignmentSyntaxNode>().ToList();
 
-        public VariableDeclarationSyntaxNode(GenericSyntaxNode typeNode, GenericSyntaxNode nameNode = null)
+        public VariableDeclarationSyntaxNode(GenericSyntaxNode typeNode, GenericSyntaxNode nameNode = null) : this((TypeToken)typeNode?.Token, nameNode)
         {
-            VariableType = (TypeToken)typeNode?.Token ?? throw new ArgumentNullException(nameof(typeNode));
+        }
+
+        private VariableDeclarationSyntaxNode(TypeToken variableType, GenericSyntaxNode nameNode = null)
+        {
+            VariableType = variableType ?? throw new ArgumentNullException(nameof(variableType));
 
             if (nameNode != null)
                 Adopt(new VariableAssignmentSyntaxNode(nameNode));
@@ -44,5 +48,7 @@ namespace Shrinker.Parser.SyntaxNodes
                 return $"{s.ToString().TrimEnd(' ', ',')};";
             }
         }
+
+        protected override SyntaxNode CreateSelf() => new VariableDeclarationSyntaxNode(VariableType);
     }
 }

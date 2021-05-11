@@ -11,23 +11,26 @@
 
 using System;
 using System.Linq;
-using Shrinker.Lexer;
 
 namespace Shrinker.Parser.SyntaxNodes
 {
     public class FunctionCallSyntaxNode : SyntaxNode
     {
         public string Name { get; }
-        public RoundBracketSyntaxNode Params { get; }
+        public RoundBracketSyntaxNode Params => (RoundBracketSyntaxNode)Children[0];
 
-        public FunctionCallSyntaxNode(GenericSyntaxNode nameNode, RoundBracketSyntaxNode brackets)
+        public FunctionCallSyntaxNode(GenericSyntaxNode nameNode, RoundBracketSyntaxNode brackets) : this(nameNode?.Token?.Content)
         {
-            Name = ((AlphaNumToken)nameNode?.Token)?.Content ?? throw new ArgumentNullException(nameof(nameNode));
-            Params = brackets ?? throw new ArgumentNullException(nameof(brackets));
+            Adopt(brackets ?? throw new ArgumentNullException(nameof(brackets)));
+        }
 
-            Adopt(brackets);
+        private FunctionCallSyntaxNode(string name)
+        {
+            Name = name ?? throw new ArgumentNullException(nameof(name));
         }
 
         public override string UiName => $"{Name}({(Params.Children.Any() ? "..." : string.Empty)})";
+
+        protected override SyntaxNode CreateSelf() => new FunctionCallSyntaxNode(Name);
     }
 }

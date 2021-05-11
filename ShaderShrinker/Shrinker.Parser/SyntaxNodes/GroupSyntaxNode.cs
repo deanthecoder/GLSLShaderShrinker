@@ -29,5 +29,7 @@ namespace Shrinker.Parser.SyntaxNodes
         }
 
         public override string UiName => "<Group>";
+
+        protected override SyntaxNode CreateSelf() => new GroupSyntaxNode();
     }
 }

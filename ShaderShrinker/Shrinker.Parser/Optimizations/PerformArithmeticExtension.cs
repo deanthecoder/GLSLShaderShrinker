@@ -146,15 +146,20 @@ namespace Shrinker.Parser.Optimizations
                     numNodeB.Remove();
                     symbolNode.Remove();
 
+                    SyntaxNode newNode;
                     if (isFloatResult)
                     {
                         var numberToken = Math.Abs(c) < 0.0001 && Math.Abs(c) > 0.0 ? new DoubleNumberToken(c.ToString($".#{new string('#', MaxDp - 1)}e0")) : new DoubleNumberToken(c.ToString($"F{MaxDp}"));
-                        numNodeA.ReplaceWith(new GenericSyntaxNode(numberToken.Simplify()));
+                        newNode = numNodeA.ReplaceWith(new GenericSyntaxNode(numberToken.Simplify()));
                     }
                     else
                     {
-                        numNodeA.ReplaceWith(new GenericSyntaxNode(new IntegerNumberToken((int)c)));
+                        newNode = numNodeA.ReplaceWith(new GenericSyntaxNode(new IntegerNumberToken((int)c)));
                     }
+
+                    // If new node is the sole child of a group, promote it.
+                    if (newNode.IsOnlyChild && newNode.Parent.GetType() == typeof(GroupSyntaxNode))
+                        newNode.Parent.ReplaceWith(newNode);
 
                     didChange = true;
                 }

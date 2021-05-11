@@ -23,6 +23,15 @@ namespace Shrinker.Parser.SyntaxNodes
         protected internal readonly List<SyntaxNode> m_children = new List<SyntaxNode>();
         public virtual string UiName => Token?.Content;
 
+        protected abstract SyntaxNode CreateSelf();
+
+        public SyntaxNode Clone()
+        {
+            var cloned = CreateSelf();
+            cloned.Adopt(m_children.Select(o => o.Clone()).ToArray());
+            return cloned;
+        }
+
         protected SyntaxNode(IToken token = null)
         {
             Token = token;
@@ -98,7 +107,11 @@ namespace Shrinker.Parser.SyntaxNodes
             SetChild(index, node);
         }
 
-        public void ReplaceWith(SyntaxNode node) => Parent.SetChild(NodeIndex, node);
+        public SyntaxNode ReplaceWith(SyntaxNode node)
+        {
+            Parent.SetChild(NodeIndex, node);
+            return node;
+        }
 
         public void ReplaceWith(IEnumerable<SyntaxNode> nodes)
         {

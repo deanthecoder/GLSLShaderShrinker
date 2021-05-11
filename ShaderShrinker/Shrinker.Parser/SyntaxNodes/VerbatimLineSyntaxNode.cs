@@ -18,5 +18,7 @@ namespace Shrinker.Parser.SyntaxNodes
         public VerbatimLineSyntaxNode(IToken token) : base(token)
         {
         }
+
+        protected override SyntaxNode CreateSelf() => new VerbatimLineSyntaxNode(Token);
     }
 }

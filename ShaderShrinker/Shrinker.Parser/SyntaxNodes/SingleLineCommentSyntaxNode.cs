@@ -9,6 +9,8 @@
 //  </summary>
 // -----------------------------------------------------------------------
 
+using Shrinker.Lexer;
+
 namespace Shrinker.Parser.SyntaxNodes
 {
     public class SingleLineCommentSyntaxNode : CommentSyntaxNodeBase
@@ -16,5 +18,11 @@ namespace Shrinker.Parser.SyntaxNodes
         public SingleLineCommentSyntaxNode(SyntaxNode commentNode) : base(commentNode)
         {
         }
+
+        private SingleLineCommentSyntaxNode(IToken commentToken) : base(commentToken)
+        {
+        }
+
+        protected override SyntaxNode CreateSelf() => new SingleLineCommentSyntaxNode(Token);
     }
 }

@@ -28,6 +28,12 @@ namespace Shrinker.Parser.SyntaxNodes
             Adopt(condition, cases);
         }
 
+        private SwitchSyntaxNode()
+        {
+        }
+
         public override string UiName => "switch (...) { case: ... }";
+
+        protected override SyntaxNode CreateSelf() => new SwitchSyntaxNode();
     }
 }
