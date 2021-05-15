@@ -14,5 +14,7 @@ namespace Shrinker.Parser.SyntaxNodes
     public class SquareBracketSyntaxNode : GroupSyntaxNode
     {
         public override string UiName => "[...]";
+
+        protected override SyntaxNode CreateSelf() => new SquareBracketSyntaxNode();
     }
 }

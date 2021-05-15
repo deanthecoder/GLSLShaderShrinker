@@ -78,12 +78,13 @@ namespace Shrinker.Parser.Optimizations
                                     o.Parent is not ForSyntaxNode &&
                                     o.Parent is not SwitchSyntaxNode &&
                                     o.Parent is not PragmaDefineSyntaxNode &&
+                                    o.Previous is not SquareBracketSyntaxNode && // E.g. int[](1)
                                     o.Previous?.Token is not AlphaNumToken &&
                                     o.Previous?.Token is not TypeToken &&
                                     o.Previous?.Token?.Content != "<<" &&
                                     o.Previous?.Token?.Content != ">>" &&
                                     o.Previous?.Token?.Content != "/" &&
-                                    o.Next?.Token?.Content != "?" &&
+                                    o.NextNonComment?.Token?.Content != "?" &&
                                     o.GetCsv().Count() == 1)
                         .ToList())
                 {

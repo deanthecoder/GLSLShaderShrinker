@@ -36,25 +36,34 @@ namespace Shrinker.Parser.Optimizations
                         .OfType<VariableAssignmentSyntaxNode>()
                         .Where(o => o.TheTree.OfType<GenericSyntaxNode>().Any(n => n.HasNodeContent(o.Name))))
                     {
-                        var rhs = assignment.Children[0].IsOnlyChild && assignment.Children.Single() is RoundBracketSyntaxNode bracketNode ? bracketNode.Children : assignment.Children;
+                        var rhs = assignment.Children[0].IsOnlyChild && assignment.Children.Single() is RoundBracketSyntaxNode bracketNode ? bracketNode.Children : assignment.ValueNodes.ToList();
 
                         // Must be at least three nodes (Variable name, math op, and more).
-                        if (rhs.Count < 3)
+                        if (rhs.Count(o => o is not SquareBracketSyntaxNode) < 3)
                             continue;
+
+                        // 1 => foo, 2 => foo[...]
+                        var nodeCountInRhsVariableName = rhs[1] is SquareBracketSyntaxNode ? 2 : 1;
 
                         // First expression on rhs must be the variable name.
-                        if ((rhs[0] as GenericSyntaxNode)?.Token.Content.StartsWithVarName(assignment.Name) != true)
+                        var rhsVarName = rhs[0].Token?.Content;
+                        if (rhsVarName == null)
+                            continue;
+                        if (nodeCountInRhsVariableName == 2)
+                            rhsVarName += rhs[1].ToCode();
+                        if (rhsVarName.StartsWithVarName(assignment.FullName) != true)
                             continue;
 
-                        // Second expression must be a math operator.
-                        var symbolType = rhs[1].Token.GetMathSymbolType();
+                        // Next expression must be a math operator.
+                        var symbolToken = rhs[nodeCountInRhsVariableName].Token;
+                        var symbolType = symbolToken.GetMathSymbolType();
                         if (symbolType == TokenExtensions.MathSymbolType.Unknown)
                             continue;
 
-                        // All maths ops should be the same type.
+                        // All math ops should be the same type.
                         if (symbolType != TokenExtensions.MathSymbolType.AddSubtract)
                         {
-                            var symbolTypes = assignment.TheTree
+                            var symbolTypes = rhs.SelectMany(o => o.TheTree)
                                 .Where(o => o.Token is SymbolOperatorToken)
                                 .Select(o => o.Token.GetMathSymbolType()).Distinct();
                             if (symbolTypes.Count() != 1)
@@ -65,10 +74,12 @@ namespace Shrinker.Parser.Optimizations
                         var newNodes = new List<SyntaxNode>
                         {
                             new GenericSyntaxNode(assignment.Name),
-                            new GenericSyntaxNode(new SymbolOperatorToken($"{rhs[1].Token.Content}="))
+                            new GenericSyntaxNode(new SymbolOperatorToken($"{symbolToken.Content}="))
                         };
+                        if (assignment.IsArray)
+                            newNodes.Insert(1, assignment.Children[0].Clone());
 
-                        var newRhs = rhs.Skip(2).ToList();
+                        var newRhs = rhs.Skip(1 + nodeCountInRhsVariableName).ToList();
                         while (newRhs.Count == 1 && newRhs[0] is RoundBracketSyntaxNode && newRhs[0].Children.Any())
                             newRhs = newRhs[0].Children.ToList();
                         newNodes.AddRange(newRhs);

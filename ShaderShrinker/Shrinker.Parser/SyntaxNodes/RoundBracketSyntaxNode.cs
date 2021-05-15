@@ -47,5 +47,7 @@ namespace Shrinker.Parser.SyntaxNodes
             if (group.Any())
                 yield return group;
         }
+
+        protected override SyntaxNode CreateSelf() => new RoundBracketSyntaxNode();
     }
 }

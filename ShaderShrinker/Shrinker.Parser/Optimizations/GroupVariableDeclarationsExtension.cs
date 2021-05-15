@@ -16,6 +16,9 @@ namespace Shrinker.Parser.Optimizations
 {
     public static class GroupVariableDeclarationsExtension
     {
+        /// <summary>
+        /// Turns "int a; int b;" into "int a, b;".
+        /// </summary>
         public static void GroupVariableDeclarations(this SyntaxNode rootNode)
         {
             rootNode.WalkTree(
@@ -65,9 +68,18 @@ namespace Shrinker.Parser.Optimizations
                                                   .Where(o => o.VariableType.Content == decl.VariableType.Content)
                                                   .ToList();
 
-                                          // Append the variable names to the first declaration variable list.
-                                          var declNames = similarDecls.SelectMany(o => o.Definitions).Select(o => o.Name).ToList();
-                                          declNames.ForEach(o => decl.Adopt(new VariableAssignmentSyntaxNode(o)));
+                                          // Append the variables to the first declaration variable list.
+                                          var decls =
+                                              similarDecls
+                                                  .SelectMany(o => o.Definitions)
+                                                  .ToList();
+                                          decls.ForEach(o =>
+                                          {
+                                              var newNode = new VariableAssignmentSyntaxNode(o.Name);
+                                              if (o.IsArray)
+                                                  newNode.Adopt(o.Children.First().Clone());
+                                              decl.Adopt(newNode);
+                                          });
 
                                           // ...and make the assignment stand on its own (outside of its declaration).
                                           similarDecls.SelectMany(o => o.Definitions).Where(o => !o.HasValue).ToList().ForEach(o => o.Remove());
@@ -75,24 +87,24 @@ namespace Shrinker.Parser.Optimizations
 
                                           i = decl.NodeIndex + 1;
                                       }
-                                  }
-                                  else
-                                  {
-                                      // Combine consecutive struct fields of the same type.
-                                      var n = node.Children.FirstOrDefault();
-                                      while (n != null)
-                                      {
-                                          if (n is VariableDeclarationSyntaxNode decl1 &&
-                                              n.Next is VariableDeclarationSyntaxNode decl2 &&
-                                              decl1.VariableType.Content == decl2.VariableType.Content)
-                                          {
-                                              decl1.Adopt(decl2.Definitions.Cast<SyntaxNode>().ToArray());
-                                              decl2.Remove();
-                                              continue;
-                                          }
 
-                                          n = n.Next;
+                                      return true;
+                                  }
+
+                                  // Combine consecutive struct fields of the same type.
+                                  var n = node.Children.FirstOrDefault();
+                                  while (n != null)
+                                  {
+                                      if (n is VariableDeclarationSyntaxNode decl1 &&
+                                          n.Next is VariableDeclarationSyntaxNode decl2 &&
+                                          decl1.VariableType.Content == decl2.VariableType.Content)
+                                      {
+                                          decl1.Adopt(decl2.Definitions.Cast<SyntaxNode>().ToArray());
+                                          decl2.Remove();
+                                          continue;
                                       }
+
+                                      n = n.Next;
                                   }
 
                                   return true;

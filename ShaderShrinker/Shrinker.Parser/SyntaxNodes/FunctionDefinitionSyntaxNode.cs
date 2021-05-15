@@ -11,7 +11,6 @@
 
 using System;
 using System.Linq;
-using Shrinker.Lexer;
 
 namespace Shrinker.Parser.SyntaxNodes
 {
@@ -28,7 +27,9 @@ namespace Shrinker.Parser.SyntaxNodes
             if (braceNode == null)
                 throw new ArgumentNullException(nameof(braceNode));
 
-            ReturnType = (TypeToken)typeNode?.Token ?? throw new ArgumentNullException(nameof(typeNode));
+            ReturnType = typeNode?.Token?.Content ?? throw new ArgumentNullException(nameof(typeNode));
+            if (typeNode.Children.FirstOrDefault() is SquareBracketSyntaxNode arrayNode)
+                ReturnType += arrayNode.ToCode();
 
             Adopt(nameNode, paramsNode, braceNode);
         }
@@ -37,7 +38,7 @@ namespace Shrinker.Parser.SyntaxNodes
         {
         }
 
-        public override string UiName => $"{ReturnType.Content} {Name}{(Params.Children.Any() ? "(...)" : "()")} {{...}}";
+        public override string UiName => $"{ReturnType} {Name}{(Params.Children.Any() ? "(...)" : "()")} {{...}}";
 
         protected override SyntaxNode CreateSelf() => new FunctionDefinitionSyntaxNode { ReturnType = ReturnType };
 

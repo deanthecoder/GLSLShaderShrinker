@@ -25,7 +25,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load("const int i; i = 10;");
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.JoinVariableDeclarationsWithAssignments = true;
             var rootNode = new Parser(lexer)
                 .Parse()
@@ -40,7 +40,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load("// Header\nconst vec2 uv = vec2(1);");
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.GroupVariableDeclarations = true;
             var rootNode = new Parser(lexer)
                 .Parse()
@@ -55,7 +55,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load("vec2 uv; uv = vec2(1);");
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.JoinVariableDeclarationsWithAssignments = true;
             var rootNode = new Parser(lexer)
                 .Parse()
@@ -70,7 +70,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load("int foo; const int z; vec3 bar; const int a;");
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.GroupVariableDeclarations = true;
             var rootNode = new Parser(lexer)
                 .Parse()
@@ -85,7 +85,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load("const int i; const int j; i = 10; j = 11;");
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.JoinVariableDeclarationsWithAssignments = true;
             var rootNode = new Parser(lexer)
                 .Parse()
@@ -100,7 +100,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load(code);
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.GroupVariableDeclarations = true;
             options.JoinVariableDeclarationsWithAssignments = true;
             var rootNode = new Parser(lexer)
@@ -116,7 +116,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load("int c, a, b; c = 3; b = 2; a = 1;");
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.GroupVariableDeclarations = true;
             options.JoinVariableDeclarationsWithAssignments = true;
             var rootNode = new Parser(lexer)
@@ -132,7 +132,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load("{ float a; int b; b = 1; a = 1.0; }");
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.GroupVariableDeclarations = true;
             options.JoinVariableDeclarationsWithAssignments = true;
             var rootNode = new Parser(lexer)
@@ -148,7 +148,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load("{ float a; int b; b = 1; sin(1.0); a = 1.0; }");
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.GroupVariableDeclarations = true;
             options.JoinVariableDeclarationsWithAssignments = true;
             var rootNode = new Parser(lexer)
@@ -164,7 +164,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load("void func(float f) { int i = 1; f += 10.0; float g = f; }");
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.GroupVariableDeclarations = true;
             options.JoinVariableDeclarationsWithAssignments = true;
             var rootNode = new Parser(lexer)
@@ -180,7 +180,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load("float bpm; void f() {} bpm = 130.;");
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.JoinVariableDeclarationsWithAssignments = true;
             var rootNode = new Parser(lexer)
                 .Parse()
@@ -195,7 +195,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load("{ int i; if (true) { i = 1; } else { i = 0; } i = 4; }");
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.GroupVariableDeclarations = true;
             var rootNode = new Parser(lexer)
                 .Parse()
@@ -210,7 +210,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load("{ int i; if (true) i = 1; else i = 0; i = 4; }");
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.GroupVariableDeclarations = true;
             var rootNode = new Parser(lexer)
                 .Parse()
@@ -225,7 +225,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load("#if A\nint i = 12; #else\nint i = 21; #endif");
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.GroupVariableDeclarations = true;
             var rootNode = new Parser(lexer)
                 .Parse()
@@ -240,7 +240,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load("void f() { int i; #if A\ni = 12; #else\ni = 21; #endif\n}");
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.GroupVariableDeclarations = true;
             var rootNode = new Parser(lexer)
                 .Parse()
@@ -255,7 +255,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load("void f() {\n#ifdef AA\n{ vec2 v = vec2(1);\n#else\nvec2 v = vec2(2);\n#endif\n#ifdef AA\n}\n#endif\n}");
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.GroupVariableDeclarations = true;
             var rootNode = new Parser(lexer)
                 .Parse()
@@ -270,7 +270,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load(code);
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.SimplifyFloatFormat = true;
             var rootNode = new Parser(lexer)
                 .Parse()
@@ -287,7 +287,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load(code);
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.SimplifyVectorConstructors = true;
             var rootNode = new Parser(lexer)
                 .Parse()
@@ -302,7 +302,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load(code);
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.RemoveDisabledCode = true;
             var rootNode = new Parser(lexer)
                 .Parse()
@@ -317,7 +317,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load(code);
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.RemoveDisabledCode = true;
             var rootNode = new Parser(lexer)
                 .Parse()
@@ -332,7 +332,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load("#if 0\nint remove;\n#endif\n");
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.RemoveDisabledCode = true;
             var rootNode = new Parser(lexer)
                 .Parse()
@@ -347,7 +347,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load("void foo() {\n#if 0\nint remove;\n#endif\n}");
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.RemoveDisabledCode = true;
             var rootNode = new Parser(lexer)
                 .Parse()
@@ -362,7 +362,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load("void foo() { } void bar() { foo(); } void main() { bar(); }");
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.RemoveDisabledCode = true;
             var rootNode = new Parser(lexer)
                 .Parse()
@@ -377,7 +377,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load(code);
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.RemoveUnusedFunctions = true;
             var rootNode = new Parser(lexer)
                 .Parse()
@@ -392,7 +392,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load("void foo(); void main() { }");
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.SimplifyFunctionDeclarations = true;
             var rootNode = new Parser(lexer)
                 .Parse()
@@ -407,7 +407,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load("void foo(int a, int b); void main() { foo(1, 2); } void foo(int a, int b) { }");
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.SimplifyFunctionDeclarations = true;
             var rootNode = new Parser(lexer)
                 .Parse()
@@ -422,7 +422,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load("void foo(void); void main() { foo(); } void foo() { }");
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.SimplifyFunctionParams = true;
             var rootNode = new Parser(lexer)
                 .Parse()
@@ -437,7 +437,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load("void foo(void) { } void main() { foo(); }");
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.SimplifyFunctionParams = true;
             var rootNode = new Parser(lexer)
                 .Parse()
@@ -452,7 +452,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load(code);
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.InlineDefines = true;
             var rootNode = new Parser(lexer)
                 .Parse()
@@ -467,7 +467,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load("#define R iResolution\nfloat main() { return R.x; }");
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.InlineDefines = true;
             var rootNode = new Parser(lexer)
                 .Parse()
@@ -482,7 +482,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load("#define S smoothstep\nfloat main() { return S(0.0, 1.0, 0.5); }");
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.InlineDefines = true;
             var rootNode = new Parser(lexer)
                 .Parse()
@@ -499,7 +499,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load(Code);
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.InlineConstantVariables = true;
             var rootNode = new Parser(lexer)
                 .Parse()
@@ -514,7 +514,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load("#define FOO 1\nint main() { return FOO + FOO; }");
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.InlineDefines = true;
             var rootNode = new Parser(lexer)
                 .Parse()
@@ -529,7 +529,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load("#if HW_PERFORMANCE==0\n#define AA 1\n#else\n#define AA 2\n#endif");
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.InlineDefines = true;
             var rootNode = new Parser(lexer)
                 .Parse()
@@ -544,7 +544,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load("#define FOO 1\nint main() {\n#if FOO>1\nreturn 1;\n#endif\n}");
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.InlineDefines = true;
             var rootNode = new Parser(lexer)
                 .Parse()
@@ -559,7 +559,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load(code);
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.InlineConstantVariables = true;
             var rootNode = new Parser(lexer)
                 .Parse()
@@ -574,7 +574,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load("int main() { const int FOO = 1; return FOO + FOO; }");
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.InlineConstantVariables = true;
             var rootNode = new Parser(lexer)
                 .Parse()
@@ -590,7 +590,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load(code);
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.InlineConstantVariables = true;
             var rootNode = new Parser(lexer)
                 .Parse()
@@ -605,7 +605,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load("void f(in vec2 uv); void main(in vec3 uv) { f(uv); } void f(in vec2 uv) { }");
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.SimplifyFunctionParams = true;
             var rootNode = new Parser(lexer)
                 .Parse()
@@ -620,7 +620,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load("struct Foo { int a; int b; float c; };");
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.GroupVariableDeclarations = true;
             var rootNode = new Parser(lexer)
                 .Parse()
@@ -637,7 +637,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load(Code);
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.GroupVariableDeclarations = true;
             var rootNode = new Parser(lexer)
                 .Parse()
@@ -652,7 +652,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load(code);
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.RemoveDisabledCode = true;
             var rootNode = new Parser(lexer)
                 .Parse()
@@ -667,7 +667,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load("// a comment\n// line 2\nvoid foo() { // another\n }");
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.RemoveComments = true;
             var rootNode = new Parser(lexer)
                 .Parse()
@@ -682,7 +682,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load("// a comment\n// line 2\nvoid foo() { // another\n }");
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.RemoveComments = true;
             options.KeepHeaderComments = true;
             var rootNode = new Parser(lexer)
@@ -698,7 +698,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load("int num() { return 3; } void main() { int n = num(); return n; }");
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.CombineAssignmentWithSingleUse = true;
             var rootNode = new Parser(lexer)
                 .Parse()
@@ -713,7 +713,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load("int num() { return 3; } void main() { if (1) { int n, a; a = 10; n = num(); return n; } }");
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.CombineAssignmentWithSingleUse = true;
             var rootNode = new Parser(lexer)
                 .Parse()
@@ -728,7 +728,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load("float smin(float a, float b, float k) { float h = clamp(.5 + .5 * (b - a) / k, 0., 1.); return mix(b, a, h) - k * h * (1. - h); }");
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.CombineAssignmentWithSingleUse = true;
             var rootNode = new Parser(lexer)
                 .Parse()
@@ -743,7 +743,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load("void main() { float n = 1.0; return n + n; }");
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.CombineAssignmentWithSingleUse = true;
             var rootNode = new Parser(lexer)
                 .Parse()
@@ -758,7 +758,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load("int num() { return 3; } void main() { int n = 1; n = min(d, num); return n; }");
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.CombineAssignmentWithSingleUse = true;
             var rootNode = new Parser(lexer)
                 .Parse()
@@ -785,7 +785,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load(code);
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.CombineAssignmentWithSingleUse = true;
             options.GroupVariableDeclarations = true;
             var rootNode = new Parser(lexer)
@@ -805,7 +805,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load(code);
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.CombineConsecutiveAssignments = true;
             var rootNode = new Parser(lexer)
                 .Parse()
@@ -826,7 +826,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load(code);
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.GroupVariableDeclarations = true;
             options.SimplifyVectorReferences = true;
             var rootNode = new Parser(lexer)
@@ -862,7 +862,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load(code);
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.GroupVariableDeclarations = true;
             options.JoinVariableDeclarationsWithAssignments = true;
             options.SimplifyVectorConstructors = true;
@@ -910,7 +910,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load(code);
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.GroupVariableDeclarations = true;
             options.SimplifyArithmetic = true;
             var rootNode = new Parser(lexer)
@@ -934,7 +934,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load(code);
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.SimplifyBranching = true;
             var rootNode = new Parser(lexer)
                 .Parse()
@@ -955,7 +955,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load(code);
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.RemoveUnreachableCode = true;
             var rootNode = new Parser(lexer)
                 .Parse()
@@ -1014,7 +1014,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load(code);
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.SimplifyArithmetic = true;
             options.PerformArithmetic = true;
             options.InlineDefines = true;
@@ -1059,7 +1059,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load(code);
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.GroupVariableDeclarations = true;
             options.RemoveUnusedFunctions = true;
             options.RemoveUnusedVariables = true;
@@ -1088,7 +1088,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load(code);
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.InlineConstantVariables = true;
             options.DetectConstants = true;
             var rootNode = new Parser(lexer)
@@ -1134,7 +1134,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load(code);
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.IntroduceMathOperators = true;
             var rootNode = new Parser(lexer)
                 .Parse()
@@ -1149,7 +1149,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load("switch (1) { case 1: break; case 2: { break; } case 3: return; case 4: { return; int a = 1; } default: break; }");
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.RemoveUnreachableCode = true;
             var rootNode = new Parser(lexer)
                 .Parse()
@@ -1165,7 +1165,7 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load(code);
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.SimplifyArithmetic = true;
             var rootNode = new Parser(lexer)
                 .Parse()
@@ -1193,15 +1193,194 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load("uniform float fGlobalTime;\nuniform vec2 v2Resolution;");
 
-            var options = new CustomOptions
-            {
-                RemoveUnusedVariables = false
-            };
+            var options = CustomOptions.All();
+            options.RemoveUnusedVariables = false;
             var rootNode = new Parser(lexer)
                 .Parse()
                 .Simplify(options);
 
             Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo("uniform float fGlobalTime; uniform vec2 v2Resolution;"));
+        }
+
+        [Test, Sequential]
+        public void CheckArrayAssignmentsAreMaintained(
+            [Values("int arr[2] = int[2](23, 32);",
+                    "int arr[] = int[2](23, 32);",
+                    "int arr[2] = int[](23, 32);",
+                    "int arr[] = int[](23, 32);",
+                    "int arr[2];",
+                    "const int arr[2] = int[2](23, 32);",
+                    "const int arr[] = int[2](23, 32);",
+                    "const int arr[2] = int[](23, 32);",
+                    "const int arr[] = int[](23, 32);")] string code)
+        {
+            var lexer = new Lexer();
+            lexer.Load(code);
+
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(CustomOptions.None());
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(code));
+        }
+
+        [Test]
+        public void CheckConstArrayAssignmentsAreNotInlined()
+        {
+            const string Code = "int foo() { const int arr[2] = int[2](23, 32); return arr[0]; }";
+
+            var lexer = new Lexer();
+            lexer.Load(Code);
+
+            var options = CustomOptions.None();
+            options.InlineConstantVariables = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(Code));
+        }
+
+        [Test]
+        public void CheckNonConstArrayAssignmentsCanBeMadeConst()
+        {
+            var lexer = new Lexer();
+            lexer.Load("int foo() { int arr[2] = int[2](23, 32); return arr[0]; }");
+
+            var options = CustomOptions.None();
+            options.DetectConstants = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo("int foo() { const int arr[2] = int[2](23, 32); return arr[0]; }"));
+        }
+
+        [Test]
+        public void CheckModifiedNonConstArrayIsNotMadeConst()
+        {
+            const string Code = "int foo() { int arr[2] = int[2](23, 32); arr[0] = 1; return arr[0]; }";
+
+            var lexer = new Lexer();
+            lexer.Load(Code);
+
+            var options = CustomOptions.None();
+            options.DetectConstants = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(Code));
+        }
+
+        [Test, Sequential]
+        public void CheckArrayAccessWithIndexSucceeds(
+            [Values("int main() { int arr[2] = int[2](23, 32); return arr[0]; }",
+                    "int main() { int arr[2]; a[0] = 1; }",
+                    "int main() { int arr[2] = int[2](23, 32), i = 1; return arr[i]; }")] string code)
+        {
+            var lexer = new Lexer();
+            lexer.Load(code);
+
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(CustomOptions.None());
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(code));
+        }
+
+        [Test, Sequential]
+        public void CheckGroupingArrayDeclarations(
+            [Values("int arr1[2]; int arr2[2];",
+                    "int arr1[2] = int[2](1, 2); int arr2[2];",
+                    "int arr1[2]; int arr2[2] = int[](1, 2);")] string code,
+            [Values("int arr1[2], arr2[2];",
+                    "int arr1[2] = int[2](1, 2), arr2[2];",
+                    "int arr1[2], arr2[2]; arr2[2] = int[](1, 2);")] string expected)
+        {
+            var lexer = new Lexer();
+            lexer.Load(code);
+
+            var options = CustomOptions.None();
+            options.GroupVariableDeclarations = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void CheckJoiningArrayDeclarationsWithAssignments()
+        {
+            var lexer = new Lexer();
+            lexer.Load("int arr[2]; arr[2] = int[2](23, 32);");
+
+            var options = CustomOptions.None();
+            options.JoinVariableDeclarationsWithAssignments = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo("int arr[2] = int[2](23, 32);"));
+        }
+
+        [Test]
+        public void CheckOptimizationsApplyWithinArrayAccessors()
+        {
+            var lexer = new Lexer();
+            lexer.Load("int foo() { return 1; } int main() { int arr[2] = int[2](23, 32); return arr[foo() + 1 * 2 - 1]; }");
+
+            var options = CustomOptions.None();
+            options.PerformArithmetic = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo("int foo() { return 1; } int main() { int arr[2] = int[2](23, 32); return arr[foo() + 1]; }"));
+        }
+
+        [Test]
+        public void CheckCombiningArrayAssignmentWithReturn()
+        {
+            var lexer = new Lexer();
+            lexer.Load("int[2] foo() { int arr[2] = int[2](23, 32); return arr; }");
+
+            var options = CustomOptions.None();
+            options.CombineAssignmentWithSingleUse = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo("int[2] foo() { return int[2](23, 32); }"));
+        }
+
+        [Test, Sequential]
+        public void CheckFullOptimizationDoesNotCorruptArrays(
+            [Values(
+                       "int main() { int arr[2] = int[2](23, 32); return arr[0]; }",
+                       "int main() { int arr[2]; arr[0] = 1; }",
+                       "int main() { int arr[] = int[](1); arr[0 + 0] = arr[0] * 2; }",
+                       "int main() { int arr[] = int[](1); arr[0] = arr[1] * 2; }",
+                       "int main() { int arr[2] = int[2](23, 32), i = 1; return arr[i]; }")] string code,
+            [Values(
+                       "int main() { return int[2](23, 32)[0]; }",
+                       "int main() { int arr[2]; arr[0] = 1; }",
+                       "int main() { const int arr[] = int[](1); arr[0] *= 2; }",
+                       "int main() { int arr[] = int[](1); arr[0] = arr[1] * 2; }",
+                       "int main() { return int[2](23, 32)[1]; }")] string expected)
+        {
+            var lexer = new Lexer();
+            lexer.Load(code);
+
+            var options = CustomOptions.All();
+            options.RemoveUnusedVariables = false;
+
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(expected));
         }
     }
 }

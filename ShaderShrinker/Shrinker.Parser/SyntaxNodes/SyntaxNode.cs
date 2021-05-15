@@ -53,10 +53,12 @@ namespace Shrinker.Parser.SyntaxNodes
         public SyntaxNode Next => NextSiblings.FirstOrDefault();
         public SyntaxNode NextNonComment => NextSiblings.FirstOrDefault(o => !o.IsComment());
 
-        public IEnumerable<SyntaxNode> NextSiblings
+        public IEnumerable<SyntaxNode> SelfAndNextSiblings
         {
             get
             {
+                yield return this;
+
                 if (Parent != null)
                 {
                     for (var i = NodeIndex + 1; i < Parent.Children.Count; i++)
@@ -64,6 +66,8 @@ namespace Shrinker.Parser.SyntaxNodes
                 }
             }
         }
+
+        public IEnumerable<SyntaxNode> NextSiblings => SelfAndNextSiblings.Skip(1);
 
         public IToken Token { get; }
 

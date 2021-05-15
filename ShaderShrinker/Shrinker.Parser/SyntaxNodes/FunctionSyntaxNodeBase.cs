@@ -9,13 +9,11 @@
 //  </summary>
 // -----------------------------------------------------------------------
 
-using Shrinker.Lexer;
-
 namespace Shrinker.Parser.SyntaxNodes
 {
     public abstract class FunctionSyntaxNodeBase : SyntaxNode
     {
-        public TypeToken ReturnType { get; protected set; }
+        public string ReturnType { get; protected set; }
         public string Name => Children[0].Token.Content;
         public RoundBracketSyntaxNode Params => (RoundBracketSyntaxNode)Children[1];
 

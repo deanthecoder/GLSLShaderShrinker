@@ -55,7 +55,7 @@ namespace Shrinker.Parser.Optimizations
 
                             if (addBrackets && nodeAfterAssignment != null)
                             {
-                                var customOptions = CustomOptions.Disabled();
+                                var customOptions = CustomOptions.None();
                                 customOptions.SimplifyArithmetic = true;
                                 nodeAfterAssignment.Simplify(customOptions);
                             }

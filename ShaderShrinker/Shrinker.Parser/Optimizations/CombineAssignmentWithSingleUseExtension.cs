@@ -83,7 +83,7 @@ namespace Shrinker.Parser.Optimizations
                             usage.ReplaceWith(new RoundBracketSyntaxNode(assignment.Children));
 
                             // Try to remove the brackets if we can.
-                            var customOptions = CustomOptions.Disabled();
+                            var customOptions = CustomOptions.None();
                             customOptions.SimplifyArithmetic = true;
                             nextAssignment.Simplify(customOptions);
                         }

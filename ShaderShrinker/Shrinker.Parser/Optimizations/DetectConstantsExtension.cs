@@ -35,7 +35,7 @@ namespace Shrinker.Parser.Optimizations
 
                     if (!isReassigned)
                     {
-                        // Perhaps modified using an operator?
+                        // Perhaps modified using an operator? (E.g. +=, *=, ...)
                         var isModified = decl.Parent.TheTree
                             .OfType<GenericSyntaxNode>()
                             .Any(

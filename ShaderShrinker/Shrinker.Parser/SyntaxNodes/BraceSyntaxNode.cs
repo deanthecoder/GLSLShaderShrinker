@@ -33,5 +33,7 @@ namespace Shrinker.Parser.SyntaxNodes
 
             return base.Adopt(toAdopt);
         }
+
+        protected override SyntaxNode CreateSelf() => new BraceSyntaxNode();
     }
 }

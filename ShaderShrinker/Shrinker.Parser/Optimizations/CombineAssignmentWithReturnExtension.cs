@@ -84,9 +84,9 @@ namespace Shrinker.Parser.Optimizations
                             // Inline the definition (adding (...) if necessary).
                             var addBrackets = assignment.Children.Any(o => o.Token is SymbolOperatorToken);
                             if (addBrackets)
-                                usages.Single().ReplaceWith(new RoundBracketSyntaxNode(assignment.Children));
+                                usages.Single().ReplaceWith(new RoundBracketSyntaxNode(assignment.ValueNodes));
                             else
-                                usages.Single().ReplaceWith(assignment.Children.ToArray());
+                                usages.Single().ReplaceWith(assignment.ValueNodes.ToArray());
 
                             assignment.Remove();
                             if (assignmentDecl?.Children.Any() == false)
@@ -96,13 +96,13 @@ namespace Shrinker.Parser.Optimizations
 
                             if (addBrackets)
                             {
-                                var customOptions = CustomOptions.Disabled();
+                                var customOptions = CustomOptions.None();
                                 customOptions.SimplifyArithmetic = true;
                                 braces.Simplify(customOptions);
                             }
 
                             {
-                                var customOptions = CustomOptions.Disabled();
+                                var customOptions = CustomOptions.None();
                                 customOptions.RemoveUnusedVariables = true;
                                 braces.Simplify(customOptions);
                             }

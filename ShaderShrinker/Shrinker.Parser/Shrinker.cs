@@ -14,8 +14,11 @@ using Shrinker.Lexer;
 using Shrinker.Parser.Optimizations;
 using Shrinker.Parser.SyntaxNodes;
 
-// todo - Support [] (https://www.shadertoy.com/view/Nd2XzG)
 // todo - Bad inlining, bad const, and dodgy anim output (https://www.shadertoy.com/view/7s2XR3)
+// todo - https://www.shadertoy.com/view/fsjXzd Could inline 'return rd'
+// todo - https://www.shadertoy.com/view/fs2XDy constifies and inlines float, passed into inout param.
+// todo - int(1.2) => 1, int(1) => 1, float(1.2) => 1.2, float(1) => 1.
+// todo - https://www.shadertoy.com/view/3tj3DW '#if 0' not removed.
 // todo - 1e3 form can be used if with vecN(...)
 // todo - 'fragColor = vec4(col, 1.0)' - Inline 'col'. (Subway)
 // todo - ED-209 (float d = .01 * t * .33;)
@@ -30,7 +33,7 @@ namespace Shrinker.Parser
     {
         public static SyntaxNode Simplify(this SyntaxNode rootNode, CustomOptions options = null)
         {
-            options ??= new CustomOptions();
+            options ??= CustomOptions.All();
 
             var repeatSimplifications = true;
             while (repeatSimplifications)

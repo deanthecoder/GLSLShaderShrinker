@@ -133,7 +133,7 @@ namespace Shrinker.Parser
 
                             case TypeToken t:
                                 sb.Append(t.Content);
-                                if (o.Next is not RoundBracketSyntaxNode)
+                                if (o.Next is not RoundBracketSyntaxNode && o.Next is not SquareBracketSyntaxNode)
                                     sb.Append(' ');
                                 break;
 
@@ -280,9 +280,10 @@ namespace Shrinker.Parser
                     break;
 
                 case VariableAssignmentSyntaxNode o:
+                    sb.Append(o.FullName);
+
                     var rhs = new StringBuilder();
-                    o.Children.ToList().ForEach(child => AppendCode(rhs, child));
-                    sb.Append(o.Name);
+                    o.ValueNodes.ToList().ForEach(child => AppendCode(rhs, child));
                     if (rhs.Length > 0)
                         sb.Append($" = {rhs}");
 
@@ -362,7 +363,7 @@ namespace Shrinker.Parser
                     break;
 
                 case FunctionDeclarationSyntaxNode o:
-                    sb.Append($"{o.ReturnType.Content} {o.Name}");
+                    sb.Append($"{o.ReturnType} {o.Name}");
                     var paramStr = new StringBuilder();
                     AppendCode(paramStr, o.Params);
                     paramStr.Replace(" ,", ",");
@@ -372,7 +373,7 @@ namespace Shrinker.Parser
                     break;
 
                 case FunctionDefinitionSyntaxNode o:
-                    sb.Append($"{o.ReturnType.Content} {o.Name}");
+                    sb.Append($"{o.ReturnType} {o.Name}");
                     AppendCode(sb, o.Params);
                     sb.Append(' ');
                     AppendCode(sb, o.Braces);

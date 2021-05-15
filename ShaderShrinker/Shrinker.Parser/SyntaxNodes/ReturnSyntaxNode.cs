@@ -16,5 +16,7 @@ namespace Shrinker.Parser.SyntaxNodes
     public class ReturnSyntaxNode : GroupSyntaxNode
     {
         public override string UiName => Children.Any() ? "return ..." : "return";
+
+        protected override SyntaxNode CreateSelf() => new ReturnSyntaxNode();
     }
 }

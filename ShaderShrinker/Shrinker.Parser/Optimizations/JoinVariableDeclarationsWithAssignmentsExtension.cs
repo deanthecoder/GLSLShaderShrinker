@@ -15,6 +15,9 @@ using Shrinker.Parser.SyntaxNodes;
 
 namespace Shrinker.Parser.Optimizations
 {
+    /// <summary>
+    /// Take something like "int a; a = 3;" and join to make "int a = 3;".
+    /// </summary>
     public static class JoinVariableDeclarationsWithAssignmentsExtension
     {
         public static void JoinVariableDeclarationsWithAssignments(this SyntaxNode rootNode)
@@ -41,7 +44,7 @@ namespace Shrinker.Parser.Optimizations
                                               {
                                                   // Pull in the const definition wherever it is.
                                                   var declVarNames = decl.Definitions.Where(o => !o.HasValue).Select(o => o.Name).ToList();
-                                                  defn = node.Children.Skip(n.NodeIndex).OfType<VariableAssignmentSyntaxNode>().FirstOrDefault(o => declVarNames.Contains(o.Name));
+                                                  defn = n.NextSiblings.OfType<VariableAssignmentSyntaxNode>().FirstOrDefault(o => declVarNames.Contains(o.Name));
                                               }
                                               else
                                               {
@@ -70,7 +73,7 @@ namespace Shrinker.Parser.Optimizations
                                                   break;
 
                                               // Definition found - Does it match declaration?
-                                              var declDef = decl.Definitions.FirstOrDefault(o => o.Name == defn.Name && !o.HasValue);
+                                              var declDef = decl.Definitions.FirstOrDefault(o => o.FullName == defn.FullName && !o.HasValue);
                                               if (declDef != null)
                                               {
                                                   // If the (non-const) decl variable list has a defined value _after_
@@ -79,7 +82,7 @@ namespace Shrinker.Parser.Optimizations
                                                   if (isSimpleAssignment || decl.VariableType.IsConst || !decl.Definitions.Skip(indexOfDeclName + 1).Any(o => o.HasValue))
                                                   {
                                                       // Join them.
-                                                      declDef.Adopt(defn.Children.ToArray());
+                                                      declDef.Adopt(defn.ValueNodes.ToArray());
                                                       defn.Remove();
                                                       continue;
                                                   }
@@ -99,10 +102,10 @@ namespace Shrinker.Parser.Optimizations
                                           break; // Nope - Give up.
 
                                       // Yes - Move it to nearer the first suitable definition.
-                                      var unassignedVariableNames = declWithNoDefs.Definitions.Select(o => o.Name).ToList();
+                                      var unassignedVariableNames = declWithNoDefs.Definitions.Select(o => o.FullName).ToList();
                                       var nextDefNodes = node.TheTree
                                           .OfType<VariableAssignmentSyntaxNode>()
-                                          .Where(o => unassignedVariableNames.Contains(o.Name) && o.HasValue)
+                                          .Where(o => unassignedVariableNames.Contains(o.FullName) && o.HasValue)
                                           .ToList();
                                       if (nextDefNodes.Any(o => !node.Children.Contains(o)))
                                       {

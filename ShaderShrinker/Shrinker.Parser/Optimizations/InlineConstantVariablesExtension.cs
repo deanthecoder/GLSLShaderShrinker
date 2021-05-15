@@ -33,9 +33,9 @@ namespace Shrinker.Parser.Optimizations
                 foreach (var definition in constDeclNode.Definitions.Where(o => o.IsSimpleAssignment()).ToList())
                 {
                     var usages = potentialUsage.Where(o => o.Token.Content.StartsWithVarName(definition.Name)).ToList();
-                    var anyDotReferences = usages.Any(o => o.Token.Content.Contains('.'));
 
-                    if (anyDotReferences)
+                    var anyUnsupportedReferences = usages.Any(o => o.Token.Content.Contains('.') || o.NextNonComment is SquareBracketSyntaxNode);
+                    if (anyUnsupportedReferences)
                         continue;
 
                     if (usages.Count == 1)

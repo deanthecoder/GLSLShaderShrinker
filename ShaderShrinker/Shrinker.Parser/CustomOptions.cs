@@ -18,40 +18,53 @@ namespace Shrinker.Parser
     /// </summary>
     public class CustomOptions
     {
-        public bool RemoveDisabledCode { get; set; } = true;
-        public bool RemoveComments { get; set; } = true;
+        public bool RemoveDisabledCode { get; set; }
+        public bool RemoveComments { get; set; }
 
         /// <summary>
         /// Requires RemoveComments to be enabled.
         /// </summary>
         public bool KeepHeaderComments { get; set; }
 
-        public bool RemoveUnusedFunctions { get; set; } = true;
-        public bool SimplifyFunctionDeclarations { get; set; } = true;
-        public bool SimplifyFunctionParams { get; set; } = true;
-        public bool GroupVariableDeclarations { get; set; } = true;
-        public bool JoinVariableDeclarationsWithAssignments { get; set; } = true;
-        public bool RemoveUnusedVariables { get; set; } = true;
-        public bool DetectConstants { get; set; } = true;
-        public bool InlineConstantVariables { get; set; } = true;
-        public bool InlineDefines { get; set; } = true;
-        public bool SimplifyFloatFormat { get; set; } = true;
-        public bool SimplifyVectorConstructors { get; set; } = true;
-        public bool SimplifyVectorReferences { get; set; } = true;
-        public bool RemoveUnreachableCode { get; set; } = true;
-        public bool CombineConsecutiveAssignments { get; set; } = true;
-        public bool CombineAssignmentWithSingleUse { get; set; } = true;
-        public bool IntroduceMathOperators { get; set; } = true;
-        public bool SimplifyArithmetic { get; set; } = true;
-        public bool PerformArithmetic { get; set; } = true;
-        public bool SimplifyBranching { get; set; } = true;
+        public bool RemoveUnusedFunctions { get; set; }
+        public bool SimplifyFunctionDeclarations { get; set; }
+        public bool SimplifyFunctionParams { get; set; }
+        public bool GroupVariableDeclarations { get; set; }
+        public bool JoinVariableDeclarationsWithAssignments { get; set; }
+        public bool RemoveUnusedVariables { get; set; }
+        public bool DetectConstants { get; set; }
+        public bool InlineConstantVariables { get; set; }
+        public bool InlineDefines { get; set; }
+        public bool SimplifyFloatFormat { get; set; }
+        public bool SimplifyVectorConstructors { get; set; }
+        public bool SimplifyVectorReferences { get; set; }
+        public bool RemoveUnreachableCode { get; set; }
+        public bool CombineConsecutiveAssignments { get; set; }
+        public bool CombineAssignmentWithSingleUse { get; set; }
+        public bool IntroduceMathOperators { get; set; }
+        public bool SimplifyArithmetic { get; set; }
+        public bool PerformArithmetic { get; set; }
+        public bool SimplifyBranching { get; set; }
 
-        public static CustomOptions Disabled()
+        private CustomOptions()
+        {
+        }
+
+        public static CustomOptions All()
+        {
+            var options = SetAllOptions(true);
+            options.KeepHeaderComments = false;
+            return options;
+        }
+
+        public static CustomOptions None() => SetAllOptions(false);
+
+        private static CustomOptions SetAllOptions(bool value)
         {
             var options = new CustomOptions();
 
             foreach (var propertyInfo in typeof(CustomOptions).GetProperties(BindingFlags.Public | BindingFlags.Instance))
-                propertyInfo.SetValue(options, false);
+                propertyInfo.SetValue(options, value);
 
             return options;
         }

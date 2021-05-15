@@ -52,7 +52,7 @@ namespace Shrinker.Parser.SyntaxNodes
             node.FindIfStatements();
             node.FindSwitchStatements();
             node.FindVariableDeclarations();
-            node.FindVariableDefinitions();
+            node.FindVariableAssignments();
             node.FindForStatements();
             node.FindFunctionCalls();
             node.FindReturnStatements();
@@ -87,7 +87,20 @@ namespace Shrinker.Parser.SyntaxNodes
         {
             for (var i = 0; i < Children.Count; i++)
             {
+                // Non-array return type.
                 var matches = TryGetMatchingChildren(i, typeof(TypeToken), typeof(GenericSyntaxNode), typeof(RoundBracketSyntaxNode), typeof(BraceSyntaxNode));
+                if (matches == null)
+                {
+                    // Try array return type.
+                    matches = TryGetMatchingChildren(i, typeof(TypeToken), typeof(SquareBracketSyntaxNode), typeof(GenericSyntaxNode), typeof(RoundBracketSyntaxNode), typeof(BraceSyntaxNode));
+                    if (matches != null)
+                    {
+                        // Fold the brackets into the 'type' node.
+                        matches[0].Adopt(matches[1]);
+                        matches.RemoveAt(1);
+                    }
+                }
+
                 if (matches == null)
                     continue;
 
@@ -448,9 +461,13 @@ namespace Shrinker.Parser.SyntaxNodes
                 var nameNode = typeNode.NextNonComment;
                 while (nameNode != null)
                 {
-                    if (nameNode.NextNonComment.Token is AssignmentOperatorToken)
+                    // Does name have [] suffix?
+                    var nameArraySuffix = nameNode.NextNonComment as SquareBracketSyntaxNode;
+
+                    // Is the variable assigned too?
+                    if ((nameArraySuffix ?? nameNode).NextNonComment.Token is AssignmentOperatorToken)
                     {
-                        var valueNodes = nameNode.NextSiblings.Where(o => !o.IsComment())
+                        var valueNodes = (nameArraySuffix ?? nameNode).NextSiblings.Where(o => !o.IsComment())
                             .Skip(1) // Skip the '='
                             .TakeWhile(o => o != null && o.Token is not CommaToken && o.Token is not SemicolonToken)
                             .ToList();
@@ -460,8 +477,12 @@ namespace Shrinker.Parser.SyntaxNodes
                     else
                     {
                         // No assignment - Just a declaration. (E.g. <type> <name>)
-                        namesAndValues.Add(new List<SyntaxNode> { nameNode });
+                        namesAndValues.Add(nameArraySuffix != null ? new List<SyntaxNode> { nameNode, nameArraySuffix } : new List<SyntaxNode> { nameNode });
                     }
+
+                    // Include the [].
+                    if (nameArraySuffix != null)
+                        namesAndValues.Last().Insert(1, nameArraySuffix);
 
                     // Multiple names?
                     var commaNode = namesAndValues.Last().Last().NextNonComment;
@@ -482,7 +503,7 @@ namespace Shrinker.Parser.SyntaxNodes
             }
         }
 
-        private void FindVariableDefinitions()
+        private void FindVariableAssignments()
         {
             var didChange = true;
             while (didChange)
@@ -493,28 +514,23 @@ namespace Shrinker.Parser.SyntaxNodes
                          {
                              if (node.Token is not AlphaNumToken)
                                  return true;
-                             if (node.TryGetMatchingSiblings(typeof(AssignmentOperatorToken)) == null)
+
+                             var isAssigned = node.NextNonComment?.Token is AssignmentOperatorToken;
+                             var isArrayElementAssigned = node.NextNonComment is SquareBracketSyntaxNode && node.NextNonComment.NextNonComment.Token is AssignmentOperatorToken;
+                             if (!isAssigned && !isArrayElementAssigned)
                                  return true;
+
+                             var assignmentStartNode = (isArrayElementAssigned ? node.NextNonComment.NextNonComment : node.NextNonComment).NextNonComment;
 
                              // Find terminating ';'
-                             var valueNodes = new List<SyntaxNode>();
-                             var semicolonNode = node.Next;
-                             while (semicolonNode != null)
-                             {
-                                 semicolonNode = semicolonNode.Next;
-
-                                 if (semicolonNode?.Token is SemicolonToken)
-                                     break;
-
-                                 valueNodes.Add(semicolonNode);
-                             }
-
+                             var semicolonNode = node.NextSiblings.FirstOrDefault(o => o.Token is SemicolonToken);
                              if (semicolonNode == null)
-                                 return true;
+                                 return true; // None found.
+
+                             var valueNodes = assignmentStartNode.SelfAndNextSiblings.TakeWhile(o => o != semicolonNode).ToList();
 
                              // Remove the '=' and ';' nodes.
-                             var equalsNode = node.Next;
-                             equalsNode.Remove();
+                             node.NextSiblings.First(o => o.Token is AssignmentOperatorToken).Remove();
                              semicolonNode.Remove();
 
                              node.ReplaceWith(new VariableAssignmentSyntaxNode((GenericSyntaxNode)node, valueNodes));

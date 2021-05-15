@@ -120,7 +120,7 @@ namespace Shrinker.WpfApp
         {
             if (!string.IsNullOrWhiteSpace(Settings.Default.CustomOptions))
                 CustomOptions = JsonConvert.DeserializeObject<CustomOptions>(Settings.Default.CustomOptions);
-            CustomOptions ??= new CustomOptions();
+            CustomOptions ??= CustomOptions.All();
         }
 
         private void LoadGlslFromClipboard(object obj)
@@ -247,8 +247,8 @@ namespace Shrinker.WpfApp
 
             var options = level switch
             {
-                "Max" => new CustomOptions(),
-                "Min" => CustomOptions.Disabled(), // todo
+                "Max" => CustomOptions.All(),
+                "Min" => CustomOptions.None(),
                 "Custom" => CustomOptions,
                 _ => throw new InvalidOperationException($"Unknown optimization level: {level}")
             };

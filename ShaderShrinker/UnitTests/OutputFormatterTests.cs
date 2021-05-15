@@ -150,7 +150,7 @@ namespace UnitTests
             var parser = new Parser(lexer);
             Assert.That(() => parser.Parse(), Throws.Nothing);
 
-            var options = CustomOptions.Disabled();
+            var options = CustomOptions.None();
             options.GroupVariableDeclarations = true;
             options.JoinVariableDeclarationsWithAssignments = true;
             var newCode = parser.RootNode.Simplify(options).ToCode();
