@@ -40,7 +40,7 @@ namespace Shrinker.Parser.Optimizations
                             .OfType<GenericSyntaxNode>()
                             .Any(
                                  o => o.Token?.Content.StartsWithVarName(defCandidate.Name) == true &&
-                                      SymbolOperatorToken.ModifyingOperator.Contains(o.Next?.Token?.Content));
+                                      o.Next?.Token?.IsAnyOf(SymbolOperatorToken.ModifyingOperator) == true);
                         isReassigned = isModified;
                     }
 

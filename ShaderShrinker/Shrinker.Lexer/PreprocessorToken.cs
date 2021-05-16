@@ -35,7 +35,7 @@ namespace Shrinker.Lexer
                 return new PreprocessorDefineToken(toEndOfLine.ToString());
             }
 
-            if (new[] { "#pragma", "#version" }.Contains(s.RemoveAllWhitespace()))
+            if (s.RemoveAllWhitespace().IsAnyOf("#pragma", "#version"))
             {
                 offset += s.Length;
 
@@ -49,7 +49,7 @@ namespace Shrinker.Lexer
                 return new VerbatimToken($"{s}{toEndOfLine}{newLine}");
             }
 
-            return new[] { "#ifdef", "#ifndef", "#if", "#else", "#endif" }.Contains(s.RemoveAllWhitespace()) ? new PreprocessorToken { Content = Read(code, ref offset, s.Length) } : null;
+            return s.RemoveAllWhitespace().IsAnyOf("#ifdef", "#ifndef", "#if", "#else", "#endif") ? new PreprocessorToken { Content = Read(code, ref offset, s.Length) } : null;
         }
     }
 }

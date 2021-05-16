@@ -21,14 +21,13 @@ namespace Shrinker.Parser.Optimizations
         {
             // #defines.
             var pragmaIfs = rootNode.TheTree.OfType<PragmaIfSyntaxNode>().Select(o => o.Name).ToList();
-            var foo1 = rootNode.TheTree
-                .OfType<PragmaDefineSyntaxNode>();
-            foreach (var define in foo1
+            foreach (var define in rootNode.TheTree
+                .OfType<PragmaDefineSyntaxNode>()
                 .Where(
                        o => o.Params == null &&
                             o.ValueNodes?.Count == 1 &&
-                            !o.HasAncestor<PragmaIfSyntaxNode>() &&
-                            !pragmaIfs.Any(p => p.Contains(o.Name)))
+                            !pragmaIfs.Any(p => p.Contains(o.Name)) &&
+                            !PragmaIfSyntaxNode.ContainsNode(o))
                 .ToList())
             {
                 var usages = rootNode.TheTree

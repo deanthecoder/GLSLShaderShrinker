@@ -14,6 +14,9 @@ using Shrinker.Parser.SyntaxNodes;
 
 namespace Shrinker.Parser.Optimizations
 {
+    /// <summary>
+    /// E.g. #if 0 and commented-out code.
+    /// </summary>
     public static class RemoveDisabledCodeExtension
     {
         public static void RemoveDisabledCode(this SyntaxNode rootNode)
@@ -30,14 +33,14 @@ namespace Shrinker.Parser.Optimizations
                                   {
                                       if (pragmaNode.Is1())
                                       {
-                                          pragmaNode.ReplaceWith(pragmaNode.TrueBranch);
+                                          pragmaNode.ReplaceWithTrueBranch();
                                           continue;
                                       }
 
-                                      if (pragmaNode.FalseBranch != null)
-                                          pragmaNode.ReplaceWith(pragmaNode.FalseBranch);
+                                      if (pragmaNode.HasFalseBranch)
+                                          pragmaNode.ReplaceWithFalseBranch();
                                       else
-                                          pragmaNode.Remove();
+                                          pragmaNode.RemoveAll();
                                   }
 
                                   return true;

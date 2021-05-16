@@ -9,7 +9,6 @@
 //  </summary>
 // -----------------------------------------------------------------------
 
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Shrinker.Lexer
@@ -42,7 +41,7 @@ namespace Shrinker.Lexer
 
         private static string SingleCharacterOperators => ":!+-*/|<>@?&^%";
 
-        private static IEnumerable<string> DoubleCharacterOperators { get; } = new[] { "||", "&&", "<=", ">=", "<<=", ">>=", "<<", ">>" };
-        public static IEnumerable<string> ModifyingOperator { get; } = new[] { "--", "++", "+=", "-=", "/=", "!=", "%=", "^=", "&=", "*=" };
+        private static string[] DoubleCharacterOperators { get; } = { "||", "&&", "<=", ">=", "<<=", ">>=", "<<", ">>" };
+        public static string[] ModifyingOperator { get; } = { "--", "++", "+=", "-=", "/=", "!=", "%=", "^=", "&=", "*=" };
     }
 }

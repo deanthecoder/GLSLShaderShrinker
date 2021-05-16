@@ -39,5 +39,7 @@ namespace Shrinker.Lexer
                     return MathSymbolType.Unknown;
             }
         }
+
+        public static bool IsAnyOf(this IToken token, params string[] choices) => token?.Content?.IsAnyOf(choices) == true;
     }
 }

@@ -10,42 +10,115 @@
 // -----------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using Shrinker.Lexer;
 
 namespace Shrinker.Parser.SyntaxNodes
 {
     public class PragmaIfSyntaxNode : SyntaxNode
     {
+        private readonly SyntaxNode m_elseNode;
+        private readonly SyntaxNode m_endNode;
+
         public string Name { get; }
-        public GroupSyntaxNode TrueBranch { get; } = new GroupSyntaxNode();
 
-        public GroupSyntaxNode FalseBranch { get; }
+        public bool HasFalseBranch => m_elseNode != null;
 
-        public PragmaIfSyntaxNode(string name, IList<SyntaxNode> ifSection, IList<SyntaxNode> elseSection)
+        public PragmaIfSyntaxNode(SyntaxNode startNode, SyntaxNode elseNode, SyntaxNode endNode)
         {
-            Name = name?.Trim() ?? throw new ArgumentNullException(nameof(name));
+            if (startNode == null)
+                throw new ArgumentNullException(nameof(startNode));
+            m_elseNode = elseNode;
+            m_endNode = endNode ?? throw new ArgumentNullException(nameof(endNode));
+
+            // Read (and discard) '#if' arguments to get name.
+            var ifName = new StringBuilder();
+            OutputFormatter.AppendCode(ifName, startNode);
+
+            var ifArgs = startNode.TakeSiblingsWhile(o => o.Token is not LineEndToken).ToList();
+            ifArgs.ForEach(o => OutputFormatter.AppendCode(ifName, o));
+            ifArgs.ForEach(o => o.Remove());
+
+            Name = ifName.ToString().Trim();
+
             if (!Name.StartsWith("#"))
-                throw new ArgumentException("Name must start with a # (I.e. #if FLAG or #ifdef NAME).");
-
-            if (ifSection == null)
-                throw new ArgumentNullException(nameof(ifSection));
-
-            Adopt(TrueBranch.Adopt(ifSection.ToArray()));
-
-            if (elseSection != null)
-            {
-                FalseBranch = new GroupSyntaxNode(elseSection);
-                Adopt(FalseBranch);
-            }
+                throw new ArgumentException("Name must start with #if...");
         }
 
-        public override string UiName => FalseBranch == null ? $"{Name}...#endif" : $"{Name}...#else...#endif";
+        public override string UiName => Name;
 
         protected override SyntaxNode CreateSelf() =>
-            new PragmaIfSyntaxNode(Name, TrueBranch.Clone().m_children, FalseBranch?.Clone().m_children);
+            throw new InvalidOperationException();
 
         public bool Is0() => Name.StartsWith("#if 0");
         public bool Is1() => Name.StartsWith("#if 1");
+
+        public static bool IsStart(SyntaxNode node) => (node?.Token as PreprocessorToken)?.IsAnyOf("#if", "#ifdef", "#ifndef") == true;
+        public static bool IsElse(SyntaxNode node) => (node?.Token as PreprocessorToken)?.Content == "#else";
+        public static bool IsEnd(SyntaxNode node) => (node?.Token as PreprocessorToken)?.Content == "#endif";
+
+        public static bool ContainsNode(SyntaxNode node)
+        {
+            var theTree = node.Root().TheTree;
+            var nodeIndex = theTree.IndexOf(node);
+            if (nodeIndex == -1)
+                throw new ArgumentException("Node not found in tree.");
+
+            return
+                theTree
+                    .OfType<PragmaIfSyntaxNode>()
+                    .Where(candidateIf => theTree.IndexOf(candidateIf) <= nodeIndex)
+                    .Any(candidateIf => theTree.IndexOf(candidateIf.m_endNode) >= nodeIndex);
+        }
+
+        public void ReplaceWithTrueBranch()
+        {
+            // Remove the '#if' line.
+            var toRemove = SelfAndNextSiblings.TakeWhile(o => o.Token is not LineEndToken).ToList();
+            toRemove.Add(toRemove.Last().Next); // Include the newline.
+
+            if (HasFalseBranch)
+            {
+                // Remove '#else' to just before the '#endif'.
+                toRemove.AddRange(m_elseNode.SelfAndNextSiblings.SelectMany(o => o.TheTree).TakeWhile(o => o != m_endNode));
+            }
+
+            // Remove the '#endif'.
+            toRemove.Add(m_endNode);
+
+            // Do it.
+            toRemove.ForEach(o => o.Remove());
+        }
+
+        public void ReplaceWithFalseBranch()
+        {
+            if (!HasFalseBranch)
+                throw new InvalidOperationException("There is no 'false' branch to remove.");
+
+            // Remove '#if' to just before the '#else'.
+            var toRemove = SelfAndNextSiblings.SelectMany(o => o.TheTree).TakeWhile(o => o != m_elseNode).ToList();
+
+            // Remove the '#else'.
+            toRemove.Add(m_elseNode);
+
+            // Remove the '#endif'.
+            toRemove.Add(m_endNode);
+
+            // Do it.
+            toRemove.ForEach(o => o.Remove());
+        }
+
+        public void RemoveAll()
+        {
+            // Remove '#if' to just before the '#endif'.
+            var toRemove = SelfAndNextSiblings.SelectMany(o => o.TheTree).TakeWhile(o => o != m_endNode).ToList();
+
+            // Remove the '#endif'.
+            toRemove.Add(m_endNode);
+
+            // Do it.
+            toRemove.ForEach(o => o.Remove());
+        }
     }
 }

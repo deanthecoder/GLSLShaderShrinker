@@ -11,6 +11,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using Shrinker.Lexer;
 using Shrinker.Parser.SyntaxNodes;
 
 namespace Shrinker.Parser.Optimizations
@@ -25,7 +26,7 @@ namespace Shrinker.Parser.Optimizations
                 .Where(
                        o => o.FalseBranch != null &&
                             (o.TrueBranch.Children.OfType<ReturnSyntaxNode>().Any() ||
-                             o.TrueBranch.FindLastChild(n => new[] { "break", "continue" }.Contains((n as GenericSyntaxNode)?.Token?.Content)) != null))
+                             o.TrueBranch.FindLastChild(n => (n as GenericSyntaxNode)?.Token?.IsAnyOf("break", "continue") == true) != null))
                 .ToList())
             {
                 var falseBranch = ifElseNode.FalseBranch;

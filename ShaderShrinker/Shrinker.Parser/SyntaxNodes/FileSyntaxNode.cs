@@ -11,7 +11,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Shrinker.Lexer;
 
 namespace Shrinker.Parser.SyntaxNodes
@@ -46,8 +45,7 @@ namespace Shrinker.Parser.SyntaxNodes
             node.FindStructDefinitions();
             node.FindFunctionDeclarations();
             node.FindFunctionDefinitions();
-            node.FindPragmaIfsInRoot();
-            node.FindPragmaIfsInFunctionBodies();
+            node.FindPragmaIfs();
             node.FindVectorComponents();
             node.FindIfStatements();
             node.FindSwitchStatements();
@@ -157,48 +155,38 @@ namespace Shrinker.Parser.SyntaxNodes
             }
         }
 
-        private void FindPragmaIfsInRoot() => FindPragmaIfs(this);
-
-        private void FindPragmaIfsInFunctionBodies()
+        private void FindPragmaIfs()
         {
-            foreach (var functionNode in Children.OfType<FunctionDefinitionSyntaxNode>())
-                FindPragmaIfs(functionNode.Braces);
-        }
+            var startNodes = new List<(int i, SyntaxNode node)>();
+            var elseNodes = new List<(int i, SyntaxNode node)>();
+            var endNodes = new List<(int i, SyntaxNode node)>();
 
-        private static void FindPragmaIfs(SyntaxNode rootNode)
-        {
-            while (true)
+            var theTree = TheTree;
+            for (var i = 0; i < theTree.Count; i++)
             {
-                // Find start of #if section.
-                var ifStartNode = rootNode.FindLastChild(o => new[] { "#if", "#ifdef", "#ifndef" }.Contains((o.Token as PreprocessorToken)?.Content));
-                if (ifStartNode == null)
-                    break;
+                if (PragmaIfSyntaxNode.IsStart(theTree[i]))
+                    startNodes.Add((i, theTree[i]));
+                else if (PragmaIfSyntaxNode.IsElse(theTree[i]))
+                    elseNodes.Add((i, theTree[i]));
+                else if (PragmaIfSyntaxNode.IsEnd(theTree[i]))
+                    endNodes.Add((i, theTree[i]));
+            }
 
-                // Read '#if' arguments.
-                var ifArgs = ifStartNode.TakeSiblingsWhile(o => o.Token is not LineEndToken).ToList();
-                var ifName = new StringBuilder();
-                new[] { ifStartNode }.Union(ifArgs).ToList().ForEach(o => OutputFormatter.AppendCode(ifName, o));
+            if (startNodes.Count != endNodes.Count)
+                throw new SyntaxErrorException($"Unbalanced #if...#endif statements ({startNodes.Count} vs {endNodes.Count}).");
 
-                // Find 'true' section.
-                var ifTrueSection = ifArgs.Last().Next.TakeSiblingsWhile(o => !new[] { "#else", "#endif" }.Contains((o.Token as PreprocessorToken)?.Content)).ToList();
+            foreach (var startNode in startNodes.AsEnumerable().Reverse())
+            {
+                // Find matching end node.
+                var endNode = endNodes.First(o => o.i > startNode.i);
+                endNodes.Remove(endNode);
 
-                // Is there an 'else' section?
-                IList<SyntaxNode> ifFalseSection = null;
-                if (ifTrueSection.Last().Next.HasNodeContent("#else"))
-                {
-                    ifFalseSection = ifTrueSection.Last().Next.Next.TakeSiblingsWhile(o => (o.Token as PreprocessorToken)?.Content != "#endif").ToList();
-                }
+                // Is there an 'else'?
+                var elseNode = elseNodes.FirstOrDefault(o => o.i > startNode.i && o.i < endNode.i);
+                if (elseNode.node != null)
+                    elseNodes.Remove(elseNode);
 
-                // Remove all nodes in the #if...#endif section.
-                var lastNode = (ifFalseSection != null ? ifFalseSection.Last() : ifTrueSection.Last()).Next.Next;
-
-                var toRemove = ifStartNode.TakeSiblingsWhile(o => o != lastNode).ToList();
-                toRemove.ForEach(o => o.Remove());
-
-                // Replace with single syntax node.
-                if (ifStartNode.Next?.Token is LineEndToken)
-                    ifStartNode.Next.Remove();
-                ifStartNode.ReplaceWith(new PragmaIfSyntaxNode(ifName.ToString(), ifTrueSection, ifFalseSection));
+                startNode.node.ReplaceWith(new PragmaIfSyntaxNode(startNode.node, elseNode.node, endNode.node));
             }
         }
 

@@ -115,7 +115,7 @@ namespace Shrinker.Parser
                                 break;
 
                             case SymbolOperatorToken t:
-                                sb.Append(!new[] { "++", "--", "!" }.Contains(t.Content) ? $" {t.Content} " : t.Content);
+                                sb.Append(!t.IsAnyOf("++", "--", "!") ? $" {t.Content} " : t.Content);
                                 break;
 
                             case UniformToken:
@@ -126,7 +126,7 @@ namespace Shrinker.Parser
                             case KeywordToken t:
                                 sb.Append(t.Content);
 
-                                var isTerminator = new[] { "continue", "break" }.Contains(t.Content);
+                                var isTerminator = t.IsAnyOf("continue", "break");
                                 if (!isTerminator)
                                     sb.Append(' ');
                                 break;
@@ -340,16 +340,7 @@ namespace Shrinker.Parser
                     break;
 
                 case PragmaIfSyntaxNode o:
-                    sb.AppendLine(o.Name);
-                    AppendCode(sb, o.TrueBranch);
-
-                    if (o.FalseBranch != null)
-                    {
-                        sb.AppendLine("#else");
-                        AppendCode(sb, o.FalseBranch);
-                    }
-
-                    sb.AppendLine("#endif");
+                    sb.Append(o.Name);
                     break;
 
                 case ForSyntaxNode o:

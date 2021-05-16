@@ -120,7 +120,7 @@ namespace UnitTests
 
             var rootNode = new Parser(lexer).Parse();
 
-            Assert.That(rootNode.Children.Single(), Is.TypeOf<PragmaIfSyntaxNode>());
+            Assert.That(rootNode.Children.First(), Is.TypeOf<PragmaIfSyntaxNode>());
         }
 
         [Test]
@@ -132,7 +132,7 @@ namespace UnitTests
             var rootNode = new Parser(lexer).Parse();
 
             Assert.That(rootNode.Children.Single(), Is.TypeOf<FunctionDefinitionSyntaxNode>());
-            Assert.That(((FunctionDefinitionSyntaxNode)rootNode.Children.Single()).Braces.Children.Single(), Is.TypeOf<PragmaIfSyntaxNode>());
+            Assert.That(((FunctionDefinitionSyntaxNode)rootNode.Children.Single()).Braces.Children.First(), Is.TypeOf<PragmaIfSyntaxNode>());
         }
 
         [Test]

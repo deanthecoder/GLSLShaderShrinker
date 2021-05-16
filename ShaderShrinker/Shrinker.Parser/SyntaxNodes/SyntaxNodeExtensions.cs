@@ -35,29 +35,7 @@ namespace Shrinker.Parser.SyntaxNodes
 
         public static bool IsWithinIfPragma(this SyntaxNode node)
         {
-            var pragmaIfCount = 0;
-            var pragmaEndifCount = 0;
-
-            while (node != null)
-            {
-                SyntaxNode prevNode;
-                while ((prevNode = node.Previous) != null)
-                {
-                    if (prevNode.Token is PreprocessorToken siblingToken)
-                    {
-                        if (siblingToken.Content.StartsWith("#if"))
-                            pragmaIfCount++;
-                        else if (siblingToken.Content.StartsWith("#endif"))
-                            pragmaEndifCount++;
-                    }
-
-                    node = prevNode;
-                }
-
-                node = node.Parent;
-            }
-
-            return pragmaIfCount > pragmaEndifCount;
+            return PragmaIfSyntaxNode.ContainsNode(node);
         }
 
         public static string ToCode(this SyntaxNode rootNode) => OutputFormatter.ToCode(rootNode);
@@ -80,7 +58,7 @@ namespace Shrinker.Parser.SyntaxNodes
         public static IEnumerable<FunctionDefinitionSyntaxNode> FindFunctionDefinitions(this SyntaxNode node) =>
             node.Children.OfType<FunctionDefinitionSyntaxNode>();
 
-        private static SyntaxNode Root(this SyntaxNode node)
+        public static SyntaxNode Root(this SyntaxNode node)
         {
             while (node.Parent != null)
                 node = node.Parent;

@@ -76,7 +76,7 @@ namespace Shrinker.Lexer
             var i = tokenIndex - 1;
             while (i > 0 && tokens[i] is WhitespaceToken)
                 i--;
-            if (i < 0 || !new[] { "in", "out", "inout" }.Contains(tokens[i].Content))
+            if (i < 0 || !tokens[i].IsAnyOf("in", "out", "inout"))
                 return null;
 
             // Remove in/out/inout prefix and combine with 'this'.

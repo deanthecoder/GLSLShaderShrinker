@@ -25,7 +25,7 @@ namespace Shrinker.Parser.Optimizations
                        o => !o.HasAncestor<StructDefinitionSyntaxNode>() &&
                             (o.VariableType.InOut == TypeToken.InOutType.In ||
                              o.VariableType.InOut == TypeToken.InOutType.None) && // inout/out variables should not be removed.
-                            !o.HasAncestor<PragmaIfSyntaxNode>())
+                            !PragmaIfSyntaxNode.ContainsNode(o))
                 .Where(o => o.FindAncestor<FunctionDefinitionSyntaxNode>()?.Params.Children.Contains(o) != true) // Don't remove function params.
                 .ToList())
             {

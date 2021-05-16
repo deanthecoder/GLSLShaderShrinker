@@ -82,5 +82,7 @@ namespace Shrinker.Lexer
         }
 
         public static string RemoveAllWhitespace(this string s) => new string(s.Where(ch => !char.IsWhiteSpace(ch)).ToArray());
+
+        public static bool IsAnyOf(this string s, params string[] choices) => choices?.Contains(s) == true;
     }
 }

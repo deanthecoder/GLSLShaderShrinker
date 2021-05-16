@@ -27,7 +27,7 @@ namespace Shrinker.Parser.Optimizations
                                   if (!node.Children.OfType<VariableDeclarationSyntaxNode>().Any())
                                       return true;
 
-                                  if (node.HasAncestor<PragmaIfSyntaxNode>())
+                                  if (PragmaIfSyntaxNode.ContainsNode(node))
                                       return true;
 
                                   if (!node.HasAncestor<StructDefinitionSyntaxNode>())
