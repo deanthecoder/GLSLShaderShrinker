@@ -31,7 +31,7 @@ namespace Shrinker.Parser.Optimizations
                     var isReassigned = decl.Parent.TheTree
                         .OfType<VariableAssignmentSyntaxNode>()
                         .Where(o => o != defCandidate)
-                        .Any(o => o.Name == defCandidate.Name);
+                        .Any(o => o.Name.StartsWithVarName(defCandidate.Name));
 
                     if (!isReassigned)
                     {

@@ -1077,13 +1077,15 @@ namespace UnitTests
                     "int g = 2; int main() { g *= 2; return g; }",
                     "int main() { vec2 v; if (true) break; v = vec2(1, 2); return v; }",
                     "int main() { int i, j = 2; for (i = 0; i < j; i++) break; return j; }",
-                    "int main() { int i; if (1) continue; i = 3; return i; }")] string code,
+                    "int main() { int i; if (1) continue; i = 3; return i; }",
+                    "vec3 ro = vec3(0); ro.xz = rot(a) * ro.xz;")] string code,
             [Values("int main() { return 2; }",
                     "int g = 2; int main() { g++; return g; }",
                     "int g = 2; int main() { g *= 2; return g; }",
                     "int main() { if (true) break; return vec2(1, 2); }",
                     "int main() { int i; for (i = 0; i < 2; i++) break; return 2; }",
-                    "int main() { if (1) continue; return 3; }")] string expected)
+                    "int main() { if (1) continue; return 3; }",
+                    "vec3 ro = vec3(0); ro.xz = rot(a) * ro.xz;")] string expected)
         {
             var lexer = new Lexer();
             lexer.Load(code);
