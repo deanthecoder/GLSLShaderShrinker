@@ -38,15 +38,15 @@ namespace Shrinker.Parser.Optimizations
                                               .Where(o => o.VariableType.IsConst && !o.IsWithinIfPragma() && o.VariableType.IsGlslType)
                                               .Reverse()
                                               .ToList();
-                                      var firstNonCommentLine = 0;
+                                      var insertionLineIndex = 0;
                                       if (node == rootNode && constDecls.Any())
                                       {
-                                          // Const is defined at the global scope - Move after any file header comments.
-                                          while (firstNonCommentLine < node.Children.Count && node.Children[firstNonCommentLine].IsComment())
-                                              firstNonCommentLine++;
+                                          // Const is defined at the global scope - Move after any file header comments and/or #defines.
+                                          while (insertionLineIndex < node.Children.Count && (node.Children[insertionLineIndex].IsComment() || node.Children[insertionLineIndex] is PragmaDefineSyntaxNode))
+                                              insertionLineIndex++;
                                       }
 
-                                      constDecls.ForEach(o => node.InsertChild(firstNonCommentLine, o));
+                                      constDecls.ForEach(o => node.InsertChild(insertionLineIndex, o));
 
                                       // Groups of non-const definitions can be placed together.
                                       var i = 0;

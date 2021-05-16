@@ -35,10 +35,10 @@ namespace UnitTests
         }
         
         [Test]
-        public void CheckGlobalConstDeclarationsArePositionedAfterFileHeaderComments()
+        public void CheckGlobalConstDeclarationsArePositionedAfterFileHeaderCommentsButBeforeDefines()
         {
             var lexer = new Lexer();
-            lexer.Load("// Header\nconst vec2 uv = vec2(1);");
+            lexer.Load("// Header\n#define FOO\nconst vec2 uv = vec2(1);");
 
             var options = CustomOptions.None();
             options.GroupVariableDeclarations = true;
@@ -46,7 +46,7 @@ namespace UnitTests
                 .Parse()
                 .Simplify(options);
 
-            Assert.That(rootNode.ToCode().Trim(), Is.EqualTo("// Header\nconst vec2 uv = vec2(1);"));
+            Assert.That(rootNode.ToCode().Trim(), Is.EqualTo("// Header\n#define FOO\n\nconst vec2 uv = vec2(1);"));
         }
 
         [Test]

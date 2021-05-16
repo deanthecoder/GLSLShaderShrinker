@@ -14,6 +14,7 @@ using Shrinker.Lexer;
 using Shrinker.Parser.Optimizations;
 using Shrinker.Parser.SyntaxNodes;
 
+// todo - Support ++i
 // todo - Bad inlining, bad const, and dodgy anim output (https://www.shadertoy.com/view/7s2XR3)
 // todo - https://www.shadertoy.com/view/fsjXzd Could inline 'return rd'
 // todo - https://www.shadertoy.com/view/fs2XDy constifies and inlines float, passed into inout param.

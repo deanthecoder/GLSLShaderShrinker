@@ -1,10 +1,9 @@
-const vec2 stepToStep = vec2(.36, .66);
-const vec3 lightPos1 = vec3(0, 4.5, 4.3),
-           lightPos2 = vec3(0, 4.5, -.6);
-
 #define MY_GPU_CAN_TAKE_IT
 #define ZERO	min(iTime, 0.)
 
+const vec2 stepToStep = vec2(.36, .66);
+const vec3 lightPos1 = vec3(0, 4.5, 4.3),
+           lightPos2 = vec3(0, 4.5, -.6);
 float smin(float a, float b, float k) {
 	float h = clamp(.5 + .5 * (b - a) / k, 0., 1.);
 	return mix(b, a, h) - k * h * (1. - h);
