@@ -78,6 +78,7 @@ namespace Shrinker.Parser.Optimizations
                                     o.Parent is not ForSyntaxNode &&
                                     o.Parent is not SwitchSyntaxNode &&
                                     o.Parent is not PragmaDefineSyntaxNode &&
+                                    !o.HasAncestor<PragmaDefineSyntaxNode>() && // Extra brackets in #define values are often needed.
                                     o.Previous is not SquareBracketSyntaxNode && // E.g. int[](1)
                                     o.Previous?.Token is not AlphaNumToken &&
                                     o.Previous?.Token is not TypeToken &&

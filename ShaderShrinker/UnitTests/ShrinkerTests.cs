@@ -920,6 +920,21 @@ namespace UnitTests
             Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(expected));
         }
 
+        [Test]
+        public void CheckArithmeticInPragmaDefinesIsNotSimplified()
+        {
+            var lexer = new Lexer();
+            lexer.Load("#define F(x) ((x) * 2.0)");
+
+            var options = CustomOptions.None();
+            options.SimplifyArithmetic = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo("#define F(x) ((x) * 2.0)"));
+        }
+
         [Test, Sequential]
         public void CheckSimplifyingElseStatements(
             [Values("float main() { int = 1; if (i == 1) return; else i++; }",
