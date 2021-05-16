@@ -67,11 +67,20 @@ namespace Shrinker.Parser.Optimizations
 
                             // Are we assigning from a non-const global variable?
                             // Bad idea - It might be modified by a function call in the 'return'.
-                            var globals = rootNode.FindGlobalVariables()
-                                .Where(o => (o.Parent as VariableDeclarationSyntaxNode)?.VariableType.IsConst != true)
-                                .Select(o => o.Name);
-                            if (globals.Any(g => assignment.TheTree.Any(o => o.Token?.Content?.StartsWithVarName(g) == true)))
-                                continue;
+                            if (returnNode.TheTree.OfType<FunctionCallSyntaxNode>().Any() ||
+                                assignment.TheTree.OfType<FunctionCallSyntaxNode>().Any())
+                            {
+                                var globals = rootNode.FindGlobalVariables()
+                                    .Where(o => (o.Parent as VariableDeclarationSyntaxNode)?.VariableType.IsConst != true)
+                                    .Select(o => o.Name)
+                                    .ToList();
+                                var assignmentUsesGlobals = globals.Any(g => assignment.TheTree.Any(o => o.Token?.Content?.StartsWithVarName(g) == true));
+                                if (assignmentUsesGlobals)
+                                    continue;
+                                var returnUsesGlobals = globals.Any(g => returnNode.TheTree.Any(o => o.Token?.Content?.StartsWithVarName(g) == true));
+                                if (returnUsesGlobals)
+                                    continue;
+                            }
 
                             // Any usages between the two locations?
                             var assignmentLine = assignment.Parent is VariableDeclarationSyntaxNode ? assignment.Parent : assignment;
