@@ -21,6 +21,9 @@ namespace Shrinker.Parser.SyntaxNodes
         public static bool HasAncestor<T>(this SyntaxNode node) =>
             node is T || node.Ancestors().OfType<T>().Any();
 
+        public static bool HasAncestor(this SyntaxNode node, SyntaxNode candidate) =>
+            node.Ancestors().Any(o => o == candidate);
+
         public static T FindAncestor<T>(this SyntaxNode node) =>
             node.Ancestors().OfType<T>().FirstOrDefault();
 
@@ -33,10 +36,11 @@ namespace Shrinker.Parser.SyntaxNodes
             }
         }
 
-        public static bool IsWithinIfPragma(this SyntaxNode node)
-        {
-            return PragmaIfSyntaxNode.ContainsNode(node);
-        }
+        public static bool IsOnlyChild(this SyntaxNode node) => node.Parent?.Children.Count == 1;
+
+        public static bool IsSiblingOf(this SyntaxNode node, SyntaxNode candidate) => node.Parent == candidate.Parent;
+
+        public static bool IsWithinIfPragma(this SyntaxNode node) => PragmaIfSyntaxNode.ContainsNode(node);
 
         public static string ToCode(this SyntaxNode rootNode) => OutputFormatter.ToCode(rootNode);
 

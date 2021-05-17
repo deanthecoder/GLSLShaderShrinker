@@ -73,8 +73,6 @@ namespace Shrinker.Parser.SyntaxNodes
 
         public IReadOnlyList<SyntaxNode> Children => m_children;
 
-        public bool IsOnlyChild => Parent?.Children.Count == 1;
-
         public void Remove()
         {
             if (Parent == null)

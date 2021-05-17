@@ -133,15 +133,13 @@ vec2 sdCorridorSection(vec3 p) {
 
 vec2 map(vec3 p, bool useGlow) {
 	const vec3 v = vec3(1.8, 6. - 1.5, 0);
-	float lightFrame, bump,
-	      d = sdBox(p - vec3(2.7, 0, 1.8), vec3(.07, 10, .07)) - .01;
+	float d = sdBox(p - vec3(2.7, 0, 1.8), vec3(.07, 10, .07)) - .01;
 	d = min(min(min(d, sdBox(p - vec3(0, 6. - 1., 1.8), vec3(2.8, 1, .07)) - .01), sdCapsule(p, v + vec3(0, 0, 2.9), v - vec3(0, 0, 100), .18)), sdCapsule(p, v + vec3(0, 0, 2), v + vec3(0, 0, 1.6), .22));
 	vec3 pp = p;
 	pp.z = abs(p.z - 1.8);
 	d = min(min(d, sdLink(pp - vec3(1.8, 6. - 1.3, .9), .2, .2, .015)), sdLink(p - vec3(1.8, 6. - 1.3, -2), .2, .2, .015));
 	pp -= vec3(0, 6. - 1., 2.5);
-	lightFrame = max(sdBox(pp, vec3(1, .25, .06)), -sdBox(pp + vec3(0, .3, 0), vec3(.95, .2, .1)));
-	d = min(d, lightFrame);
+	d = min(d, max(sdBox(pp, vec3(1, .25, .06)), -sdBox(pp + vec3(0, .3, 0), vec3(.95, .2, .1))));
 	if (useGlow) {
 		float gd,
 		      endFade = 1. - clamp((abs(p.x) - .8) / .2, 0., 1.);
@@ -151,8 +149,7 @@ vec2 map(vec3 p, bool useGlow) {
 	}
 	pp = p;
 	pp.xz *= rot(-.78538);
-	bump = texture(iChannel0, p.xz * .8).r * .01;
-	d = min(d, sdBox(pp - vec3(0, 6, -20), vec3(10, 1, 20. + stepToStep * 12.)) - bump);
+	d = min(d, sdBox(pp - vec3(0, 6, -20), vec3(10, 1, 20. + stepToStep * 12.)) - texture(iChannel0, p.xz * .8).r * .01);
 	vec2 d2 = sdCorridorSection(p);
 	p.yz -= stepToStep * 12.;
 	p.z -= 9.;
@@ -247,6 +244,5 @@ void mainImage(out vec4 fragColor, vec2 fragCoord) {
 	}
 #endif
 	col *= exp(-pow(distance(ro, p) / 30., 3.) * 5.);
-	col = vignette(pow(col, vec3(.4545)), fragCoord);
-	fragColor = vec4(col, 1);
+	fragColor = vec4(vignette(pow(col, vec3(.4545)), fragCoord), 1);
 }

@@ -41,7 +41,8 @@ namespace Shrinker.Parser.SyntaxNodes
                 InsertChild(0, nameNode.NextNonComment);
         }
 
-        public override string UiName => $"{FullName} = {(ValueNodes.Count() == 1 ? ValueNodes.Single().UiName : "<Children>")}";
+        public override string UiName =>
+            !ValueNodes.Any() ? FullName : $"{FullName} = {(ValueNodes.Count() == 1 ? ValueNodes.Single().UiName : "...")}";
 
         protected override SyntaxNode CreateSelf() => new VariableAssignmentSyntaxNode(Name);
 
@@ -82,6 +83,24 @@ namespace Shrinker.Parser.SyntaxNodes
                           o.Token is CommaToken ||
                           o.Token is INumberToken ||
                           o.Token is TypeToken);
+        }
+
+        /// <summary>
+        /// Return all the nodes which are within the scope of the declaration of 'this' variable.
+        /// </summary>
+        public IEnumerable<SyntaxNode> FindDeclarationScope()
+        {
+            var decl = Parent as VariableDeclarationSyntaxNode ?? this.Root().TheTree.TakeWhile(o => o != this).OfType<VariableDeclarationSyntaxNode>().LastOrDefault(o => o.IsDeclared(Name));
+            if (decl == null)
+                yield break;
+
+            // Return all nodes after the assignment _within_ the declaration variable list.
+            foreach (var node in decl.Definitions.First(o => o.Name == Name).SelfAndNextSiblings.SelectMany(o => o.TheTree))
+                yield return node;
+
+            // Return all the nodes after the declaration node too.
+            foreach (var node in decl.NextSiblings.SelectMany(o => o.TheTree))
+                yield return node;
         }
     }
 }

@@ -50,5 +50,7 @@ namespace Shrinker.Parser.SyntaxNodes
         }
 
         protected override SyntaxNode CreateSelf() => new VariableDeclarationSyntaxNode(VariableType);
+
+        public bool IsDeclared(string variableName) => Definitions.Any(o => o.Name == variableName);
     }
 }

@@ -32,7 +32,7 @@ namespace Shrinker.Parser.Optimizations
                 foreach (var toRemove in
                     rootNode.TheTree
                         .OfType<RoundBracketSyntaxNode>()
-                        .Where(o => o.IsOnlyChild && o.Parent is RoundBracketSyntaxNode)
+                        .Where(o => o.IsOnlyChild() && o.Parent is RoundBracketSyntaxNode)
                         .ToList())
                 {
                     toRemove.ReplaceWith(toRemove.Children.ToArray());
@@ -47,7 +47,7 @@ namespace Shrinker.Parser.Optimizations
                                o => o.Children.Count == 1
                                     && o.Children.Single()?.Token is INumberToken
                                     && o.Parent is not FunctionCallSyntaxNode
-                                    && (o.IsOnlyChild || o.Previous?.Token is SymbolOperatorToken))
+                                    && (o.IsOnlyChild() || o.Previous?.Token is SymbolOperatorToken))
                         .ToList())
                 {
                     toRemove.ReplaceWith(toRemove.Children.Single());
@@ -59,7 +59,7 @@ namespace Shrinker.Parser.Optimizations
                     rootNode.TheTree
                         .OfType<RoundBracketSyntaxNode>()
                         .Where(
-                               o => o.IsOnlyChild
+                               o => o.IsOnlyChild()
                                     && (o.Parent is ReturnSyntaxNode || o.Parent is VariableAssignmentSyntaxNode))
                         .ToList())
                 {

@@ -56,7 +56,7 @@ namespace Shrinker.Parser.Optimizations
                                                   {
                                                       var candidateDefn = decl.NextSiblings.OfType<VariableAssignmentSyntaxNode>().FirstOrDefault();
                                                       if (candidateDefn?.HasValue == true &&
-                                                          decl.Definitions.Any(o => o.Name == candidateDefn.Name) &&
+                                                          decl.IsDeclared(candidateDefn.Name) &&
                                                           candidateDefn.IsSimpleAssignment())
                                                       {
                                                           var nodesInBetween = decl.TakeSiblingsWhile(o => o != candidateDefn);

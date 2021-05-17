@@ -187,7 +187,7 @@ MarchData waist(vec3 p) {
 	setBodyMaterial(r);
 	p.y += .65;
 	p.yz *= rot(-.2);
-	float bump, d, pistons,
+	float bump, d,
 	      legAngle = legWalkAngle(1.);
 	p.xy *= rot(legAngle * .3);
 	vec3 pp = p;
@@ -205,8 +205,7 @@ MarchData waist(vec3 p) {
 	r.d = min(r.d, sdBox(pp, vec3(.24, .2, .14 + .2 * pp.y)));
 	p = pp;
 	pp.xz = abs(pp.xz) - vec2(.12, .25);
-	pistons = min(sdCappedCylinder(pp.xzy, .1, .325), sdCappedCylinder(pp.xzy, .05, .5));
-	r.d = min(r.d, max(pistons, pp.y));
+	r.d = min(r.d, max(min(sdCappedCylinder(pp.xzy, .1, .325), sdCappedCylinder(pp.xzy, .05, .5)), pp.y));
 	p.y += .68;
 	r.d = min(r.d, sdBox(p, vec3(sign(abs(p.y) - .04) * .005 + .26, .2, .34)));
 	if (d < r.d) {
@@ -289,8 +288,7 @@ MarchData room(vec3 p) {
 	p.x += doorWidth;
 	door = sdBox(p, vec3(doorWidth, frameInner.yz));
 	p = abs(p) - vec3(doorWidth * .5, 1.1, .14);
-	door = max(door, -max(sdBox(p, vec3(.45, .9, .1)), -sdBox(p, vec3(.35, .8, 1))));
-	d = min(doorFrame, door);
+	d = min(doorFrame, max(door, -max(sdBox(p, vec3(.45, .9, .1)), -sdBox(p, vec3(.35, .8, 1)))));
 	if (d < r.d) {
 		r.d = d;
 		r.mat = vec3(.02, .02, .024);
@@ -395,8 +393,7 @@ void mainImage(out vec4 fragColor, vec2 fragCoord) {
 	else if (time < 29.) {
 		startScene = 25.;
 		endScene = 29.;
-		float t = time - startScene;
-		ro = vec3(-2, .5 + t * .1, edZ() - 3.);
+		ro = vec3(-2, .5 + (time - startScene) * .1, edZ() - 3.);
 		lookAt = vec3(0, 0, edZ());
 	}
 	else if (time < 37.) {

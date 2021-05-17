@@ -18,9 +18,9 @@ using Shrinker.Parser.SyntaxNodes;
 // todo - https://www.shadertoy.com/view/fs2XDy constifies and inlines float, passed into inout param.
 // todo - int(1.2) => 1, int(1) => 1, float(1.2) => 1.2, float(1) => 1.
 // todo - 1e3 form can be used if with vecN(...)
-// todo - 'fragColor = vec4(col, 1.0)' - Inline 'col'. (Subway)
 // todo - ED-209 (float d = .01 * t * .33;)
 // todo - Remove 'return;' specifically at end of function.
+// todo - pow(f, 2.0) => f * f (if smaller code)
 namespace Shrinker.Parser
 {
     /// <summary>

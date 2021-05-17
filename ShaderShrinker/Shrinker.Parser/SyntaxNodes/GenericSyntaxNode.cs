@@ -36,7 +36,7 @@ namespace Shrinker.Parser.SyntaxNodes
             {
                 var decl = node.Parent?.Children
                     .OfType<VariableDeclarationSyntaxNode>()
-                    .FirstOrDefault(o => o.Definitions.Any(def => def.Name == varName));
+                    .FirstOrDefault(o => o.IsDeclared(varName));
                 if (decl != null)
                     return decl;
 

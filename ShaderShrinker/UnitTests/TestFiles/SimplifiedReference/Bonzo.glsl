@@ -21,7 +21,5 @@ void main() {
 	      f = texture(texFFT, d).r * 100;
 	m.x += sin(fGlobalTime) * .1;
 	m.y += fGlobalTime * .25;
-	vec4 t = plas(m * 3.14, fGlobalTime) / d;
-	t = clamp(t, 0., 1.);
-	out_color = f + t;
+	out_color = f + clamp(plas(m * 3.14, fGlobalTime) / d, 0., 1.);
 }

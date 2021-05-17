@@ -158,7 +158,7 @@ namespace Shrinker.Parser.Optimizations
                     }
 
                     // If new node is the sole child of a group, promote it.
-                    if (newNode.IsOnlyChild && newNode.Parent.GetType() == typeof(GroupSyntaxNode))
+                    if (newNode.IsOnlyChild() && newNode.Parent.GetType() == typeof(GroupSyntaxNode))
                         newNode.Parent.ReplaceWith(newNode);
 
                     didChange = true;

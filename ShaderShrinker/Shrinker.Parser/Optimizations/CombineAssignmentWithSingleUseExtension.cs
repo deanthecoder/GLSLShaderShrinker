@@ -30,16 +30,28 @@ namespace Shrinker.Parser.Optimizations
                 {
                     var didChange = false;
 
-                    var assignments = functionNode.LocalVariables();
+                    var localVariables = functionNode.LocalVariables().ToList();
+                    var localVariablesNames = localVariables.Select(o => o.Name).ToList(); // todo - inline
+                    var assignments = functionNode.TheTree.OfType<VariableAssignmentSyntaxNode>()
+                        .Where(o => o.HasValue && // Exclude declarations of the variable name.
+                                    localVariablesNames.Contains(o.Name)) // Variable must be declared locally.
+                        .ToList();
                     foreach (var assignment in assignments)
                     {
-                        if (assignment.Name.Contains("."))
-                            continue; // Can't inline a vector field (E.g. v.x)
+                        // Find the declaration matching the variable being assigned to.
+                        var variableDecl = localVariables.LastOrDefault(o => o.FindDeclarationScope().Contains(assignment));
 
-                        // Variable must only ever be used once.
-                        if (functionNode.Braces.TheTree.OfType<GenericSyntaxNode>().Count(o => o.StartsWithVarName(assignment.Name)) != 1)
+                        // Variable must only ever be used once after the assignment.
+                        var scopedNodesAfterAssignment = 
+                            variableDecl
+                                .FindDeclarationScope() // Get the entire scope of the variable.
+                                .SkipWhile(o => o != assignment) // ...starting from the RHS of the assignment.
+                                .Skip(1)
+                                .SkipWhile(o => o.HasAncestor(assignment)) // ...and skipping to the next line.
+                                .ToList();
+                        if (scopedNodesAfterAssignment.OfType<GenericSyntaxNode>().Count(o => o.StartsWithVarName(assignment.Name)) != 1)
                             continue;
-                        if (functionNode.Braces.TheTree.OfType<GenericSyntaxNode>().Count(o => o.IsVarName(assignment.Name)) != 1)
+                        if (scopedNodesAfterAssignment.OfType<GenericSyntaxNode>().Count(o => o.IsVarName(assignment.Name)) != 1)
                             continue;
 
                         // Find 'next' node.
