@@ -11,7 +11,9 @@
 
 // ReSharper disable StringIndexOfIsCultureSpecific.1
 
+using System;
 using System.Linq;
+using System.Text;
 
 namespace Shrinker.Lexer
 {
@@ -19,7 +21,17 @@ namespace Shrinker.Lexer
     {
         public static int GetCodeCharCount(this string glsl)
         {
-            // Remove comment blocks.
+            // Remove C++ line comments.
+            var sb = new StringBuilder();
+            foreach (var line in glsl.Split('\r', '\n'))
+            {
+                var i = line.IndexOf("//");
+                sb.AppendLine((i >= 0 ? line.Substring(0, i) : line).Trim());
+            }
+
+            glsl = sb.ToString();
+
+            // Remove C comment blocks.
             int startComment;
             while ((startComment = glsl.IndexOf("/*")) >= 0)
             {
@@ -40,18 +52,18 @@ namespace Shrinker.Lexer
             if (commentIndex >= 0)
                 line = line.Substring(0, commentIndex);
 
-            var isEmpty = string.IsNullOrEmpty(line.Trim('\r', '\n', ' '));
-
+            var sb = new StringBuilder(line.Trim());
             int l;
             do
             {
-                l = line.Length;
-                line = line.Replace(" ", null);
-                line = line.Replace("\r", null);
-                line = line.Replace("\n", null);
-            } while (line.Length != l);
+                l = sb.Length;
+                sb.Replace(" ", null)
+                  .Replace("\t", null)
+                  .Replace("\r", null)
+                  .Replace("\n", null);
+            } while (sb.Length != l);
 
-            return line.Trim().Length + (isEmpty ? 0 : 1);
+            return sb.Length;
         }
 
         public static bool IsNewline(this char ch) => ch == '\n' || ch == '\r';

@@ -14,13 +14,11 @@ using Shrinker.Lexer;
 using Shrinker.Parser.Optimizations;
 using Shrinker.Parser.SyntaxNodes;
 
+// todo - https://www.shadertoy.com/view/fdSSWm 'light' const not inlined, but would save space.
+// todo - (if rhs doesn't use 'a') a *= 2.0; a *= foo; ... => a *= 2.0 * foo; (https://www.shadertoy.com/view/MdXXW2 sound, https://www.shadertoy.com/view/NsSXWd)
+// todo - (if rhs doesn't use 'a') a += 2.0; a += foo; ... => a += 2.0 + foo;
 // todo - Support ++i
-// todo - 'vec2 d =vec2(1e5,0.);' is changing to 'vec2 d = vec2(100000, 0);' (https://www.shadertoy.com/view/fs2XDy)
 // todo - int(1.2) => 1, int(1) => 1, float(1.2) => 1.2, float(1) => 1.
-// todo - 1e3 form can be used if with vecN(...)
-// todo - ED-209 (float d = .01 * t * .33;)
-// todo - Remove 'return;' specifically at end of function.
-// todo - pow(f, 2.0) => f * f (if smaller code)
 namespace Shrinker.Parser
 {
     /// <summary>
