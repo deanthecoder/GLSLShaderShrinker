@@ -1116,6 +1116,24 @@ namespace UnitTests
         }
 
         [Test, Sequential]
+        public void CheckNonConstVariablesAreNotMadeConstIfPassedIntoOutParam(
+            [Values("void f(inout int n) { n++; } void main() { int i = 1; f(i); }",
+                    "void f(out int n) { n++; } void main() { int i; f(i); }",
+                    "void f(out int n) { n++; } void main() { int i = 2; f(i); }")] string code)
+        {
+            var lexer = new Lexer();
+            lexer.Load(code);
+
+            var options = CustomOptions.None();
+            options.DetectConstants = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(code));
+        }
+
+        [Test, Sequential]
         public void CheckAssignmentAndMathOpCanBeJoined(
             [Values("void f() { float a = 1.; a = a * 2.; }",
                     "void f() { float a = 1.; a = (a * 2.); }",

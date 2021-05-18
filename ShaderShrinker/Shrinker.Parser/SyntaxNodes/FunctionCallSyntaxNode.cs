@@ -32,5 +32,7 @@ namespace Shrinker.Parser.SyntaxNodes
         public override string UiName => $"{Name}({(Params.Children.Any() ? "..." : string.Empty)})";
 
         protected override SyntaxNode CreateSelf() => new FunctionCallSyntaxNode(Name);
+
+        public bool HasOutParam => this.Root().FindFunctionDefinitions().Any(o => o.Name == Name && o.HasOutParam);
     }
 }

@@ -27,24 +27,31 @@ namespace Shrinker.Parser.Optimizations
             {
                 foreach (var defCandidate in decl.Definitions.Where(o => o.IsSimpleAssignment()))
                 {
+                    var parentTree = decl.Parent.TheTree;
+
                     // Is this variable assigned anywhere else?
-                    var isReassigned = decl.Parent.TheTree
+                    var isReassigned = parentTree
                         .OfType<VariableAssignmentSyntaxNode>()
                         .Where(o => o != defCandidate)
                         .Any(o => o.Name.StartsWithVarName(defCandidate.Name));
-
-                    if (!isReassigned)
-                    {
-                        // Perhaps modified using an operator? (E.g. +=, *=, ...)
-                        var isModified = decl.Parent.TheTree
-                            .OfType<GenericSyntaxNode>()
-                            .Any(
-                                 o => o.Token?.Content.StartsWithVarName(defCandidate.Name) == true &&
-                                      o.Next?.Token?.IsAnyOf(SymbolOperatorToken.ModifyingOperator) == true);
-                        isReassigned = isModified;
-                    }
-
                     if (isReassigned)
+                        continue;
+
+                    // Perhaps modified using an operator? (E.g. +=, *=, ...)
+                    var isModified = parentTree
+                        .OfType<GenericSyntaxNode>()
+                        .Any(
+                             o => o.Token?.Content.StartsWithVarName(defCandidate.Name) == true &&
+                                  o.Next?.Token?.IsAnyOf(SymbolOperatorToken.ModifyingOperator) == true);
+                    if (isModified)
+                        continue;
+
+                    // Used in a 'inout' or 'out' function call?
+                    var passedIntoOutParam = parentTree
+                        .OfType<FunctionCallSyntaxNode>()
+                        .Where(o => o.Params.Children.OfType<GenericSyntaxNode>().Any(p => p.StartsWithVarName(defCandidate.Name)))
+                        .Any(o => o.HasOutParam);
+                    if (passedIntoOutParam)
                         continue;
 
                     // Make a const version.

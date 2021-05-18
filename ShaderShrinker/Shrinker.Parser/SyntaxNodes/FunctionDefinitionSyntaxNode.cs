@@ -11,6 +11,7 @@
 
 using System;
 using System.Linq;
+using Shrinker.Lexer;
 
 namespace Shrinker.Parser.SyntaxNodes
 {
@@ -43,5 +44,7 @@ namespace Shrinker.Parser.SyntaxNodes
         protected override SyntaxNode CreateSelf() => new FunctionDefinitionSyntaxNode { ReturnType = ReturnType };
 
         public bool IsMain() => Name.StartsWith("main");
+
+        public bool HasOutParam => Params.TheTree.Select(o => o.Token as TypeToken).Any(o => o?.InOut == TypeToken.InOutType.InOut || o?.InOut == TypeToken.InOutType.Out);
     }
 }
