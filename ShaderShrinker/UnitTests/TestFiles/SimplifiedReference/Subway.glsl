@@ -113,7 +113,7 @@ vec2 sdWalls(vec3 p) {
 		      depthToInclude = 2.9 - nearEndZ;
 		pp = op;
 		pp.z -= middleZ;
-		d = max(d, sdBox(pp, vec3(3, 1000, depthToInclude / 2.)));
+		d = max(d, sdBox(pp, vec3(3, 1e3, depthToInclude / 2.)));
 	}
 	return min2(vec2(d, 1.5), vec2(d2, 2.5));
 }
@@ -134,7 +134,7 @@ vec2 sdCorridorSection(vec3 p) {
 vec2 map(vec3 p, bool useGlow) {
 	const vec3 v = vec3(1.8, 6. - 1.5, 0);
 	float d = sdBox(p - vec3(2.7, 0, 1.8), vec3(.07, 10, .07)) - .01;
-	d = min(min(min(d, sdBox(p - vec3(0, 6. - 1., 1.8), vec3(2.8, 1, .07)) - .01), sdCapsule(p, v + vec3(0, 0, 2.9), v - vec3(0, 0, 100), .18)), sdCapsule(p, v + vec3(0, 0, 2), v + vec3(0, 0, 1.6), .22));
+	d = min(min(min(d, sdBox(p - vec3(0, 6. - 1., 1.8), vec3(2.8, 1, .07)) - .01), sdCapsule(p, v + vec3(0, 0, 2.9), v - vec3(0, 0, 1e2), .18)), sdCapsule(p, v + vec3(0, 0, 2), v + vec3(0, 0, 1.6), .22));
 	vec3 pp = p;
 	pp.z = abs(p.z - 1.8);
 	d = min(min(d, sdLink(pp - vec3(1.8, 6. - 1.3, .9), .2, .2, .015)), sdLink(p - vec3(1.8, 6. - 1.3, -2), .2, .2, .015));

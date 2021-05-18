@@ -1438,5 +1438,20 @@ namespace UnitTests
 
             Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(expected));
         }
+
+        [Test]
+        public void CheckFloatWithEIsNotExpandedWithinVectorConstructor()
+        {
+            var lexer = new Lexer();
+            lexer.Load("vec2 d = vec2(1e5, 0);");
+
+            var options = CustomOptions.None();
+            options.SimplifyVectorConstructors = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo("vec2 d = vec2(1e5, 0);"));
+        }
     }
 }

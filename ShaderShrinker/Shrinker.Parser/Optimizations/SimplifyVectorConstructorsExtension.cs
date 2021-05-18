@@ -29,7 +29,7 @@ namespace Shrinker.Parser.Optimizations
                 .Select(syntaxNode => (RoundBracketSyntaxNode)syntaxNode.Next)
                 .ToList())
             {
-                foreach (var child in brackets.Children.Where(o => o.Token is DoubleNumberToken).ToList())
+                foreach (var child in brackets.Children.Where(o => o.Token is FloatToken).ToList())
                 {
                     var hasCommaPrefix = child.Previous?.Token is CommaToken;
                     var hasCommaSuffix = child.Next?.Token is CommaToken;
@@ -43,7 +43,11 @@ namespace Shrinker.Parser.Optimizations
 
                         // vec3 (etc) can be constructed with integer params.
                         if (Math.Abs((int)asDouble - asDouble) < 0.0000001)
-                            child.ReplaceWith(new GenericSyntaxNode(new IntegerNumberToken((int)asDouble)));
+                        {
+                            var asInt = new GenericSyntaxNode(new IntToken((int)asDouble));
+                            if (asInt.ToCode().Length < child.ToCode().Length)
+                                child.ReplaceWith(asInt);
+                        }
                     }
                 }
 

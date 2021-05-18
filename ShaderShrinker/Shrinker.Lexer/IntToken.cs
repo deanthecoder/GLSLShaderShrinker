@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-//  <copyright file="IntegerNumberToken.cs">
+//  <copyright file="IntToken.cs">
 //      Copyright (c) 2021 Dean Edis. All rights reserved.
 //  </copyright>
 //  <summary>
@@ -11,13 +11,13 @@
 
 namespace Shrinker.Lexer
 {
-    public class IntegerNumberToken : Token, INumberToken
+    public class IntToken : Token, INumberToken
     {
-        public IntegerNumberToken()
+        public IntToken()
         {
         }
 
-        public IntegerNumberToken(int i)
+        public IntToken(int i)
         {
             Content = i.ToString("D");
         }
@@ -49,11 +49,11 @@ namespace Shrinker.Lexer
                 if (double.TryParse(floatAsString, out _))
                 {
                     offset += count;
-                    return new DoubleNumberToken(floatAsString);
+                    return new FloatToken(floatAsString);
                 }
             }
 
-            return new IntegerNumberToken { Content = Read(code, ref offset, count) };
+            return new IntToken { Content = Read(code, ref offset, count) };
         }
 
         public void MakeNegative() => Content = $"-{Content.TrimStart('-')}";

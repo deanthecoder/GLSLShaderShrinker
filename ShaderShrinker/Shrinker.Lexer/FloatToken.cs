@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-//  <copyright file="DoubleNumberToken.cs">
+//  <copyright file="FloatToken.cs">
 //      Copyright (c) 2021 Dean Edis. All rights reserved.
 //  </copyright>
 //  <summary>
@@ -14,9 +14,9 @@ using System.Linq;
 
 namespace Shrinker.Lexer
 {
-    public class DoubleNumberToken : Token, INumberToken
+    public class FloatToken : Token, INumberToken
     {
-        public DoubleNumberToken(string s)
+        public FloatToken(string s)
         {
             Content = s;
         }
@@ -24,7 +24,7 @@ namespace Shrinker.Lexer
         public override IToken TryMatch(string code, ref int offset) =>
             throw new InvalidOperationException("Should be created by DotToken.");
 
-        public DoubleNumberToken Simplify()
+        public FloatToken Simplify()
         {
             if (Content.ToLower().Contains('e'))
                 return this;

@@ -69,7 +69,7 @@ namespace Shrinker.Parser
                     rootNode.InlineConstantVariables();
 
                 if (options.SimplifyFloatFormat)
-                    rootNode.TheTree.ToList().ForEach(o => (o.Token as DoubleNumberToken)?.Simplify());
+                    rootNode.TheTree.ToList().ForEach(o => (o.Token as FloatToken)?.Simplify());
 
                 if (options.SimplifyVectorConstructors)
                     rootNode.SimplifyVectorConstructors();

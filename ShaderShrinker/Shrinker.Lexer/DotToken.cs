@@ -23,20 +23,20 @@ namespace Shrinker.Lexer
         {
             base.TryJoin(tokens, tokenIndex, out deletePrevious, out deleteTotal);
 
-            if (tokenIndex > 0 && tokens[tokenIndex - 1] is IntegerNumberToken)
+            if (tokenIndex > 0 && tokens[tokenIndex - 1] is IntToken)
             {
                 deletePrevious = 1;
                 tokenIndex--;
             }
 
             var newContent = new StringBuilder();
-            while (tokenIndex + deleteTotal < tokens.Count && (tokens[tokenIndex + deleteTotal] is IntegerNumberToken || tokens[tokenIndex + deleteTotal] is DotToken))
+            while (tokenIndex + deleteTotal < tokens.Count && (tokens[tokenIndex + deleteTotal] is IntToken || tokens[tokenIndex + deleteTotal] is DotToken))
             {
                 newContent.Append(tokens[tokenIndex + deleteTotal].Content);
                 deleteTotal++;
             }
 
-            return deleteTotal <= 1 ? null : new DoubleNumberToken(newContent.ToString());
+            return deleteTotal <= 1 ? null : new FloatToken(newContent.ToString());
         }
     }
 }

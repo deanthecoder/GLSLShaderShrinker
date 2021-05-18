@@ -137,8 +137,8 @@ namespace Shrinker.Parser
                                     sb.Append(' ');
                                 break;
 
-                            case DoubleNumberToken:
-                            case IntegerNumberToken:
+                            case FloatToken:
+                            case IntToken:
                             case DotToken:
                             case LineEndToken:
                                 sb.Append(o.Token.Content);

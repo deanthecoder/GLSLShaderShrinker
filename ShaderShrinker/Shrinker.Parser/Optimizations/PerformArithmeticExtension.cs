@@ -142,19 +142,19 @@ namespace Shrinker.Parser.Optimizations
                             throw new InvalidOperationException($"Unrecognized math operation '{symbol}'.");
                     }
 
-                    var isFloatResult = numNodeA.Token is DoubleNumberToken || numNodeB.Token is DoubleNumberToken;
+                    var isFloatResult = numNodeA.Token is FloatToken || numNodeB.Token is FloatToken;
                     numNodeB.Remove();
                     symbolNode.Remove();
 
                     SyntaxNode newNode;
                     if (isFloatResult)
                     {
-                        var numberToken = Math.Abs(c) < 0.0001 && Math.Abs(c) > 0.0 ? new DoubleNumberToken(c.ToString($".#{new string('#', MaxDp - 1)}e0")) : new DoubleNumberToken(c.ToString($"F{MaxDp}"));
+                        var numberToken = Math.Abs(c) < 0.0001 && Math.Abs(c) > 0.0 ? new FloatToken(c.ToString($".#{new string('#', MaxDp - 1)}e0")) : new FloatToken(c.ToString($"F{MaxDp}"));
                         newNode = numNodeA.ReplaceWith(new GenericSyntaxNode(numberToken.Simplify()));
                     }
                     else
                     {
-                        newNode = numNodeA.ReplaceWith(new GenericSyntaxNode(new IntegerNumberToken((int)c)));
+                        newNode = numNodeA.ReplaceWith(new GenericSyntaxNode(new IntToken((int)c)));
                     }
 
                     // If new node is the sole child of a group, promote it.

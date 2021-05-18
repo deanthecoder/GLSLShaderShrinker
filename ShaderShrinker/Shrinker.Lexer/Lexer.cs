@@ -38,7 +38,7 @@ namespace Shrinker.Lexer
             new ConstToken(),
             new PrecisionToken(),
             new AlphaNumToken(),
-            new IntegerNumberToken(),
+            new IntToken(),
             new QuoteToken(),
             new BracketToken(),
             new CommaToken(),

@@ -447,7 +447,7 @@ namespace UnitTests
             parser.Parse();
 
             Assert.That(parser.RootNode.Children.Single(), Is.TypeOf<GenericSyntaxNode>());
-            Assert.That(parser.RootNode.Children.Single().Token, Is.TypeOf<IntegerNumberToken>());
+            Assert.That(parser.RootNode.Children.Single().Token, Is.TypeOf<IntToken>());
         }
 
         [Test]
@@ -458,8 +458,8 @@ namespace UnitTests
 
             var rootNode = new Parser(lexer).Parse();
 
-            Assert.That(rootNode.Children.Single().Token, Is.TypeOf<IntegerNumberToken>());
-            Assert.That(((IntegerNumberToken)rootNode.Children.Single().Token).Content, Is.EqualTo("-4"));
+            Assert.That(rootNode.Children.Single().Token, Is.TypeOf<IntToken>());
+            Assert.That(((IntToken)rootNode.Children.Single().Token).Content, Is.EqualTo("-4"));
         }
 
         [Test]
@@ -470,8 +470,8 @@ namespace UnitTests
 
             var rootNode = new Parser(lexer).Parse();
 
-            var numberToken = rootNode.TheTree.Single(o => o.Token is IntegerNumberToken).Token;
-            Assert.That(((IntegerNumberToken)numberToken).Content, Is.EqualTo("-4"));
+            var numberToken = rootNode.TheTree.Single(o => o.Token is IntToken).Token;
+            Assert.That(((IntToken)numberToken).Content, Is.EqualTo("-4"));
         }
 
         [Test, Sequential]
@@ -482,8 +482,8 @@ namespace UnitTests
 
             var rootNode = new Parser(lexer).Parse();
 
-            var numberToken = rootNode.TheTree.Single(o => o.Token is IntegerNumberToken).Token;
-            Assert.That(((IntegerNumberToken)numberToken).Content, Is.EqualTo("-4"));
+            var numberToken = rootNode.TheTree.Single(o => o.Token is IntToken).Token;
+            Assert.That(((IntToken)numberToken).Content, Is.EqualTo("-4"));
         }
 
         [Test]
@@ -494,8 +494,8 @@ namespace UnitTests
 
             var rootNode = new Parser(lexer).Parse();
 
-            var numberToken = rootNode.TheTree.Single(o => o.Token is IntegerNumberToken).Token;
-            Assert.That(((IntegerNumberToken)numberToken).Content, Is.EqualTo("4"));
+            var numberToken = rootNode.TheTree.Single(o => o.Token is IntToken).Token;
+            Assert.That(((IntToken)numberToken).Content, Is.EqualTo("4"));
         }
 
         [Test, Sequential]
@@ -508,7 +508,7 @@ namespace UnitTests
             parser.Parse();
 
             Assert.That(parser.RootNode.Children.Single(), Is.TypeOf<GenericSyntaxNode>());
-            Assert.That(parser.RootNode.Children.Single().Token, Is.TypeOf<DoubleNumberToken>());
+            Assert.That(parser.RootNode.Children.Single().Token, Is.TypeOf<FloatToken>());
         }
 
         [Test]
@@ -519,8 +519,8 @@ namespace UnitTests
 
             var rootNode = new Parser(lexer).Parse();
 
-            Assert.That(rootNode.Children.Single().Token, Is.TypeOf<DoubleNumberToken>());
-            Assert.That(((DoubleNumberToken)rootNode.Children.Single().Token).Content, Is.EqualTo("-4.1"));
+            Assert.That(rootNode.Children.Single().Token, Is.TypeOf<FloatToken>());
+            Assert.That(((FloatToken)rootNode.Children.Single().Token).Content, Is.EqualTo("-4.1"));
         }
 
         [Test]
@@ -531,8 +531,8 @@ namespace UnitTests
 
             var rootNode = new Parser(lexer).Parse();
 
-            var numberToken = rootNode.TheTree.Single(o => o.Token is DoubleNumberToken).Token;
-            Assert.That(((DoubleNumberToken)numberToken).Content, Is.EqualTo("-4.2"));
+            var numberToken = rootNode.TheTree.Single(o => o.Token is FloatToken).Token;
+            Assert.That(((FloatToken)numberToken).Content, Is.EqualTo("-4.2"));
         }
 
         [Test, Sequential]
@@ -543,8 +543,8 @@ namespace UnitTests
 
             var rootNode = new Parser(lexer).Parse();
 
-            var numberToken = rootNode.TheTree.Single(o => o.Token is DoubleNumberToken).Token;
-            Assert.That(((DoubleNumberToken)numberToken).Content, Is.EqualTo("-4.3"));
+            var numberToken = rootNode.TheTree.Single(o => o.Token is FloatToken).Token;
+            Assert.That(((FloatToken)numberToken).Content, Is.EqualTo("-4.3"));
         }
 
         [Test]
@@ -555,8 +555,8 @@ namespace UnitTests
 
             var rootNode = new Parser(lexer).Parse();
 
-            var numberToken = rootNode.TheTree.Single(o => o.Token is DoubleNumberToken).Token;
-            Assert.That(((DoubleNumberToken)numberToken).Content, Is.EqualTo("4.4"));
+            var numberToken = rootNode.TheTree.Single(o => o.Token is FloatToken).Token;
+            Assert.That(((FloatToken)numberToken).Content, Is.EqualTo("4.4"));
         }
 
         [Test]
