@@ -31,18 +31,54 @@ namespace Shrinker.Parser.Optimizations
             {
                 foreach (var varName in decl.Definitions.Select(o => o.Name).ToList())
                 {
+                    var parentTree = decl.Parent.TheTree;
+
                     // Any references?
-                    if (decl.Parent.TheTree
+                    if (parentTree
                         .OfType<GenericSyntaxNode>()
                         .Where(o => o.Token?.Content != null)
                         .Any(o => o.StartsWithVarName(varName)))
                         continue; // Variable was used.
 
                     // Variable not used - Remove any definitions using it.
-                    var defs = decl.Parent.TheTree
+                    var assignments = parentTree
                         .OfType<VariableAssignmentSyntaxNode>()
                         .Where(o => o.Name == varName).ToList();
-                    defs.ForEach(o => o.Remove());
+                    foreach (var assignment in assignments)
+                    {
+                        // If RHS of the assignment calls a function with an 'out/inout' param, it is not save to remove.
+                        // Instead, replace the assignment with the RHS component.
+                        if (assignment.TheTree.OfType<FunctionCallSyntaxNode>().Any(o => o.HasOutParam))
+                        {
+                            var rhs = assignment.ValueNodes.ToList();
+                            rhs.Add(new GenericSyntaxNode(new SemicolonToken()));
+
+                            var isInDecl = assignment.Parent is VariableDeclarationSyntaxNode;
+                            if (isInDecl)
+                            {
+                                var isFirstDeclVariable = decl.Definitions.FirstOrDefault()?.Name == varName;
+                                if (!isFirstDeclVariable)
+                                {
+                                    // In the middle of a list of variable declarations - Too tricky to remove.
+                                    continue;
+                                }
+
+                                // Is the first assignment in a variable declaration - Move RHS to immediately before it.
+                                var tempNode = new GenericSyntaxNode("temp");
+                                decl.Parent.InsertChild(decl.NodeIndex, tempNode);
+                                assignment.Remove();
+                                tempNode.ReplaceWith(rhs);
+                                continue;
+                            }
+
+                            assignment.ReplaceWith(rhs);
+                        }
+                        else
+                        {
+                            // ...otherwise we can remove the entire assignment.
+                            assignment.Remove();
+                        }
+                    }
 
                     if (!decl.Definitions.Any())
                         decl.Remove();

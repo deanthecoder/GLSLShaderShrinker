@@ -15,7 +15,7 @@ using Shrinker.Parser.Optimizations;
 using Shrinker.Parser.SyntaxNodes;
 
 // todo - Support ++i
-// todo - https://www.shadertoy.com/view/fs2XDy constifies and inlines float, passed into inout param.
+// todo - 'vec2 d =vec2(1e5,0.);' is changing to 'vec2 d = vec2(100000, 0);' (https://www.shadertoy.com/view/fs2XDy)
 // todo - int(1.2) => 1, int(1) => 1, float(1.2) => 1.2, float(1) => 1.
 // todo - 1e3 form can be used if with vecN(...)
 // todo - ED-209 (float d = .01 * t * .33;)

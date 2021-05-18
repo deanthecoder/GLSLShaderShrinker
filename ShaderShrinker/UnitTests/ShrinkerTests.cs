@@ -1086,6 +1086,27 @@ namespace UnitTests
         }
 
         [Test, Sequential]
+        public void GivenUnusedVariableAssignedValueFromFunctionWithOutParamCheckFunctionCallIsNotRemoved(
+            [Values("int f(inout int n) { n++; return n; } void main() { int a = 1, b = f(a); }",
+                    "int f(inout float n) { n++; return 1; } void main() { float a = 1.0; int b = f(a); }",
+                    "int f(inout float n) { n++; return 1; } void main() { float a = 1.0; int b; b = 1.0 + f(a); }")] string code,
+            [Values("int f(inout int n) { n++; return n; } void main() { int a = 1, b = f(a); }",
+                    "int f(inout float n) { n++; return 1; } void main() { float a = 1.0; f(a); }",
+                    "int f(inout float n) { n++; return 1; } void main() { float a = 1.0; 1.0 + f(a); }")] string expected)
+        {
+            var lexer = new Lexer();
+            lexer.Load(code);
+
+            var options = CustomOptions.None();
+            options.RemoveUnusedVariables = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(expected));
+        }
+
+        [Test, Sequential]
         public void CheckFindingVariablesToMakeConst(
             [Values("int g = 2; int main() { return g; }",
                     "int g = 2; int main() { g++; return g; }",
