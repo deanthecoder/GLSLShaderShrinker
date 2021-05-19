@@ -124,17 +124,16 @@ vec3 scene(vec3 ro, vec3 rd) {
 }
 
 void mainImage(out vec4 fragColor, vec2 fc) {
-	const vec3 lookAt = vec3(0, 2, 0);
 	m = abs(iMouse / vec2(640, 360).xyxy);
 	vec3 col,
 	     ro = vec3(0, 2, -5);
 	ro.yz *= rot(m.y - .5);
 	ro.xz *= rot((m.x - .5) * 3.141);
 	vec2 uv = (fc - .5 * iResolution.xy) / iResolution.y;
-	col = scene(ro, rayDir(ro, lookAt, uv));
+	col = scene(ro, rayDir(ro, vec3(0, 2, 0), uv));
 #ifdef AA
 	if (fwidth(col.r) > .01) {
-		for (float dx = Z0; dx <= 1.; dx++) { for (float dy = Z0; dy <= 1.; dy++) col += scene(ro, rayDir(ro, lookAt, uv + (vec2(dx, dy) - .5) / iResolution.xy)); }
+		for (float dx = Z0; dx <= 1.; dx++) { for (float dy = Z0; dy <= 1.; dy++) col += scene(ro, rayDir(ro, vec3(0, 2, 0), uv + (vec2(dx, dy) - .5) / iResolution.xy)); }
 		col /= 5.;
 	}
 #endif

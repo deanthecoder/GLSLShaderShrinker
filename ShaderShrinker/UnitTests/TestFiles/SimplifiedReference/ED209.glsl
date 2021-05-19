@@ -154,14 +154,13 @@ MarchData gunPod(vec3 p) {
 }
 
 MarchData arms(vec3 p) {
-	const vec3 elbow = vec3(1.5, 0, 0),
-	           wrist = elbow - vec3(0, 0, .3);
+	const vec3 wrist = vec3(1.5, 0, 0) - vec3(0, 0, .3);
 	MarchData r;
 	setBodyMaterial(r);
 	p.x = abs(p.x);
 	p.yz += vec2(.24, 0);
 	p.xy *= rot(.15 * (gunsUp - 1.));
-	r.d = min(sdCapsule(p, vec3(0), elbow, .2), sdCapsule(p, elbow, wrist, .2));
+	r.d = min(sdCapsule(p, vec3(0), vec3(1.5, 0, 0), .2), sdCapsule(p, vec3(1.5, 0, 0), wrist, .2));
 	p -= wrist;
 	p.z -= gunsForward * .15;
 	return minResult(r, gunPod(p));
@@ -335,15 +334,14 @@ vec3 vignette(vec3 col, vec2 fragCoord) {
 }
 
 vec3 applyLighting(vec3 p, vec3 rd, float d, MarchData data) {
-	const vec3 sunPos = vec3(10, 10, -10);
-	vec3 sunDir = normalize(sunPos - p),
+	vec3 sunDir = normalize(vec3(10, 10, -10) - p),
 	     n = calcNormal(p, d);
 	float primary = max(0., dot(sunDir, n)),
 	      bounce = max(0., dot(-sunDir, n)) * .2,
 	      spe = pow(max(0., dot(rd, reflect(sunDir, n))), data.specPower) * 2.,
 	      fre = smoothstep(.7, 1., 1. + dot(rd, n)),
 	      fog = exp(-length(p) * .05);
-	primary *= mix(.2, 1., calcShadow(p, sunPos));
+	primary *= mix(.2, 1., calcShadow(p, vec3(10, 10, -10)));
 	return mix(data.mat * ((primary + bounce) * ao(p, n, .33) + spe) * vec3(2, 1.6, 1.7), vec3(.01), fre) * fog;
 }
 

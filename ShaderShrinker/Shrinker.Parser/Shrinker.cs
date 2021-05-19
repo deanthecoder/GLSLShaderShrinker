@@ -14,7 +14,6 @@ using Shrinker.Lexer;
 using Shrinker.Parser.Optimizations;
 using Shrinker.Parser.SyntaxNodes;
 
-// todo - https://www.shadertoy.com/view/fdSSWm 'light' const not inlined, but would save space.
 // todo - (if rhs doesn't use 'a') a *= 2.0; a *= foo; ... => a *= 2.0 * foo; (https://www.shadertoy.com/view/MdXXW2 sound, https://www.shadertoy.com/view/NsSXWd)
 // todo - (if rhs doesn't use 'a') a += 2.0; a += foo; ... => a += 2.0 + foo;
 // todo - Support ++i

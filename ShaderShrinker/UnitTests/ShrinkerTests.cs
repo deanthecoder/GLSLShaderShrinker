@@ -568,6 +568,25 @@ namespace UnitTests
             Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo("float main() { return 2.3 + 1.0; }"));
         }
 
+        [Test, Sequential]
+        public void CheckInliningConstantVectors(
+            [Values("vec3 f() { const vec3 theVector = vec3(1.0, 1.0, 1.0); return theVector * 2.0; }",
+                    "vec3 f() { const vec3 theVector = vec3(1, 1, 1); return theVector * 2.0; }",
+                    "vec3 f() { const vec3 theVector = vec3(1); return theVector * 2.0; }")] string code)
+        {
+            var lexer = new Lexer();
+            lexer.Load(code);
+
+            var options = CustomOptions.None();
+            options.InlineConstantVariables = true;
+            options.SimplifyVectorConstructors = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo("vec3 f() { return vec3(1) * 2.0; }"));
+        }
+
         [Test]
         public void CheckInliningConstantVariableWithMultipleUses()
         {

@@ -11,7 +11,6 @@
 
 // ReSharper disable StringIndexOfIsCultureSpecific.1
 
-using System;
 using System.Linq;
 using System.Text;
 

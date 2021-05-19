@@ -2,8 +2,6 @@
 #define ZERO	min(iTime, 0.)
 
 const vec2 stepToStep = vec2(.36, .66);
-const vec3 lightPos1 = vec3(0, 4.5, 4.3),
-           lightPos2 = vec3(0, 4.5, -.6);
 float smin(float a, float b, float k) {
 	float h = clamp(.5 + .5 * (b - a) / k, 0., 1.);
 	return mix(b, a, h) - k * h * (1. - h);
@@ -187,8 +185,8 @@ vec3 vignette(vec3 col, vec2 fragCoord) {
 
 vec3 getMaterial(vec3 p, vec3 rd, vec3 n, float id) {
 	vec3 mat,
-	     lightDir1 = normalize(lightPos1 - p),
-	     lightDir2 = normalize(lightPos2 - p);
+	     lightDir1 = normalize(vec3(0, 4.5, 4.3) - p),
+	     lightDir2 = normalize(vec3(0, 4.5, -.6) - p);
 	float diff, occ, sha,
 	      spec = pow(max(max(dot(reflect(lightDir1, n), rd) * flicker, dot(reflect(lightDir2, n), rd)), 0.), 50.);
 	if (id == 3.5) mat = vec3(.1);
@@ -201,7 +199,7 @@ vec3 getMaterial(vec3 p, vec3 rd, vec3 n, float id) {
 	else mat = vec3(1);
 	diff = max(max(0., dot(lightDir1, n) * flicker), dot(lightDir2, n));
 	occ = min(1., .2 + calcAO(p, n, .15) * calcAO(p, n, .05));
-	sha = (calcShadow(p, lightPos1) * flicker + calcShadow(p, lightPos2)) / 2.;
+	sha = (calcShadow(p, vec3(0, 4.5, 4.3)) * flicker + calcShadow(p, vec3(0, 4.5, -.6))) / 2.;
 	return mat * vec3(1, 1, 1.1) * ((diff + spec) * sha + occ * .025) + min(glow, 1.);
 }
 
@@ -226,11 +224,11 @@ void mainImage(out vec4 fragColor, vec2 fragCoord) {
 	if (phase == 0.) ro = vec3(mix(0., -.5, ft) * -3. - 1., -1. - 6. * mix(.5, .4, ft), -10);
 	else if (phase == 1.) {
 		ro = vec3(-3. * mix(0., .5, ft) - 1., 3, -4);
-		lookAt = lightPos2;
+		lookAt = vec3(0, 4.5, -.6);
 	}
 	else if (phase == 2.) {
 		ro = vec3(.5, -1. - 6. * (mix(.25, 0., ft) - .5), -1);
-		lookAt = lightPos1 - mix(vec3(5, 3.5, -1), vec3(0), ft);
+		lookAt = vec3(0, 4.5, 4.3) - mix(vec3(5, 3.5, -1), vec3(0), ft);
 	}
 	rd = getRayDir(ro, lookAt, uv);
 	march(ro, rd, p, h);

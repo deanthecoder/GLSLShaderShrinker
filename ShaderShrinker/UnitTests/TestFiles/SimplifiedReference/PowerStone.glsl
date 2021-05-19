@@ -188,15 +188,14 @@ vec3 scene(vec3 ro, vec3 rd) {
 }
 
 void mainImage(out vec4 fragColor, vec2 fc) {
-	const vec3 lookAt = vec3(0, 2, 0);
 	T = mod(iTime, 30.);
 	vec3 col,
 	     ro = mix(vec3(1, 2, -4), vec3(0, 3.5, -3), S(T / 4.));
 	vec2 uv = (fc - .5 * iResolution.xy) / iResolution.y;
-	col = scene(ro, rayDir(ro, lookAt, uv));
+	col = scene(ro, rayDir(ro, vec3(0, 2, 0), uv));
 #ifdef AA
 	if (fwidth(col.r) > .03) {
-		for (float dx = Z0; dx <= 1.; dx++) { for (float dy = Z0; dy <= 1.; dy++) col += scene(ro, rayDir(ro, lookAt, uv + (vec2(dx, dy) - .5) / iResolution.xy)); }
+		for (float dx = Z0; dx <= 1.; dx++) { for (float dy = Z0; dy <= 1.; dy++) col += scene(ro, rayDir(ro, vec3(0, 2, 0), uv + (vec2(dx, dy) - .5) / iResolution.xy)); }
 		col /= 5.;
 	}
 #endif

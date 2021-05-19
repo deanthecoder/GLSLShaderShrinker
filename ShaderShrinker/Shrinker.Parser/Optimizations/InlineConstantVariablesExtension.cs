@@ -40,16 +40,39 @@ namespace Shrinker.Parser.Optimizations
 
                     if (usages.Count == 1)
                     {
-                        // No copying needed - Just move definition to it's single use.
+                        // No copying needed - Just move definition to its single use.
                         usages.ForEach(o => o.ReplaceWith(definition.Children.ToList()));
                         definition.Remove();
+                        continue;
                     }
-                    else if (definition.TheTree.Count == 2)
-                    {
-                        // The const is just a number - Copy the node.
-                        usages.ForEach(o => o.ReplaceWith(definition.Children.Select(d => new GenericSyntaxNode(d.Token)).ToList()));
-                        definition.Remove();
-                    }
+
+                    // Is the const a single expression?
+                    var couldInline = definition.TheTree.Count == 2;
+
+                    // Perhaps a simple vector/matrix?
+                    couldInline = couldInline ||
+                                  definition.ValueNodes.Count() == 2 &&
+                                  definition.Children[0]?.Token is TypeToken &&
+                                  definition.Children[1] is RoundBracketSyntaxNode brackets &&
+                                  brackets.TheTree.Skip(1).All(o => o.Token is INumberToken || o.Token is CommaToken);
+
+                    if (!couldInline)
+                        continue;
+
+                    // Is it worth it?
+                    var declCodeLength = constDeclNode.VariableType.Content.Length;
+                    var costBeforeInlining = declCodeLength + definition.ToCode().Length + usages.Count * definition.Name.Length;
+                    var rhsLength = definition.ToCode().Length - definition.Name.Length - 3;
+                    var costAfterInlining = usages.Count * rhsLength;
+                    if (constDeclNode.Definitions.Count() == 1)
+                        costAfterInlining -= declCodeLength + definition.Name.Length;
+
+                    if (costAfterInlining >= costBeforeInlining)
+                        continue; // Inlining would increase code size.
+
+                    // Inline.
+                    usages.ForEach(o => o.ReplaceWith(definition.Clone().Children.ToList()));
+                    definition.Remove();
                 }
 
                 if (!constDeclNode.Definitions.Any())
