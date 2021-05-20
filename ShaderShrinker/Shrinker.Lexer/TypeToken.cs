@@ -65,7 +65,7 @@ namespace Shrinker.Lexer
         public InOutType InOut { get; private set; }
         public bool IsGlslType => MultiValueTypes.Contains(m_content) || Names.Contains(m_content);
 
-        public static IEnumerable<string> MultiValueTypes { get; } = new[] { "vec2", "vec3", "vec4", "uvec2", "uvec3", "uvec4", "ivec2", "ivec3", "ivec4", "mat2", "mat3", "mat4" };
+        public static IEnumerable<string> MultiValueTypes { get; } = new[] { "vec2", "vec3", "vec4", "uvec2", "uvec3", "uvec4", "ivec2", "ivec3", "ivec4", "bvec2", "bvec3", "bvec4", "mat2", "mat3", "mat4" };
         public static IEnumerable<string> Names { get; } = new[] { "void", "bool", "int",  "uint", "float", "sampler1D", "sampler2D", "sampler3D" }.Union(MultiValueTypes);
 
         public IToken TryJoin(List<IToken> tokens, int tokenIndex, out int deletePrevious, out int deleteTotal)
