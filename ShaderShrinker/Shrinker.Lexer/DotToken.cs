@@ -9,6 +9,7 @@
 //  </summary>
 // -----------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -31,6 +32,13 @@ namespace Shrinker.Lexer
 
             var newContent = new StringBuilder();
             while (tokenIndex + deleteTotal < tokens.Count && (tokens[tokenIndex + deleteTotal] is IntToken || tokens[tokenIndex + deleteTotal] is DotToken))
+            {
+                newContent.Append(tokens[tokenIndex + deleteTotal].Content);
+                deleteTotal++;
+            }
+
+            // Support floats appended with 'f'.
+            if (tokenIndex + deleteTotal < tokens.Count && tokens[tokenIndex + deleteTotal].Content.Equals("f", StringComparison.OrdinalIgnoreCase))
             {
                 newContent.Append(tokens[tokenIndex + deleteTotal].Content);
                 deleteTotal++;

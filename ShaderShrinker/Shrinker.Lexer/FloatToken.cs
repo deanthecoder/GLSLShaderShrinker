@@ -33,6 +33,9 @@ namespace Shrinker.Lexer
             var isNeg = Content.StartsWith("-");
             Content = Content.TrimStart('-');
 
+            // Strip trailing 'f'.
+            Content = Content.TrimEnd('f', 'F');
+
             try
             {
                 if (Content.StartsWith("."))
@@ -69,6 +72,6 @@ namespace Shrinker.Lexer
         public void MakeNegative() => Content = $"-{Content.TrimStart('-')}";
         public void MakePositive() => Content = $"{Content.TrimStart('-')}";
 
-        public bool IsOne() => Math.Abs(double.Parse(Content) - 1.0) < 0.000001;
+        public bool IsOne() => Math.Abs(double.Parse(Content.TrimEnd('f', 'F')) - 1.0) < 0.000001;
     }
 }
