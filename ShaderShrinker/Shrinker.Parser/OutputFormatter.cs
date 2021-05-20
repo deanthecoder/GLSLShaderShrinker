@@ -194,6 +194,8 @@ namespace Shrinker.Parser
                     sb.Append('[');
                     o.Children.ToList().ForEach(child => AppendCode(sb, child));
                     sb.Append(']');
+                    if (o.Next is VariableAssignmentSyntaxNode)
+                        sb.Append(' ');
                     break;
 
                 case RoundBracketSyntaxNode o:
