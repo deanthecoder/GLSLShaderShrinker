@@ -167,7 +167,7 @@
                             HorizontalAlignment="Center"
                             Margin="16"
                             IsIndeterminate="True"/>
-                            <TextBlock Text="Optimizing..."/>
+                            <TextBlock Text="Analyzing..."/>
                         </StackPanel>
                     </materialDesign:DialogHost.DialogContent>
                 </materialDesign:DialogHost>

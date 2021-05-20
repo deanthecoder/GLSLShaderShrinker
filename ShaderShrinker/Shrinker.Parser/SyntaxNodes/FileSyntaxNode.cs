@@ -503,12 +503,13 @@ namespace Shrinker.Parser.SyntaxNodes
                              if (node.Token is not AlphaNumToken)
                                  return true;
 
-                             var isAssigned = node.NextNonComment?.Token is AssignmentOperatorToken;
-                             var isArrayElementAssigned = node.NextNonComment is SquareBracketSyntaxNode && node.NextNonComment.NextNonComment.Token is AssignmentOperatorToken;
+                             var nextNonComment = node.NextNonComment;
+                             var isAssigned = nextNonComment?.Token is AssignmentOperatorToken;
+                             var isArrayElementAssigned = nextNonComment is SquareBracketSyntaxNode && nextNonComment.NextNonComment?.Token is AssignmentOperatorToken;
                              if (!isAssigned && !isArrayElementAssigned)
                                  return true;
 
-                             var assignmentStartNode = (isArrayElementAssigned ? node.NextNonComment.NextNonComment : node.NextNonComment).NextNonComment;
+                             var assignmentStartNode = (isArrayElementAssigned ? nextNonComment.NextNonComment : nextNonComment).NextNonComment;
 
                              // Find terminating ';'
                              var semicolonNode = node.NextSiblings.FirstOrDefault(o => o.Token is SemicolonToken);
