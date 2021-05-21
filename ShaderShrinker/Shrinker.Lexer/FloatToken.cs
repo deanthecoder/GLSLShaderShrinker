@@ -46,15 +46,20 @@ namespace Shrinker.Lexer
                 if (!Content.EndsWith("."))
                 {
                     // Remove leading zeroes.
-                    while (Content.StartsWith("0"))
-                        Content = Content.Substring(1);
+                    Content = Content.TrimStart('0');
                 }
                 else
                 {
                     // Detect 3e6.
-                    var leadingNonZeros = Content.TakeWhile(ch => ch != '0' && ch != '.').Count();
-                    var followingZeros = Content.Skip(leadingNonZeros).TakeWhile(ch => ch == '0').Count();
-                    var expFormat = $"{Content.Substring(0, leadingNonZeros)}e{followingZeros}";
+                    var intPart = Content.Substring(0, Content.IndexOf('.'));
+                    var trailingZeros = 0;
+                    while (intPart.EndsWith("0"))
+                    {
+                        trailingZeros++;
+                        intPart = intPart.Substring(0, intPart.Length - 1);
+                    }
+
+                    var expFormat = $"{intPart}e{trailingZeros}";
                     if (expFormat.Length < Content.Length)
                         Content = expFormat;
                 }
