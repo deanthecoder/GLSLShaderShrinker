@@ -82,6 +82,7 @@ namespace Shrinker.Parser.Optimizations
                                     o.Previous is not SquareBracketSyntaxNode && // E.g. int[](1)
                                     o.Previous?.Token is not AlphaNumToken &&
                                     o.Previous?.Token is not TypeToken &&
+                                    o.Previous?.Token is not KeywordToken &&
                                     o.Previous?.Token?.Content != "<<" &&
                                     o.Previous?.Token?.Content != ">>" &&
                                     o.Previous?.Token?.Content != "/" &&

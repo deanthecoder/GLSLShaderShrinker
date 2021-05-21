@@ -904,14 +904,10 @@ namespace UnitTests
                     "int main() { int i = (1 + ((2))); }",
                     "int main() { int i = ((2)); }",
                     "int main() { int i = -(2 + 3); }",
-                    "int main() { if (1) return 1; return 0; }",
-                    "float main() { return 1.0 / (2.0 * 3.0); }",
                     "float main() { return 1.0 * (2.0 / 3.0); }",
                     "void main() { float d = 1.0, t = 2.0; if ((d < (.003 * t)) || (t >= 25.)) return; }",
                     "void main() { float f = (1. - exp((-.12 * t))); }",
-                    "void main() { float n = 2.0, f = (1.0 + ((1.2 * n * 3.0) * (4.0 + n))); }",
-                    "void main() { float d, n = 1.2; if ((d = 1.0) < 2.0 || (d = 2.0) >= n) return; }",
-                    "vec2 v = vec2(1);")] string code,
+                    "void main() { float n = 2.0, f = (1.0 + ((1.2 * n * 3.0) * (4.0 + n))); }")] string code,
             [Values("float main() { return 1.23; }",
                     "int main() { return 1 + 2; }",
                     "int main() { return 1 + 2 * 3; }",
@@ -919,26 +915,41 @@ namespace UnitTests
                     "int main() { int i = 1 + 2; }",
                     "int main() { int i = 2; }",
                     "int main() { int i = -(2 + 3); }",
-                    "int main() { if (1) return 1; return 0; }",
-                    "float main() { return 1.0 / (2.0 * 3.0); }",
                     "float main() { return 1.0 * 2.0 / 3.0; }",
                     "void main() { float d = 1.0, t = 2.0; if (d < .003 * t || t >= 25.) return; }",
                     "void main() { float f = 1. - exp(-.12 * t); }",
-                    "void main() { float n = 2.0, f = 1.0 + 1.2 * n * 3.0 * (4.0 + n); }",
-                    "void main() { float d, n = 1.2; if ((d = 1.0) < 2.0 || (d = 2.0) >= n) return; }",
-                    "vec2 v = vec2(1);")] string expected)
+                    "void main() { float n = 2.0, f = 1.0 + 1.2 * n * 3.0 * (4.0 + n); }")] string expected)
         {
             var lexer = new Lexer();
             lexer.Load(code);
 
             var options = CustomOptions.None();
-            options.GroupVariableDeclarations = true;
             options.SimplifyArithmetic = true;
             var rootNode = new Parser(lexer)
                 .Parse()
                 .Simplify(options);
 
             Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(expected));
+        }
+
+        [Test, Sequential]
+        public void CheckSimplifyingArithmeticDoesNotRemoveRequiredBrackets(
+            [Values("int main() { if (1) return 1; return 0; }",
+                    "float main() { return 1.0 / (2.0 * 3.0); }",
+                    "void main() { float d, n = 1.2; if ((d = 1.0) < 2.0 || (d = 2.0) >= n) return; }",
+                    "vec2 v = vec2(1);",
+                    "while (1) { continue; }")] string code)
+        {
+            var lexer = new Lexer();
+            lexer.Load(code);
+
+            var options = CustomOptions.None();
+            options.SimplifyArithmetic = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(code));
         }
 
         [Test]
