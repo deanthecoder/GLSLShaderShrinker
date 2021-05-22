@@ -50,10 +50,11 @@ namespace UnitTests
             rootNode = rootNode.Simplify();
 
             var simplifiedCode = rootNode.ToCode();
+            var simpleCount = simplifiedCode.GetCodeCharCount();
+
+            simplifiedCode = simplifiedCode.WithAppMessage(originalCount, simpleCount);
             File.WriteAllText(referenceFile, simplifiedCode);
 
-            var simpleCount = simplifiedCode.GetCodeCharCount();
-            TestContext.WriteLine($"Original: {originalCount}  Simple: {simpleCount}  ({simpleCount - originalCount}, {(originalCount - simpleCount) * 100.0 / originalCount:F1}%)");
             Assert.That(simplifiedCode, Is.EqualTo(referenceCode));
         }
    }

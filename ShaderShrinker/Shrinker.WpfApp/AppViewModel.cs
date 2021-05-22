@@ -132,11 +132,11 @@ namespace Shrinker.WpfApp
 
         private void SaveGlslToClipboard(object obj)
         {
-            var glsl = m_optimizedRoot?.ToCode();
+            var glsl = OptimizedCode;
             if (string.IsNullOrEmpty(glsl))
                 return;
 
-            Clipboard.SetText(glsl.WithAppMessage());
+            Clipboard.SetText(glsl.WithAppMessage(OriginalSize, OptimizedSize));
             MyMessageQueue.Enqueue("GLSL saved to clipboard");
         }
 
@@ -181,7 +181,7 @@ namespace Shrinker.WpfApp
             if (dialog.ShowDialog() != true)
                 return;
 
-            File.WriteAllText(dialog.FileName, OptimizedCode.WithAppMessage());
+            File.WriteAllText(dialog.FileName, OptimizedCode.WithAppMessage(OriginalSize, OptimizedSize));
             MyMessageQueue.Enqueue("GLSL saved to file");
         }
 

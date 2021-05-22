@@ -86,10 +86,13 @@ namespace Shrinker.Lexer
             return s.Trim();
         }
 
-        public static string WithAppMessage(this string glsl)
+        public static string WithAppMessage(this string glsl, int originalSize, int optimizedSize)
         {
-            const string Message = "Processed with 'GLSL Shader Shrinker'";
-            return glsl.Contains(Message) ? glsl : $"// {Message}\n{glsl}";
+            const string Message = "Processed by 'GLSL Shader Shrinker'";
+            if (glsl.Contains(Message))
+                return glsl;
+
+            return $"// {Message} ({originalSize:N0} to {optimizedSize:N0} characters)\n// (https://github.com/deanthecoder/GLSLShaderShrinker)\n{glsl}";
         }
 
         public static string RemoveAllWhitespace(this string s) => new string(s.Where(ch => !char.IsWhiteSpace(ch)).ToArray());

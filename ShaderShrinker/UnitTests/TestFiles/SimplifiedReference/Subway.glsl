@@ -1,3 +1,5 @@
+// Processed by 'GLSL Shader Shrinker' (7,733 to 6,464 characters)
+// (https://github.com/deanthecoder/GLSLShaderShrinker)
 #define MY_GPU_CAN_TAKE_IT
 #define ZERO	min(iTime, 0.)
 

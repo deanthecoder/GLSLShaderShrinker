@@ -1,3 +1,5 @@
+// Processed by 'GLSL Shader Shrinker' (3,968 to 3,960 characters)
+// (https://github.com/deanthecoder/GLSLShaderShrinker)
 #define Z0	min(iTime, 0.)
 #define sat(x)	clamp(x, 0., 1.)
 #define S(x)	smoothstep(0., 1., x)

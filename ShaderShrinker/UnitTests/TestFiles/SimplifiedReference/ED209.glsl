@@ -1,3 +1,5 @@
+// Processed by 'GLSL Shader Shrinker' (10,705 to 9,810 characters)
+// (https://github.com/deanthecoder/GLSLShaderShrinker)
 float stretch, gunsUp, gunsForward, edWalk, edTwist, edDown, edShoot, doorOpen, glow;
 struct MarchData {
 	float d;
