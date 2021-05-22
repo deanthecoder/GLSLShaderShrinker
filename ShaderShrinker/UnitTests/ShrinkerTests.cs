@@ -1384,7 +1384,7 @@ namespace UnitTests
                     "int arr1[2]; int arr2[2] = int[](1, 2);")] string code,
             [Values("int arr1[2], arr2[2];",
                     "int arr1[2] = int[2](1, 2), arr2[2];",
-                    "int arr1[2], arr2[2]; arr2[2] = int[](1, 2);")] string expected)
+                    "int arr1[2], arr2[2]; arr2 = int[](1, 2);")] string expected)
         {
             var lexer = new Lexer();
             lexer.Load(code);

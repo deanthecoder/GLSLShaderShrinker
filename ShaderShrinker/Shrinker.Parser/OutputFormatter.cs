@@ -282,7 +282,13 @@ namespace Shrinker.Parser
                     break;
 
                 case VariableAssignmentSyntaxNode o:
-                    sb.Append(o.FullName);
+                    if (o.IsArray && // An array
+                        o.Parent is not VariableDeclarationSyntaxNode && // ...not defined in within a declaration.
+                        o.ValueNodes.FirstOrDefault()?.Token is TypeToken &&
+                        o.ValueNodes.FirstOrDefault()?.NextNonComment is SquareBracketSyntaxNode)
+                        sb.Append(o.Name); // Exclude the array brackets [].
+                    else
+                        sb.Append(o.FullName);
 
                     var rhs = new StringBuilder();
                     o.ValueNodes.ToList().ForEach(child => AppendCode(rhs, child));
