@@ -1088,7 +1088,8 @@ namespace UnitTests
                     "struct S { int a; }; void main() { S s = S(1); return s.a; }",
                     "int f(int n) { return 1; } int main() { return f(2); }",
                     "int main() { int a = 1, b = a + 1; return b; }",
-                    "struct Sphere { }; const Sphere lights[1] = Sphere[]();")] string code,
+                    "struct Sphere { }; const Sphere lights[1] = Sphere[]();",
+                    "vec2 main() { vec2 h; h.x = 1.1; h.y = 2.2; return h; }")] string code,
             [Values("void main() { }",
                     "void main() { }",
                     "int main() { int c = 3; return c; }",
@@ -1103,7 +1104,8 @@ namespace UnitTests
                     "struct S { int a; }; void main() { S s = S(1); return s.a; }",
                     "int f(int n) { return 1; } int main() { return f(2); }",
                     "int main() { int a = 1, b = a + 1; return b; }",
-                    "struct Sphere { };")] string expected)
+                    "struct Sphere { };",
+                    "vec2 main() { vec2 h; h.x = 1.1; h.y = 2.2; return h; }")] string expected)
         {
             var lexer = new Lexer();
             lexer.Load(code);

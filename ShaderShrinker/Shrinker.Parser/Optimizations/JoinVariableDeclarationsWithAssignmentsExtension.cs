@@ -11,6 +11,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using Shrinker.Lexer;
 using Shrinker.Parser.SyntaxNodes;
 
 namespace Shrinker.Parser.Optimizations
@@ -93,7 +94,7 @@ namespace Shrinker.Parser.Optimizations
                                           }
                                       }
 
-                                      // Find any variable declarations which are defined later (potentially to move nearer actual the definition).
+                                      // Find any variable declarations which are used later (potentially to move nearer actual the use).
                                       var declWithNoDefs = node.Children
                                           .OfType<VariableDeclarationSyntaxNode>()
                                           .Where(o => !o.IsWithinIfPragma())
@@ -101,26 +102,35 @@ namespace Shrinker.Parser.Optimizations
                                       if (declWithNoDefs == null)
                                           break; // Nope - Give up.
 
-                                      // Yes - Move it to nearer the first suitable definition.
+                                      // Yes - Find all uses.
+                                      var nextNodesInScope = declWithNoDefs.NextSiblings.SelectMany(o => o.TheTree).ToList();
                                       var unassignedVariableNames = declWithNoDefs.Definitions.Select(o => o.FullName).ToList();
-                                      var nextDefNodes = node.TheTree
-                                          .OfType<VariableAssignmentSyntaxNode>()
-                                          .Where(o => unassignedVariableNames.Contains(o.FullName) && o.HasValue)
+                                      var nextAssignments = nextNodesInScope.OfType<VariableAssignmentSyntaxNode>()
+                                          .Where(o => unassignedVariableNames.Any(n => o.FullName.StartsWithVarName(n)) && o.HasValue);
+                                      var nextUses = nextNodesInScope.OfType<FunctionCallSyntaxNode>()
+                                          .Where(o => o.Params.TheTree.OfType<GenericSyntaxNode>().Any(n => unassignedVariableNames.Any(n.StartsWithVarName)))
+                                          .Cast<SyntaxNode>()
                                           .ToList();
-                                      if (nextDefNodes.Any(o => !node.Children.Contains(o)))
+                                      nextUses.AddRange(nextAssignments);
+
+                                      var nearestUseIndex = nextUses.Min(o => nextNodesInScope.IndexOf(o));
+                                      if (nearestUseIndex == -1)
+                                          break; // No uses found.
+
+                                      var nearestUseNode = nextNodesInScope[nearestUseIndex];
+                                      if (!nearestUseNode.IsSiblingOf(declWithNoDefs))
                                       {
-                                          // One of the variables is defined in a sub-tree of code.
-                                          // We won't move the declaration...
+                                          // One of the variables is used in a sub-tree of code.
+                                          // Moving the declaration would change it's scope...
                                           break;
                                       }
 
-                                      var nearestDefNode = nextDefNodes.OrderBy(o => o.NodeIndex).FirstOrDefault();
-                                      if (nearestDefNode == null)
-                                          break; // No definition node found - Give up.
+                                      if (declWithNoDefs.NextNonComment == nearestUseNode)
+                                          break; // Already next to each other.
 
                                       // Move declaration to before definition.
                                       declWithNoDefs.Remove();
-                                      node.InsertChild(nearestDefNode.NodeIndex, declWithNoDefs);
+                                      node.InsertChild(nearestUseNode.NodeIndex, declWithNoDefs);
                                   }
 
                                   return true;
