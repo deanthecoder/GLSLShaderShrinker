@@ -203,8 +203,24 @@ namespace Shrinker.Parser.SyntaxNodes
                     continue;
 
                 matches[3].Remove(); // Remove the ';'
-                structs.Add(new StructDefinitionSyntaxNode((GenericSyntaxNode)matches[1], (BraceSyntaxNode)matches[2]));
+                var structNode = new StructDefinitionSyntaxNode((GenericSyntaxNode)matches[1], (BraceSyntaxNode)matches[2]);
+                structs.Add(structNode);
                 Children[i].ReplaceWith(structs.Last());
+
+                // Replace later occurrences of the struct name with a type token.
+                var references = Children[i].NextSiblings.SelectMany(o => o.TheTree).OfType<GenericSyntaxNode>().Where(o => o.Token?.Content == structNode.Name).ToList();
+                foreach (var reference in references)
+                {
+                    var typeToken = new TypeToken(structNode.Name);
+
+                    if (reference.Previous?.Token is ConstToken)
+                    {
+                        typeToken.IsConst = true;
+                        reference.Previous.Remove();
+                    }
+
+                    reference.ReplaceWith(new GenericSyntaxNode(typeToken));
+                }
             }
 
             // Replace all references to the struct type with a 'type' token.
