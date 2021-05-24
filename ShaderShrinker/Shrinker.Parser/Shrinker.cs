@@ -17,6 +17,7 @@ using Shrinker.Parser.SyntaxNodes;
 // todo - Only group a declaration if it reduced code size.
 // todo - float(32) => 32.0  (Really do - Can happen after inlining a const int)
 // todo - int(32.0) => 32  (Really do - Can happen after inlining a const float)
+// todo - ED-209: 'vec3(1.5, 0, 0) - vec3(0, 0, .3)' - Perform math.
 // todo - (if rhs doesn't use 'a') a *= 2.0; a *= foo; ... => a *= 2.0 * foo; (https://www.shadertoy.com/view/MdXXW2 sound, https://www.shadertoy.com/view/NsSXWd)
 // todo - (if rhs doesn't use 'a') a += 2.0; a += foo; ... => a += 2.0 + foo;
 // todo - Support ++i

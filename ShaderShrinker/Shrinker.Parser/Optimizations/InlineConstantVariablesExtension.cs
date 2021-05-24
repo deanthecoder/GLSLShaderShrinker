@@ -30,9 +30,16 @@ namespace Shrinker.Parser.Optimizations
                     .OfType<GenericSyntaxNode>()
                     .Where(o => o.Token is AlphaNumToken)
                     .ToList();
+
                 foreach (var definition in constDeclNode.Definitions.Where(o => o.IsSimpleAssignment()).ToList())
                 {
-                    var usages = potentialUsage.Where(o => o.Token.Content.StartsWithVarName(definition.Name)).ToList();
+                    var usages = potentialUsage
+                        .Where(o => o.Token.Content.StartsWithVarName(definition.Name) &&
+                                    !IsNameMaskedByFunctionParam(definition.Name, o))
+                        .ToList();
+
+                    if (!usages.Any())
+                        continue;
 
                     var anyUnsupportedReferences = usages.Any(o => o.Token.Content.Contains('.') || o.NextNonComment is SquareBracketSyntaxNode);
                     if (anyUnsupportedReferences)
@@ -78,6 +85,19 @@ namespace Shrinker.Parser.Optimizations
                 if (!constDeclNode.Definitions.Any())
                     constDeclNode.Remove();
             }
+        }
+
+        private static bool IsNameMaskedByFunctionParam(string name, SyntaxNode node)
+        {
+            var inFunction = node.FindAncestor<FunctionDefinitionSyntaxNode>();
+            if (inFunction == null)
+                return false; // Not within a function.
+
+            return inFunction
+                .Params
+                .Children
+                .OfType<GenericSyntaxNode>()
+                .Any(o => o.IsVarName(name));
         }
     }
 }

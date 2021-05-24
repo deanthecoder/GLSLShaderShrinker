@@ -570,6 +570,23 @@ namespace UnitTests
             Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo("float main() { return 2.3 + 1.0; }"));
         }
 
+        [Test]
+        public void CheckGlobalConstantVariableNotInlinedWithinFunctionWithMatchingParameterName()
+        {
+            const string Code = "const int g = 2; void f(int g) { return g; }";
+
+            var lexer = new Lexer();
+            lexer.Load(Code);
+
+            var options = CustomOptions.None();
+            options.InlineConstantVariables = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(Code));
+        }
+
         [Test, Sequential]
         public void CheckInliningConstantVectors(
             [Values("vec3 f() { const vec3 theVector = vec3(1.0, 1.0, 1.0); return theVector * 2.0; }",
