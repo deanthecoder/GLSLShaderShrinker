@@ -87,6 +87,7 @@ namespace Shrinker.Parser.Optimizations
                                     o.Previous?.Token?.Content != ">>" &&
                                     o.Previous?.Token?.Content != "/" &&
                                     o.NextNonComment?.Token?.Content != "?" &&
+                                    o.NextNonComment?.Token?.Content != "." && // Don't remove from 'p = (v * f).xyz'.
                                     o.GetCsv().Count() == 1)
                         .ToList())
                 {
