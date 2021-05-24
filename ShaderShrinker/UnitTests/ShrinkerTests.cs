@@ -283,8 +283,8 @@ namespace UnitTests
 
         [Test, Sequential]
         public void CheckSimplifyingVecConstruction(
-            [Values("vec3(1.0, -2.0, 3.0)", "vec2(-1.0, 2.2)", "vec4(8.0)", "mat3(1.0)", "vec3(1.0, 1, 1.0)")] string code,
-            [Values("vec3(1, -2, 3)", "vec2(-1, 2.2)", "vec4(8)", "mat3(1)", "vec3(1)")] string expectedCode)
+            [Values("vec3(1.0, -2.0, 3.0)", "vec2(-1.0, 2.2)", "vec4(8.0)", "mat3(1.0)", "mat4(1.0)", "mat4x4(2.0)", "mat3x2(3.0)", "vec3(1.0, 1, 1.0)")] string code,
+            [Values("vec3(1, -2, 3)", "vec2(-1, 2.2)", "vec4(8)", "mat3(1)", "mat4(1)", "mat4x4(2)", "mat3x2(3)", "vec3(1)")] string expectedCode)
         {
             var lexer = new Lexer();
             lexer.Load(code);

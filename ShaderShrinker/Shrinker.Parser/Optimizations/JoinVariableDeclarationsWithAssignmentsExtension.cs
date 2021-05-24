@@ -113,10 +113,10 @@ namespace Shrinker.Parser.Optimizations
                                           .ToList();
                                       nextUses.AddRange(nextAssignments);
 
-                                      var nearestUseIndex = nextUses.Min(o => nextNodesInScope.IndexOf(o));
-                                      if (nearestUseIndex == -1)
+                                      if (!nextUses.Any())
                                           break; // No uses found.
 
+                                      var nearestUseIndex = nextUses.Min(o => nextNodesInScope.IndexOf(o));
                                       var nearestUseNode = nextNodesInScope[nearestUseIndex];
                                       if (!nearestUseNode.IsSiblingOf(declWithNoDefs))
                                       {
