@@ -14,9 +14,16 @@ using Shrinker.Lexer;
 using Shrinker.Parser.Optimizations;
 using Shrinker.Parser.SyntaxNodes;
 
+// todo - Only group a declaration if it reduced code size.
+// todo - float(32) => 32.0  (Really do - Can happen after inlining a const int)
+// todo - int(32.0) => 32  (Really do - Can happen after inlining a const float)
 // todo - (if rhs doesn't use 'a') a *= 2.0; a *= foo; ... => a *= 2.0 * foo; (https://www.shadertoy.com/view/MdXXW2 sound, https://www.shadertoy.com/view/NsSXWd)
 // todo - (if rhs doesn't use 'a') a += 2.0; a += foo; ... => a += 2.0 + foo;
 // todo - Support ++i
+// todo - vec3(pow(col.r,.45),pow(col.g,.45),pow(col.b,.45)
+// todo - vec4(vec3(a, b, c ), d); => vec4(a, b, c, d)
+// todo - col -= vec3(.01) => col -= .01;
+// todo - col = col / (col + vec3(1)); => col /= col + 1.;
 // todo - int(1.2) => 1, int(1) => 1, float(1.2) => 1.2, float(1) => 1.
 namespace Shrinker.Parser
 {

@@ -868,7 +868,8 @@ namespace UnitTests
                     "vec4 ab; vec4 v = vec4(1.0, ab.b, ab.g, ab.r);",
                     "vec2 ab; vec4 v = vec4(ab, ab.x, ab.y);",
                     "vec2 ab; vec4 v = vec4(ab, .1, .2);",
-                    "vec3 ab; vec2 v = vec2(ab.x, ab.z);")] string code,
+                    "vec3 ab; vec2 v = vec2(ab.x, ab.z);",
+                    "struct S{ float A, B, C; }; S s; vec3 v = vec3(s.A, s.B, s.C);")] string code,
             [Values("vec3 ab; vec4 v = vec4(ab, 1);",
                     "vec3 ab; vec4 v = vec4(1, ab);",
                     "vec3 ab; vec4 v = ab.yxxy;",
@@ -878,7 +879,8 @@ namespace UnitTests
                     "vec4 ab, v = vec4(1, ab.bgr);",
                     "vec2 ab; vec4 v = vec4(ab, ab);",
                     "vec2 ab; vec4 v = vec4(ab, .1, .2);",
-                    "vec3 ab; vec2 v = ab.xz;")] string expected)
+                    "vec3 ab; vec2 v = ab.xz;",
+                    "struct S { float A, B, C; }; S s; vec3 v = vec3(s.A, s.B, s.C);")] string expected)
         {
             var lexer = new Lexer();
             lexer.Load(code);

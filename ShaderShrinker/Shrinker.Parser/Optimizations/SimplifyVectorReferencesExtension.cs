@@ -57,6 +57,12 @@ namespace Shrinker.Parser.Optimizations
                         {
                             var lhsRhs1 = valuesAsVecNames[i]?.Split('.');
                             var lhsRhs2 = i + 1 < valuesAsVecNames.Count ? valuesAsVecNames[i + 1]?.Split('.') : null;
+
+                            if (lhsRhs1 != null && lhsRhs1[1].Any(ch => !"xyzwrgba".Contains(ch)))
+                                lhsRhs1 = null;
+                            if (lhsRhs2 != null && lhsRhs2[1].Any(ch => !"xyzwrgba".Contains(ch)))
+                                lhsRhs2 = null;
+
                             if (lhsRhs1 == null || lhsRhs2 == null || lhsRhs1[0] != lhsRhs2[0])
                             {
                                 // No change.
