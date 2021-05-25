@@ -535,7 +535,7 @@ namespace UnitTests
             lexer.Load(Code);
 
             var options = CustomOptions.None();
-            options.InlineConstantVariables = true;
+            options.InlineDefines = true;
             var rootNode = new Parser(lexer)
                 .Parse()
                 .Simplify(options);
@@ -586,6 +586,21 @@ namespace UnitTests
                 .Simplify(options);
 
             Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo("#define FOO 1 int main() { #if FOO > 1 return 1; #endif }"));
+        } 
+        
+        [Test, Sequential]
+        public void CheckConstantDefinitionOfSimpleVectorIsInlined([Values("vec2(1.1, 1.2)", "vec3(1.0)", "vec4(0)")] string define)
+        {
+            var lexer = new Lexer();
+            lexer.Load($"#define V {define}\nvoid main() {{ return V; }}");
+
+            var options = CustomOptions.None();
+            options.InlineDefines = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo($"void main() {{ return {define}; }}"));
         }
 
         [Test, Sequential]

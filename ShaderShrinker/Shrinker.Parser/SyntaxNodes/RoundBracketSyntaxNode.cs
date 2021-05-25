@@ -49,5 +49,11 @@ namespace Shrinker.Parser.SyntaxNodes
         }
 
         protected override SyntaxNode CreateSelf() => new RoundBracketSyntaxNode();
+
+        /// <summary>
+        /// Check if the brackets contain a simple sequence of numbers. (E.g. (1, 3, 2))
+        /// </summary>
+        public bool IsSimpleCsv() =>
+            TheTree.Skip(1).All(o => o.Token is INumberToken || o.Token is CommaToken);
     }
 }

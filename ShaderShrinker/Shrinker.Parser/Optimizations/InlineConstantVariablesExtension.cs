@@ -61,7 +61,7 @@ namespace Shrinker.Parser.Optimizations
                                   definition.ValueNodes.Count() == 2 &&
                                   definition.Children[0]?.Token is TypeToken &&
                                   definition.Children[1] is RoundBracketSyntaxNode brackets &&
-                                  brackets.TheTree.Skip(1).All(o => o.Token is INumberToken || o.Token is CommaToken);
+                                  brackets.IsSimpleCsv();
 
                     if (!couldInline)
                         continue;

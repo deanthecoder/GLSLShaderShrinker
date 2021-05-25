@@ -24,8 +24,7 @@ namespace Shrinker.Parser.Optimizations
             foreach (var define in rootNode.TheTree
                 .OfType<PragmaDefineSyntaxNode>()
                 .Where(
-                       o => o.Params == null &&
-                            o.ValueNodes?.Count == 1 &&
+                       o => CouldInline(o) &&
                             !pragmaIfs.Any(p => p.Contains(o.Name)) &&
                             !PragmaIfSyntaxNode.ContainsNode(o))
                 .ToList())
@@ -56,6 +55,29 @@ namespace Shrinker.Parser.Optimizations
                     usage.ReplaceWith(newContent);
                 }
             }
+        }
+
+        private static bool CouldInline(PragmaDefineSyntaxNode o)
+        {
+            if (o.Params != null)
+                return false;
+
+            switch (o.ValueNodes?.Count)
+            {
+                case 1:
+                    return true; // The value is a single node - Definite candidate to inline.
+
+                case 2:
+                    // Is this a vector or similar, containing just a comma-separated list of numbers?
+                    // E.g. #define V vec3(1, 4, 2)
+                    return o.ValueNodes[0].Token is TypeToken t &&
+                        t.IsGlslType &&
+                        o.ValueNodes[1] is RoundBracketSyntaxNode brackets &&
+                        brackets.IsSimpleCsv();
+            }
+
+            // Nope - Can't inline.
+            return false;
         }
     }
 }
