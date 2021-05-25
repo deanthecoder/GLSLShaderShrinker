@@ -13,7 +13,7 @@ UninstallDisplayIcon={app}\Inno_Setup_Project.exe
 Compression=lzma2
 SolidCompression=yes
 SourceDir=..\Shrinker.WpfApp\
-OutputDir=Output
+OutputDir=Setup
 OutputBaseFilename={#MyAppName} Installer
 
 [Tasks]
