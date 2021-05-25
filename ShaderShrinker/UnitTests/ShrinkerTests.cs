@@ -12,7 +12,6 @@
 using NUnit.Framework;
 using Shrinker.Lexer;
 using Shrinker.Parser;
-using Shrinker.Parser.SyntaxNodes;
 
 namespace UnitTests
 {

@@ -42,8 +42,6 @@ namespace Shrinker.Parser.SyntaxNodes
 
         public static bool IsWithinIfPragma(this SyntaxNode node) => PragmaIfSyntaxNode.ContainsNode(node);
 
-        public static string ToCode(this SyntaxNode rootNode) => OutputFormatter.ToCode(rootNode);
-
         public static T FindLastChild<T>(this SyntaxNode node, Func<T, bool> isMatchFunc = null) => isMatchFunc != null ? node.Children.OfType<T>().LastOrDefault(isMatchFunc) : node.Children.OfType<T>().LastOrDefault();
 
         public static SyntaxNode FindLastChild(this SyntaxNode node, Func<SyntaxNode, bool> isMatchFunc) => node.FindLastChild<SyntaxNode>(isMatchFunc);

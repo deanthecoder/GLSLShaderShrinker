@@ -22,7 +22,7 @@ namespace Shrinker.Parser
     /// </summary>
     public static class OutputFormatter
     {
-        public static string ToCode(SyntaxNode rootNode)
+        public static string ToCode(this SyntaxNode rootNode)
         {
             if (rootNode == null)
                 throw new ArgumentNullException(nameof(rootNode));
@@ -145,8 +145,8 @@ namespace Shrinker.Parser
                                 break;
 
                             case AlphaNumToken:
-                                // Re-insert spaces in words within a #define.
-                                if (o.Previous?.Token is AlphaNumToken && o.HasAncestor<PragmaDefineSyntaxNode>())
+                                // Re-insert spaces between words.
+                                if (o.Previous?.Token is AlphaNumToken || o.Previous?.Token?.Content == ")")
                                     sb.Append(' ');
                                 sb.Append(o.Token.Content);
                                 break;

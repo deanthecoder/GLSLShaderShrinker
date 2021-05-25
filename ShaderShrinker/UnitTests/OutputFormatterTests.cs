@@ -13,7 +13,6 @@ using System.Linq;
 using NUnit.Framework;
 using Shrinker.Lexer;
 using Shrinker.Parser;
-using Shrinker.Parser.SyntaxNodes;
 
 namespace UnitTests
 {
@@ -156,6 +155,19 @@ namespace UnitTests
             var newCode = parser.RootNode.Simplify(options).ToCode();
             var lines = newCode.Split('\n').ToList();
             Assert.That(lines, Is.EqualTo(new[] { "int d, c,", "    a = 1,", "    b = 2;" }));
+        }
+
+        [Test]
+        public void CheckConsecutiveGenericTextNodesAreSpaced()
+        {
+            var lexer = new Lexer();
+            Assert.That(lexer.Load("text1 text2"), Is.True);
+
+            var parser = new Parser(lexer);
+            Assert.That(() => parser.Parse(), Throws.Nothing);
+
+            var newCode = parser.RootNode.ToCode();
+            Assert.That(newCode, Is.EqualTo("text1 text2"));
         }
     }
 }
