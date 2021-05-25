@@ -9,8 +9,6 @@
 //  </summary>
 // -----------------------------------------------------------------------
 
-using System.Linq;
-using Shrinker.Lexer;
 using Shrinker.Parser.Optimizations;
 using Shrinker.Parser.SyntaxNodes;
 
@@ -62,7 +60,7 @@ namespace Shrinker.Parser
                     rootNode.InlineConstantVariables();
 
                 if (options.SimplifyFloatFormat)
-                    rootNode.TheTree.ToList().ForEach(o => (o.Token as FloatToken)?.Simplify());
+                    rootNode.SimplifyFloatFormat();
 
                 if (options.SimplifyVectorConstructors)
                     rootNode.SimplifyVectorConstructors();

@@ -21,6 +21,8 @@ namespace Shrinker.Lexer
             Content = s;
         }
 
+        public double Number => double.Parse(Content.TrimEnd('f', 'F'));
+
         public override IToken TryMatch(string code, ref int offset) =>
             throw new InvalidOperationException("Should be created by DotToken.");
 
@@ -77,6 +79,6 @@ namespace Shrinker.Lexer
         public void MakeNegative() => Content = $"-{Content.TrimStart('-')}";
         public void MakePositive() => Content = $"{Content.TrimStart('-')}";
 
-        public bool IsOne() => Math.Abs(double.Parse(Content.TrimEnd('f', 'F')) - 1.0) < 0.000001;
+        public bool IsOne() => Math.Abs(Number - 1.0) < 0.000001;
     }
 }

@@ -281,6 +281,40 @@ namespace UnitTests
         }
 
         [Test, Sequential]
+        public void CheckSimplifyingFloatCasts(
+            [Values("float(1.1)", "float(1e2)", "float(2)", "float(1.800f)", "float(-0.1)", "float(-0.2f)")] string code,
+            [Values("1.1", "1e2", "2.", "1.8", "-.1", "-.2")] string expectedOutput)
+        {
+            var lexer = new Lexer();
+            lexer.Load(code);
+
+            var options = CustomOptions.None();
+            options.SimplifyFloatFormat = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(expectedOutput));
+        }
+
+        [Test, Sequential]
+        public void CheckSimplifyingIntCasts(
+            [Values("int(1.9)", "int(1e2)", "int(2)", "int(1.82f)", "int(-2)", "int(-2.8)")] string code,
+            [Values("1", "100", "2", "1", "-2", "-2")] string expectedOutput)
+        {
+            var lexer = new Lexer();
+            lexer.Load(code);
+
+            var options = CustomOptions.None();
+            options.SimplifyFloatFormat = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(expectedOutput));
+        }
+
+        [Test, Sequential]
         public void CheckSimplifyingVecConstruction(
             [Values("vec3(1.0, -2.0, 3.0)", "vec2(-1.0, 2.2)", "vec4(8.0)", "mat3(1.0)", "mat4(1.0)", "mat4x4(2.0)", "mat3x2(3.0)", "vec3(1.0, 1, 1.0)")] string code,
             [Values("vec3(1, -2, 3)", "vec2(-1, 2.2)", "vec4(8)", "mat3(1)", "mat4(1)", "mat4x4(2)", "mat3x2(3)", "vec3(1)")] string expectedCode)
