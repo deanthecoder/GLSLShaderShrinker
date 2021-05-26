@@ -47,7 +47,8 @@ namespace Shrinker.Lexer
             new EqualityOperatorToken(),
             new AssignmentOperatorToken(),
             new SymbolOperatorToken(),
-            new PreprocessorToken()
+            new PreprocessorToken(),
+            new MiscCharacterToken()
         };
 
         public bool Load(FileInfo codeFile)

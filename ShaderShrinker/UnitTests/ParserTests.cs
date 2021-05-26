@@ -410,6 +410,20 @@ namespace UnitTests
         }
 
         [Test]
+        public void CheckDetectingSingleLineCommentContainingSymbols()
+        {
+            var lexer = new Lexer();
+            Assert.That(lexer.Load("// Word #~@:¬`|\\\nvoid main() { }"), Is.True);
+
+            var parser = new Parser(lexer);
+            parser.Parse();
+
+            var nodes = parser.RootNode.Children;
+            Assert.That(nodes[0], Is.TypeOf<SingleLineCommentSyntaxNode>());
+            Assert.That(nodes[1], Is.TypeOf<FunctionDefinitionSyntaxNode>());
+        }
+
+        [Test]
         public void CheckCommentFormatIsNotPostProcessed()
         {
             var lexer = new Lexer();
