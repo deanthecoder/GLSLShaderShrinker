@@ -1,5 +1,6 @@
 // Processed by 'GLSL Shader Shrinker' (752 to 594 characters)
 // (https://github.com/deanthecoder/GLSLShaderShrinker)
+
 #version 410 core
 
 precision mediump float;

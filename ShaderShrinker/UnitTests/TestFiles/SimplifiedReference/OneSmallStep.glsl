@@ -1,5 +1,6 @@
 // Processed by 'GLSL Shader Shrinker' (2,803 to 2,780 characters)
 // (https://github.com/deanthecoder/GLSLShaderShrinker)
+
 float n31(vec3 p) {
 	const vec3 s = vec3(7, 157, 113);
 	vec3 ip = floor(p);

@@ -92,7 +92,7 @@ namespace Shrinker.Lexer
             if (glsl.Contains(Message))
                 return glsl;
 
-            return $"// {Message} ({originalSize:N0} to {optimizedSize:N0} characters)\n// (https://github.com/deanthecoder/GLSLShaderShrinker)\n{glsl}";
+            return $"// {Message} ({originalSize:N0} to {optimizedSize:N0} characters)\n// (https://github.com/deanthecoder/GLSLShaderShrinker)\n\n{glsl}";
         }
 
         public static string RemoveAllWhitespace(this string s) => new string(s.Where(ch => !char.IsWhiteSpace(ch)).ToArray());
