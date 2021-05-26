@@ -22,7 +22,7 @@ namespace Shrinker.Parser.Optimizations
             // Const variables.
             var consts = rootNode.TheTree
                 .OfType<VariableDeclarationSyntaxNode>()
-                .Where(o => o.VariableType.IsConst && o.Definitions.Any())
+                .Where(o => o.VariableType.IsConst && o.Definitions.Any() && !o.IsWithinIfPragma())
                 .ToList();
             foreach (var constDeclNode in consts)
             {
