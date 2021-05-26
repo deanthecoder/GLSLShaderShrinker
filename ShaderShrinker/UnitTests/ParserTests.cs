@@ -101,6 +101,20 @@ namespace UnitTests
         }
 
         [Test]
+        public void CheckDefineWithValueDefiningAFunctionDoesNotHaveFunctionRemoved()
+        {
+            const string Code = "#define F() bool inside(){ }";
+
+            var lexer = new Lexer();
+            lexer.Load(Code);
+
+            var parser = new Parser(lexer);
+            Assert.That(() => parser.Parse(), Throws.Nothing);
+
+            Assert.That(parser.RootNode.ToCode().ToSimple(), Is.EqualTo(Code));
+        }
+
+        [Test]
         public void CheckMultiLinePragmaDefineIsReducedToSingleLine()
         {
             var lexer = new Lexer();

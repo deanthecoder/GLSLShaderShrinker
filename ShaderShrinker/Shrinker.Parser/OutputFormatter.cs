@@ -10,6 +10,7 @@
 // -----------------------------------------------------------------------
 
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Shrinker.Lexer;
@@ -150,7 +151,11 @@ namespace Shrinker.Parser
                                 // Re-insert spaces between words.
                                 if (o.Previous?.Token is AlphaNumToken || o.Previous?.Token?.Content == ")")
                                     sb.Append(' ');
+
                                 sb.Append(o.Token.Content);
+
+                                if (o.Next is VariableAssignmentSyntaxNode)
+                                    sb.Append(' ');
                                 break;
 
                             case ConstToken:

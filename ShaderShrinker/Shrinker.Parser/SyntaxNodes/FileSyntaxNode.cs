@@ -445,7 +445,9 @@ namespace Shrinker.Parser.SyntaxNodes
         {
             // Find declarations of the for '<type> <name>, <name2> = <value>, ...;
             foreach (var typeNode in TheTree.OfType<GenericSyntaxNode>()
-                .Where(o => o.Token is TypeToken && o.Next?.Token is AlphaNumToken)
+                .Where(o => o.Token is TypeToken &&
+                            o.Next?.Token is AlphaNumToken &&
+                            !o.HasAncestor<PragmaDefineSyntaxNode>())
                 .Where(o => !o.HasAncestor<FunctionDeclarationSyntaxNode>()) // We can ignore function declarations.
                 .ToList())
             {
