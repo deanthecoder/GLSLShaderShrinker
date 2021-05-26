@@ -589,7 +589,7 @@ namespace UnitTests
         }
 
         [Test, Sequential]
-        public void CheckDetectingIfWithSingleBranch([Values("if (true) { break; }", "if (true) break;")] string code)
+        public void CheckDetectingIfWithSingleBranch([Values("if (true) { break; }", "if (true) break;", "if (true) // comment\n break;", "if (true) // comment\n { break; }")] string code)
         {
             var lexer = new Lexer();
             Assert.That(lexer.Load(code), Is.True);
@@ -598,10 +598,13 @@ namespace UnitTests
             parser.Parse();
 
             var nodes = parser.RootNode.Children;
-            Assert.That(nodes.Single(), Is.TypeOf<IfSyntaxNode>());
-            Assert.That(((IfSyntaxNode)nodes.Single()).Conditions, Is.Not.Null);
-            Assert.That(((IfSyntaxNode)nodes.Single()).TrueBranch, Is.Not.Null);
-            Assert.That(((IfSyntaxNode)nodes.Single()).FalseBranch, Is.Null);
+            Assert.That(nodes[0], Is.TypeOf<IfSyntaxNode>());
+
+            var ifSyntaxNode = (IfSyntaxNode)nodes[0];
+            Assert.That(ifSyntaxNode.Conditions, Is.Not.Null);
+            Assert.That(ifSyntaxNode.TrueBranch, Is.Not.Null);
+            Assert.That(ifSyntaxNode.TrueBranch.Children, Has.Count.EqualTo(2)); // 'break' and ';'
+            Assert.That(ifSyntaxNode.FalseBranch, Is.Null);
         }
 
         [Test, Sequential]
@@ -614,10 +617,12 @@ namespace UnitTests
             parser.Parse();
 
             var nodes = parser.RootNode.Children;
-            Assert.That(nodes.Single(), Is.TypeOf<IfSyntaxNode>());
-            Assert.That(((IfSyntaxNode)nodes.Single()).Conditions, Is.Not.Null);
-            Assert.That(((IfSyntaxNode)nodes.Single()).TrueBranch, Is.Not.Null);
-            Assert.That(((IfSyntaxNode)nodes.Single()).FalseBranch, Is.Not.Null);
+            Assert.That(nodes[0], Is.TypeOf<IfSyntaxNode>());
+
+            var ifSyntaxNode = (IfSyntaxNode)nodes[0];
+            Assert.That(ifSyntaxNode.Conditions, Is.Not.Null);
+            Assert.That(ifSyntaxNode.TrueBranch, Is.Not.Null);
+            Assert.That(ifSyntaxNode.FalseBranch, Is.Not.Null);
         }
 
         [Test]

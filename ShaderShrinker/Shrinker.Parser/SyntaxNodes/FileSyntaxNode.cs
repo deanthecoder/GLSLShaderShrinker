@@ -302,10 +302,10 @@ namespace Shrinker.Parser.SyntaxNodes
                              if (node.Token is not KeywordToken || node.Token.Content != "if")
                                  continue;
 
-                             if (node.Next is not RoundBracketSyntaxNode conditions)
+                             if (node.NextNonComment is not RoundBracketSyntaxNode conditions)
                                  continue;
 
-                             var peekNode = conditions.Next;
+                             var peekNode = conditions.NextNonComment;
                              BraceSyntaxNode trueBranch = null;
                              BraceSyntaxNode falseBranch = null;
                              foreach (var inTrueBranch in new[] { true, false })
@@ -322,7 +322,7 @@ namespace Shrinker.Parser.SyntaxNodes
                                      if ((elseNode?.Token as KeywordToken)?.Content != "else")
                                          break; // No 'else' branch.
 
-                                     peekNode = elseNode.Next;
+                                     peekNode = elseNode.NextNonComment;
                                      elseNode.Remove();
                                  }
                              }
