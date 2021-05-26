@@ -32,17 +32,17 @@ namespace Shrinker.Parser.Optimizations
 
                         foreach (var localVariable in functionNode.LocalVariables())
                         {
-                            // Single use in return statement?
+                            // Variable used in return statement?
                             var returnNode = braces.FindLastChild<ReturnSyntaxNode>();
                             if (returnNode == null)
-                                continue;
+                                continue; // ...no. Ignore...
 
                             var usagesWithSuffix = returnNode
                                 .TheTree
                                 .OfType<GenericSyntaxNode>()
                                 .Where(o => o.StartsWithVarName(localVariable.Name) && !o.IsVarName(localVariable.Name));
                             if (usagesWithSuffix.Any())
-                                continue;
+                                continue; // There is a use, but it has an array accessor. Ignore...
 
                             var usages = returnNode
                                 .TheTree
@@ -50,13 +50,13 @@ namespace Shrinker.Parser.Optimizations
                                 .Where(o => o.IsVarName(localVariable.Name))
                                 .ToList();
                             if (usages.Count != 1)
-                                continue;
+                                continue; // Used more than once.  Ignore...
 
                             // Find the last assignment of the variable.
                             var assignment = braces
                                 .FindLastChild<VariableAssignmentSyntaxNode>(o => o.Name.StartsWithVarName(localVariable.Name));
-                            if (assignment != null && assignment.Name != localVariable.Name)
-                                continue; // Assignment has '.' suffix part.
+                            if (assignment != null && assignment.FullName != localVariable.Name)
+                                continue; // Assignment has '.' suffix part, or array accessor.
 
                             assignment ??= localVariable;
 

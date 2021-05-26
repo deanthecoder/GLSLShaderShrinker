@@ -853,6 +853,23 @@ namespace UnitTests
             Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo("int num() { return 3; } void main() { return min(d, num); }"));
         }
 
+        [Test]
+        public void CheckIndividualMatrixAssignmentsAreNotCombined()
+        {
+            const string Code = "mat3 f() { mat3 m; m[0] = vec3(0); return m; }";
+
+            var lexer = new Lexer();
+            lexer.Load(Code);
+
+            var options = CustomOptions.None();
+            options.CombineAssignmentWithSingleUse = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(Code));
+        } 
+
         [Test, Sequential]
         public void CheckCombiningAssignmentWithUseWhenUsedOnlyOnce(
             [Values("int main() { int a = 1, b = 2, c = b + 1; return c; }",
