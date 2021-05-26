@@ -65,6 +65,10 @@ namespace Shrinker.Lexer
                     if (expFormat.Length < Content.Length)
                         Content = expFormat;
                 }
+
+                // Trim to a sensible number of significant figures.
+                if (Content.Length > 9)
+                    Content = Content.Substring(0, 9);
             }
             finally
             {

@@ -264,9 +264,9 @@ namespace UnitTests
         }
 
         [Test, Sequential]
-        public void CheckSimplifyingFloatsWithoutStrippingFSuffix(
-            [Values("10.0", "1.1", "0.10", "0.0000", "-0.09", "100.0", "100.1", "1100000.", "1.23f", "-0.1f", ".0f", "0.f", "10.00F", "102.", "001.1")] string code,
-            [Values("10.", "1.1", ".1", "0.", "-.09", "1e2", "100.1", "11e5", "1.23", "-.1", "0.", "0.", "10.", "102.", "1.1")] string expectedOutput)
+        public void CheckSimplifyingFloats(
+            [Values("10.0", "1.1", "0.10", "0.0000", "-0.09", "100.0", "100.1", "1100000.", "1.23f", "-0.1f", ".0f", "0.f", "10.00F", "102.", "001.1", "3.141592653589793238462643383279502884197", "-3.141592653589793238462643383279502884197")] string code,
+            [Values("10.", "1.1", ".1", "0.", "-.09", "1e2", "100.1", "11e5", "1.23", "-.1", "0.", "0.", "10.", "102.", "1.1", "3.1415926", "-3.1415926")] string expectedOutput)
         {
             var lexer = new Lexer();
             lexer.Load(code);

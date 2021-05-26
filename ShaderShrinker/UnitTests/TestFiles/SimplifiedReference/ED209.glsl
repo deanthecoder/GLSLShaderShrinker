@@ -58,7 +58,7 @@ float sdCapsule(vec3 p, vec3 a, vec3 b, float r) {
 }
 
 float sdOctogon(vec2 p, float r) {
-	const vec3 k = vec3(-.9238795325, .3826834323, .4142135623);
+	const vec3 k = vec3(-.92387953, .38268343, .41421356);
 	p = abs(p);
 	p -= 2. * min(dot(k.xy, p), 0.) * k.xy;
 	p -= 2. * min(dot(vec2(-k.x, k.y), p), 0.) * vec2(-k.x, k.y);
@@ -424,7 +424,7 @@ void mainImage(out vec4 fragColor, vec2 fragCoord) {
 #else
 			vec2 coord = fragCoord;
 #endif
-			coord += (fract(fireShock() * vec2(23242.2323, 978.23465)) - .5) * 10.;
+			coord += (fract(fireShock() * vec2(23242.232, 978.23465)) - .5) * 10.;
 			vec2 uv = (coord - .5 * iResolution.xy) / iResolution.y;
 			col += getSceneColor(ro, getRayDir(ro, lookAt, uv));
 #ifdef AA
