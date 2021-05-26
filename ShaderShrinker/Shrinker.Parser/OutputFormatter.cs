@@ -120,6 +120,8 @@ namespace Shrinker.Parser
 
                             case UniformToken:
                             case PreprocessorToken:
+                                if (sb.GetColumn() > 0)
+                                    sb.AppendLine();
                                 sb.Append($"{o.Token.Content} ");
                                 break;
 
