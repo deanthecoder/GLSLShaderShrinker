@@ -84,5 +84,6 @@ namespace Shrinker.Lexer
         public void MakePositive() => Content = $"{Content.TrimStart('-')}";
 
         public bool IsOne() => Math.Abs(Number - 1.0) < 0.000001;
+        public bool IsZero() => Math.Abs(Number) < 0.000001;
     }
 }

@@ -60,5 +60,6 @@ namespace Shrinker.Lexer
         public void MakePositive() => Content = $"{Content.TrimStart('-')}";
 
         public bool IsOne() => long.Parse(Content) == 1;
+        public bool IsZero() => long.Parse(Content) == 0;
     }
 }

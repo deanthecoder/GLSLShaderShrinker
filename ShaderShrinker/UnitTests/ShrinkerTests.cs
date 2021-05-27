@@ -1158,6 +1158,40 @@ namespace UnitTests
         }
 
         [Test, Sequential]
+        public void CheckArithmeticWithZero(
+            [Values("int i = 1 * 0;",
+                    "float o = 1.0 * 0.0;",
+                    "float o = (1.0 + 2.0) * 0.0;",
+                    "float f() { return 1.0; } void main() { float v = f() * 0.0; }",
+                    "float f(out int p) { p = 2; return 1.0; } void main() { int p; float v = f(p) * 0.0; }",
+                    "float a = 1.0, v = a * 0.0;",
+                    "int a = 1, v = a * 0;",
+                    "vec2 v = vec2(1, 2); float a = v.x * 0.0;",
+                    "vec2 v = vec2(1, 2); float a = v * 0.0;")] string code,
+            [Values("int i = 0;",
+                    "float o = 0.;",
+                    "float o = 0.;",
+                    "float f() { return 1.0; } void main() { float v = 0.0; }",
+                    "float f(out int p) { p = 2; return 1.0; } void main() { int p; float v = f(p) * 0.0; }",
+                    "float a = 1.0, v = 0.0;",
+                    "int a = 1, v = 0;",
+                    "vec2 v = vec2(1, 2); float a = 0.0;",
+                    "vec2 v = vec2(1, 2); float a = 0.0;")] string expected)
+        {
+            var lexer = new Lexer();
+            lexer.Load(code);
+
+            var options = CustomOptions.None();
+            options.PerformArithmetic = true;
+            options.SimplifyArithmetic = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(expected));
+        }
+
+        [Test, Sequential]
         public void CheckRemovingUnusedVariables(
             [Values("void main() { int a; }",
                     "void main() { int a = 1; }",

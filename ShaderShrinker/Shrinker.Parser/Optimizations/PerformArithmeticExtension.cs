@@ -70,6 +70,57 @@ namespace Shrinker.Parser.Optimizations
                     oneNode.Remove();
                     didChange = true;
                 }
+                
+                // 'f / 0.0' => 'f * 0.0'
+                foreach (var zeroNode in rootNode.TheTree
+                    .OfType<GenericSyntaxNode>()
+                    .Where(
+                           o => (o.Token as INumberToken)?.IsZero() == true &&
+                                o.Previous?.Token.Content == "/")
+                    .ToList())
+                {
+                    zeroNode.Previous.ReplaceWith(new GenericSyntaxNode(new SymbolOperatorToken("*")));
+                    didChange = true;
+                }
+                
+                // 'f * 0.0' => <Nothing>
+                if (!didChange)
+                {
+                    foreach (var zeroNode in rootNode.TheTree
+                        .OfType<GenericSyntaxNode>()
+                        .Where(
+                               o => (o.Token as INumberToken)?.IsZero() == true &&
+                                    o.Previous?.Token.Content == "*" &&
+                                    (o.Next == null || o.Next?.Token is CommaToken))
+                        .ToList())
+                    {
+                        var f = zeroNode.Previous.Previous;
+                        if ((f as GenericSyntaxNode)?.Token is AlphaNumToken ||
+                            f is FunctionCallSyntaxNode call && !call.HasOutParam)
+                        {
+                            f.Remove();
+                            zeroNode.Previous.Remove();
+                            didChange = true;
+                        }
+                    }
+                }
+                
+                // 'f + 0.0' => f
+                if (!didChange)
+                {
+                    foreach (var zeroNode in rootNode.TheTree
+                        .OfType<GenericSyntaxNode>()
+                        .Where(
+                               o => (o.Token as INumberToken)?.IsZero() == true &&
+                                    o.Previous?.Token.GetMathSymbolType() == TokenExtensions.MathSymbolType.AddSubtract &&
+                                    (o.Next == null || o.Next?.Token is CommaToken))
+                        .ToList())
+                    {
+                        zeroNode.Previous.Remove();
+                        zeroNode.Remove();
+                        didChange = true;
+                    }
+                }
 
                 // Perform simple arithmetic calculations.
                 foreach (var numNodeA in rootNode.TheTree
