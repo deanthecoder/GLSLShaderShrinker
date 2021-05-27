@@ -49,7 +49,7 @@ namespace Shrinker.Lexer
                 return new VerbatimToken($"{s}{toEndOfLine}{newLine}");
             }
 
-            return s.RemoveAllWhitespace().IsAnyOf("#ifdef", "#ifndef", "#if", "#else", "#endif") ? new PreprocessorToken { Content = Read(code, ref offset, s.Length) } : null;
+            return s.RemoveAllWhitespace().IsAnyOf("#ifdef", "#ifndef", "#if", "#else", "#endif", "#elif", "#undef") ? new PreprocessorToken { Content = Read(code, ref offset, s.Length) } : null;
         }
     }
 }
