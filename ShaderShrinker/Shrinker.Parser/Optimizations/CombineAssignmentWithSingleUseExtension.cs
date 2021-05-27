@@ -40,6 +40,8 @@ namespace Shrinker.Parser.Optimizations
                     {
                         // Find the declaration matching the variable being assigned to.
                         var variableDecl = localVariables.LastOrDefault(o => o.FindDeclarationScope().Contains(assignment));
+                        if (variableDecl == null)
+                            continue;
 
                         // Variable must only ever be used once after the assignment.
                         var scopedNodesAfterAssignment = 

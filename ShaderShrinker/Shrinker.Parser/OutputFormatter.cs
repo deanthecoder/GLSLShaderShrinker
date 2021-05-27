@@ -10,7 +10,6 @@
 // -----------------------------------------------------------------------
 
 using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Shrinker.Lexer;
@@ -163,7 +162,7 @@ namespace Shrinker.Parser
                                 break;
 
                             default:
-                                throw new SyntaxErrorException($"Unsupported token: {o.Token.GetType()}");
+                                throw new SyntaxErrorException($"Unsupported token: {o.Token.GetType()}({o.Token.Content})");
                         }
                     }
 

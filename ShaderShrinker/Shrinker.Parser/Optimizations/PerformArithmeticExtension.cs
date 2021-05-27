@@ -137,6 +137,8 @@ namespace Shrinker.Parser.Optimizations
                             break;
                         case '/':
                             c = a / b;
+                            if (double.IsInfinity(c))
+                                c = 0.0;
                             break;
                         default:
                             throw new InvalidOperationException($"Unrecognized math operation '{symbol}'.");
