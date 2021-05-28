@@ -1192,6 +1192,31 @@ namespace UnitTests
         }
 
         [Test, Sequential]
+        public void CheckArithmeticWithPowFunction(
+            [Values("float f = pow(2.0, 4.0);",
+                    "float f = pow(2.0, pow(2., 2.));",
+                    "float f; f = pow(2.0, pow(2., 2.));",
+                    "float f = pow(-1.5, 2.0);",
+                    "float f = pow(1.5, -2.0);")] string code,
+            [Values("float f = 16.;",
+                    "float f = 16.;",
+                    "float f; f = 16.;",
+                    "float f = pow(-1.5, 2.0);",
+                    "float f = pow(1.5, -2.0);")] string expected)
+        {
+            var lexer = new Lexer();
+            lexer.Load(code);
+
+            var options = CustomOptions.None();
+            options.PerformArithmetic = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(expected));
+        }
+
+        [Test, Sequential]
         public void CheckRemovingUnusedVariables(
             [Values("void main() { int a; }",
                     "void main() { int a = 1; }",

@@ -122,6 +122,25 @@ namespace Shrinker.Parser.Optimizations
                     }
                 }
 
+                // pow(1.1, 2.2) => <the result>
+                foreach (var powNode in rootNode.TheTree
+                    .OfType<GenericSyntaxNode>()
+                    .Where(
+                           o => o.Token?.Content == "pow" &&
+                                o.NextNonComment is RoundBracketSyntaxNode brackets &&
+                                brackets.IsSimpleCsv())
+                    .ToList())
+                {
+                    var brackets = (RoundBracketSyntaxNode)powNode.NextNonComment;
+                    var xy = brackets.Children.Where(o => o.Token is FloatToken).Select(o => (FloatToken)o.Token).ToList();
+                    if (xy.Count == 2 && xy.All(o => o.Number > 0.0))
+                    {
+                        brackets.Remove();
+                        powNode.ReplaceWith(new GenericSyntaxNode(new FloatToken($"{Math.Pow(xy[0].Number, xy[1].Number):F}").Simplify()));
+                        didChange = true;
+                    }
+                }
+
                 // Perform simple arithmetic calculations.
                 foreach (var numNodeA in rootNode.TheTree
                     .OfType<GenericSyntaxNode>()
