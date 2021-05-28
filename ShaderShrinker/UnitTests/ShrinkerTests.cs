@@ -901,9 +901,11 @@ namespace UnitTests
         [Test, Sequential]
         public void CheckCombiningConsecutiveReassignments(
             [Values("int main() { int a = 1; a = a + 2; a = a - 4; return a; }",
-                    "int main() { int a = 1; a = a * 2; a = a / 4; return a; }")] string code,
+                    "int main() { int a = 1; a = a * 2; a = a / 4; return a; }",
+                    "void main() { vec2 v; v = vec2(1.); v = v + v.x; }")] string code,
             [Values("int main() { int a = 1; a = (a + 2) - 4; return a; }",
-                    "int main() { int a = 1; a = a * 2 / 4; return a; }")] string expected)
+                    "int main() { int a = 1; a = a * 2 / 4; return a; }",
+                    "void main() { vec2 v; v = vec2(1.); v = v + v.x; }")] string expected)
         {
             var lexer = new Lexer();
             lexer.Load(code);

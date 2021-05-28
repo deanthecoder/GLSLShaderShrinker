@@ -35,7 +35,7 @@ namespace Shrinker.Parser.Optimizations
                                 .Where(o => o.HasValue && o.Parent is not VariableDeclarationSyntaxNode)
                                 .Where(o => o.Next is VariableAssignmentSyntaxNode)
                                 .Where(o => o.Name == localVariable.Name && ((VariableAssignmentSyntaxNode)o.Next).Name == localVariable.Name)
-                                .FirstOrDefault(o => o.Next.TheTree.OfType<GenericSyntaxNode>().Count(n => n.IsVarName(localVariable.Name)) == 1);
+                                .FirstOrDefault(o => o.Next.TheTree.OfType<GenericSyntaxNode>().Count(n => n.StartsWithVarName(localVariable.Name)) == 1);
 
                             if (assignment == null)
                                 continue;
