@@ -527,7 +527,7 @@ namespace UnitTests
         }
 
         [Test, Sequential]
-        public void CheckDetectingFloats([Values("0.", "1.", ".1", "1.1", "1e3", "1e-2", "-12.3")] string code)
+        public void CheckDetectingFloats([Values("0.", "1.", ".1", "1.1", "1e3", "1e-2", "-12.3", "1.1e4")] string code)
         {
             var lexer = new Lexer();
             Assert.That(lexer.Load(code), Is.True);
@@ -537,6 +537,9 @@ namespace UnitTests
 
             Assert.That(parser.RootNode.Children.Single(), Is.TypeOf<GenericSyntaxNode>());
             Assert.That(parser.RootNode.Children.Single().Token, Is.TypeOf<FloatToken>());
+
+            var floatToken = new FloatToken("1.54118254e-4").Simplify();
+            var s = floatToken.Content;
         }
 
         [Test]

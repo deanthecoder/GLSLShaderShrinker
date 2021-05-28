@@ -26,12 +26,14 @@ namespace Shrinker.Lexer
 
             if (tokenIndex > 0 && tokens[tokenIndex - 1] is IntToken)
             {
+                // Previous token is an int, so we have '#.' ...
                 deletePrevious = 1;
                 tokenIndex--;
             }
 
+            // Read digits and dot.
             var newContent = new StringBuilder();
-            while (tokenIndex + deleteTotal < tokens.Count && (tokens[tokenIndex + deleteTotal] is IntToken || tokens[tokenIndex + deleteTotal] is DotToken))
+            while (tokenIndex + deleteTotal < tokens.Count && (tokens[tokenIndex + deleteTotal] is INumberToken || tokens[tokenIndex + deleteTotal] is DotToken))
             {
                 newContent.Append(tokens[tokenIndex + deleteTotal].Content);
                 deleteTotal++;
