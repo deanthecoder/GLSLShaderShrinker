@@ -10,6 +10,7 @@
 // -----------------------------------------------------------------------
 
 using System;
+using System.Globalization;
 using System.Linq;
 
 namespace Shrinker.Lexer
@@ -28,8 +29,19 @@ namespace Shrinker.Lexer
 
         public FloatToken Simplify()
         {
+            const int MaxSigFigs = 9;
+
             if (Content.ToLower().Contains('e'))
+            {
+                var eIndex = Content.IndexOfAny(new[] { 'e', 'E' });
+                while (eIndex > 0 && Content.Length > MaxSigFigs)
+                {
+                    Content = Content.Remove(eIndex - 1, 1);
+                    eIndex--;
+                }
+
                 return this;
+            }
 
             // Strip starting '-'.
             var isNeg = Content.StartsWith("-");
@@ -67,8 +79,8 @@ namespace Shrinker.Lexer
                 }
 
                 // Trim to a sensible number of significant figures.
-                if (Content.Length > 9)
-                    Content = Content.Substring(0, 9);
+                if (Content.Length > MaxSigFigs)
+                    Content = Content.Substring(0, MaxSigFigs);
             }
             finally
             {
