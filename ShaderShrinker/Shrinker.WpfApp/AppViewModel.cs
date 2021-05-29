@@ -13,11 +13,13 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using MaterialDesignThemes.Wpf;
+using Microsoft.VisualBasic.ApplicationServices;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using Shrinker.Lexer;
@@ -115,6 +117,14 @@ namespace Shrinker.WpfApp
         public SnackbarMessageQueue MyMessageQueue { get; } = new SnackbarMessageQueue();
 
         public bool IsFileOpen => m_optimizedRoot != null;
+        public string AppTitle
+        {
+            get
+            {
+                var assemblyInfo = new AssemblyInfo(Assembly.GetEntryAssembly());
+                return $"{assemblyInfo.ProductName} v{assemblyInfo.Version}";
+            }
+        }
 
         public AppViewModel()
         {

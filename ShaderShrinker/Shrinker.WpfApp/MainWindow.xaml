@@ -14,7 +14,7 @@
                  Background="{DynamicResource MaterialDesignDarkBackground}"
                  UseLayoutRounding="True"
                  ResizeMode="CanResizeWithGrip"
-                 Title="GLSL Shader Shrinker"
+                 Title="{Binding AppTitle}"
                  Icon="App.ico"
                  Height="800" Width="1280" MinHeight="400" MinWidth="1100"
                  d:DataContext="{d:DesignInstance local:AppViewModel}">
