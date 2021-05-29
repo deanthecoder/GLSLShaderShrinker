@@ -189,6 +189,40 @@ namespace UnitTests
         }
 
         [Test]
+        public void CheckJoiningDeclarationsAndDefinitionsWhenUsingArrays()
+        {
+            const string Code = "void f(int a, int b) { } void main() { int a[2], b; a[0] = 2; b = 2; f(a, b); }";
+
+            var lexer = new Lexer();
+            lexer.Load(Code);
+
+            var options = CustomOptions.None();
+            options.JoinVariableDeclarationsWithAssignments = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(Code));
+        }
+
+        [Test]
+        public void CheckJoiningDeclarationsAndDefinitionsWhenUsingVectorAccess()
+        {
+            const string Code = "void f(int a, int b) { } void main() { vec2 a, b; a.x = 2; b = 2; f(a, b); }";
+
+            var lexer = new Lexer();
+            lexer.Load(Code);
+
+            var options = CustomOptions.None();
+            options.JoinVariableDeclarationsWithAssignments = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(Code));
+        }
+
+        [Test]
         public void CheckDeclarationIsNotMovedIfAssignedInBracedCodeBranch()
         {
             var lexer = new Lexer();

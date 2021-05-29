@@ -104,9 +104,9 @@ namespace Shrinker.Parser.Optimizations
 
                                       // Yes - Find all uses.
                                       var nextNodesInScope = declWithNoDefs.NextSiblings.SelectMany(o => o.TheTree).ToList();
-                                      var unassignedVariableNames = declWithNoDefs.Definitions.Select(o => o.FullName).ToList();
+                                      var unassignedVariableNames = declWithNoDefs.Definitions.Select(o => o.Name).ToList();
                                       var nextAssignments = nextNodesInScope.OfType<VariableAssignmentSyntaxNode>()
-                                          .Where(o => unassignedVariableNames.Any(n => o.FullName.StartsWithVarName(n)) && o.HasValue);
+                                          .Where(o => unassignedVariableNames.Any(n => o.Name.StartsWithVarName(n)) && o.HasValue);
                                       var nextUses = nextNodesInScope.OfType<FunctionCallSyntaxNode>()
                                           .Where(o => o.Params.TheTree.OfType<GenericSyntaxNode>().Any(n => unassignedVariableNames.Any(n.StartsWithVarName)))
                                           .Cast<SyntaxNode>()
