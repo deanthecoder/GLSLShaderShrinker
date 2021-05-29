@@ -43,7 +43,7 @@ namespace Shrinker.Parser.Optimizations
                     case IntToken i:
                         // E.g. float(123) => Remove the 'float' cast and turn content into float value.
                         floatKeyword.NextNonComment.Remove();
-                        floatKeyword.ReplaceWith(new GenericSyntaxNode(new FloatToken($"{i.Content}.")));
+                        floatKeyword.ReplaceWith(new GenericSyntaxNode(new FloatToken(i.Content)));
                         break;
                 }
             }

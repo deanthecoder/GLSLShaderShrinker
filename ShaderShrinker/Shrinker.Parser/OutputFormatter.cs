@@ -84,6 +84,7 @@ namespace Shrinker.Parser
                                 .Replace(", - ", ", -")
                                 .Replace("( - ", "(-")
                                 .Replace("( -", "(-")
+                                .Replace("return - ", "return -")
                                 .Replace("{  }", "{ }");
                             foreach (var ch in new[] { '*', '/', '+' })
                                 nodeBuilder.Replace($"  {ch} ", $" {ch} ");
