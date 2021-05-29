@@ -59,7 +59,7 @@ namespace Shrinker.Parser.Optimizations
                     {
                         IsConst = true
                     };
-                    var newDecl = new VariableDeclarationSyntaxNode(new GenericSyntaxNode(newType), new GenericSyntaxNode(defCandidate.Name));
+                    var newDecl = new VariableDeclarationSyntaxNode(new GenericSyntaxNode(newType), defCandidate.Name);
                     newDecl.Children.Single().Adopt(defCandidate.Children.ToArray());
                     defCandidate.Remove();
 

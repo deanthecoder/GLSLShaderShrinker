@@ -109,6 +109,8 @@ namespace Shrinker.Parser.SyntaxNodes
             SetChild(index, node);
         }
 
+        public void InsertNextSibling(SyntaxNode node) => Parent.InsertChild(NodeIndex + 1, node);
+
         public SyntaxNode ReplaceWith(SyntaxNode node)
         {
             Parent.SetChild(NodeIndex, node);

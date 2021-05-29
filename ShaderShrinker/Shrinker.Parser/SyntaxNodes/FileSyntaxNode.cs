@@ -196,16 +196,39 @@ namespace Shrinker.Parser.SyntaxNodes
 
             for (var i = 0; i < Children.Count; i++)
             {
-                var matches = TryGetMatchingChildren(i, typeof(KeywordToken), typeof(AlphaNumToken), typeof(BraceSyntaxNode), typeof(SemicolonToken));
+                var matches = TryGetMatchingChildren(i, typeof(KeywordToken), typeof(AlphaNumToken), typeof(BraceSyntaxNode));
                 if (matches == null)
                     continue;
                 if (matches[0].Token.Content != "struct")
                     continue;
 
-                matches[3].Remove(); // Remove the ';'
+                // Does struct declare variable instance too?
+                string declaresVar = null;
+                var nextNonComment = matches.Last().NextNonComment;
+                if (nextNonComment?.Token is SemicolonToken)
+                {
+                    // Nope.
+                    nextNonComment.Remove(); // Remove the ';'
+                }
+                else
+                {
+                    // Yes - Remove it (for now).
+                    declaresVar = nextNonComment.Token?.Content;
+                    var toRemove = matches.Last().NextSiblings.TakeWhile(o => o.Token is not SemicolonToken).ToList();
+                    toRemove.ForEach(o => o.Remove());
+                    matches.Last().Next.Remove(); // Remove the ';'
+                }
+
+                // Make a struct node.
                 var structNode = new StructDefinitionSyntaxNode((GenericSyntaxNode)matches[1], (BraceSyntaxNode)matches[2]);
                 structs.Add(structNode);
                 Children[i].ReplaceWith(structs.Last());
+
+                // Re-add the variable declaration (if there was one).
+                if (declaresVar != null)
+                {
+                    structNode.InsertNextSibling(new VariableDeclarationSyntaxNode(new GenericSyntaxNode(new TypeToken(structNode.Name)), declaresVar));
+                }
 
                 // Replace later occurrences of the struct name with a type token.
                 var references = Children[i].NextSiblings.SelectMany(o => o.TheTree).OfType<GenericSyntaxNode>().Where(o => o.Token?.Content == structNode.Name).ToList();

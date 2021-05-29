@@ -24,6 +24,8 @@ namespace Shrinker.Parser.SyntaxNodes
         {
         }
 
+        public static implicit operator GenericSyntaxNode(string s) => new GenericSyntaxNode(s);
+
         /// <summary>
         /// Assuming this is the name of a variable, try to find where it was declared.
         /// </summary>
