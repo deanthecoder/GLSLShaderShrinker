@@ -953,6 +953,23 @@ namespace UnitTests
             Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(expected));
         }
 
+        [Test]
+        public void CheckCombiningAssignmentsRecognizesArrayAccessors()
+        {
+            const string Code = "void main() { int a[2]; a[0] = a[0] + 1; a[1] = a[1] + 2; }";
+
+            var lexer = new Lexer();
+            lexer.Load(Code);
+
+            var options = CustomOptions.None();
+            options.CombineConsecutiveAssignments = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(Code));
+        }
+
         [Test, Sequential]
         public void GivenVectorReferencingAllComponentsCheckSimplifyingToJustVariableName(
             [Values("vec4 a = vec4(1, 2, 3, 4), b = a.rgba;",
@@ -1679,8 +1696,10 @@ namespace UnitTests
         [Test]
         public void CheckFloatWithEIsNotExpandedWithinVectorConstructor()
         {
+            const string Code = "vec2 d = vec2(1e5, 0);";
+
             var lexer = new Lexer();
-            lexer.Load("vec2 d = vec2(1e5, 0);");
+            lexer.Load(Code);
 
             var options = CustomOptions.None();
             options.SimplifyVectorConstructors = true;
@@ -1688,7 +1707,7 @@ namespace UnitTests
                 .Parse()
                 .Simplify(options);
 
-            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo("vec2 d = vec2(1e5, 0);"));
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(Code));
         }
     }
 }

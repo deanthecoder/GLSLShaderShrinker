@@ -34,7 +34,10 @@ namespace Shrinker.Parser.Optimizations
                             var assignment = braces.Children.OfType<VariableAssignmentSyntaxNode>()
                                 .Where(o => o.HasValue && o.Parent is not VariableDeclarationSyntaxNode)
                                 .Where(o => o.Next is VariableAssignmentSyntaxNode)
-                                .Where(o => o.Name == localVariable.Name && ((VariableAssignmentSyntaxNode)o.Next).Name == localVariable.Name)
+                                .Where(o => o.Name == localVariable.Name &&
+                                            o.Next is VariableAssignmentSyntaxNode ass2 &&
+                                            ass2.Name == localVariable.Name &&
+                                            o.FullName == ass2.FullName)
                                 .FirstOrDefault(o => o.Next.TheTree.OfType<GenericSyntaxNode>().Count(n => n.StartsWithVarName(localVariable.Name)) == 1);
 
                             if (assignment == null)
