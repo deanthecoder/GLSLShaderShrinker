@@ -67,7 +67,8 @@ namespace Shrinker.Parser.Optimizations
 
                             // Are we assigning from a non-const global variable?
                             // Bad idea - It might be modified by a function call in the 'return'.
-                            if (returnNode.TheTree.OfType<FunctionCallSyntaxNode>().Any() ||
+                            var functionsInReturn = returnNode.TheTree.OfType<FunctionCallSyntaxNode>().ToList();
+                            if (functionsInReturn.Any() ||
                                 assignment.TheTree.OfType<FunctionCallSyntaxNode>().Any())
                             {
                                 var globals = rootNode.FindGlobalVariables()
@@ -82,13 +83,23 @@ namespace Shrinker.Parser.Optimizations
                                     continue;
                             }
 
-                            // Any usages between the two locations?
+                            // Any usages between the assignment and return?
                             var assignmentLine = assignment.Parent is VariableDeclarationSyntaxNode ? assignment.Parent : assignment;
                             var middleNodes = assignmentLine.TakeSiblingsWhile(o => o != returnNode)
                                 .SelectMany(o => o.TheTree)
                                 .Distinct();
                             if (middleNodes.Any())
                                 continue;
+
+                            // If variable is passed into a function with an 'out' param, skip it...
+                            if (functionsInReturn.Any())
+                            {
+                                var allFunctions = rootNode.Root().Children.OfType<FunctionDefinitionSyntaxNode>();
+                                var calledFunctionNames = functionsInReturn.Select(o => o.Name).ToList();
+                                var calledFunctions = allFunctions.Where(o => calledFunctionNames.Contains(o.Name));
+                                if (calledFunctions.Any(o => o.HasOutParam))
+                                    continue;
+                            }
 
                             // Inline the definition (adding (...) if necessary).
                             var addBrackets = assignment.Children.Any(o => o.Token is SymbolOperatorToken);

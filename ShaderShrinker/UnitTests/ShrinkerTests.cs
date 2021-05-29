@@ -1288,6 +1288,23 @@ namespace UnitTests
             Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(expected));
         }
 
+        [Test]
+        public void CheckVariableAssignedByFunctionCallOutParamCalledByReturnStatementIsNotRemoved()
+        {
+            const string Code = "void f(out int i) { } void main() { int n; return f(n); }";
+
+            var lexer = new Lexer();
+            lexer.Load(Code);
+
+            var options = CustomOptions.None();
+            options.CombineAssignmentWithSingleUse = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(Code));
+        }
+
         [Test, Sequential]
         public void CheckFindingVariablesToMakeConst(
             [Values("int g = 2; int main() { return g; }",

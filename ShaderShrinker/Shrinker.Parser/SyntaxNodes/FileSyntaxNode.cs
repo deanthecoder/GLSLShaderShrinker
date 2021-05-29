@@ -218,6 +218,9 @@ namespace Shrinker.Parser.SyntaxNodes
                         typeToken.IsConst = true;
                         reference.Previous.Remove();
                     }
+                    
+                    if (typeToken.SetInOut((reference.Previous?.Token as KeywordToken)?.Content))
+                        reference.Previous.Remove();
 
                     reference.ReplaceWith(new GenericSyntaxNode(typeToken));
                 }

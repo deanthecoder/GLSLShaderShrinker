@@ -537,9 +537,6 @@ namespace UnitTests
 
             Assert.That(parser.RootNode.Children.Single(), Is.TypeOf<GenericSyntaxNode>());
             Assert.That(parser.RootNode.Children.Single().Token, Is.TypeOf<FloatToken>());
-
-            var floatToken = new FloatToken("1.54118254e-4").Simplify();
-            var s = floatToken.Content;
         }
 
         [Test]

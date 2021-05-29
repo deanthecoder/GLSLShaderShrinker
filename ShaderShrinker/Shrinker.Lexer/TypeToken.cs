@@ -34,9 +34,6 @@ namespace Shrinker.Lexer
             get
             {
                 var s = m_content;
-                if (IsConst)
-                    s = $"const {s}";
-
                 switch (InOut)
                 {
                     case InOutType.None:
@@ -56,6 +53,10 @@ namespace Shrinker.Lexer
 
                 if (IsUniform)
                     s = $"uniform {s}";
+
+                if (IsConst)
+                    s = $"const {s}";
+
                 return s;
             }
         }
@@ -101,22 +102,22 @@ namespace Shrinker.Lexer
             m_content = content ?? throw new ArgumentNullException(nameof(content));
         }
 
-        public void SetInOut(string inOutType = null)
+        public bool SetInOut(string inOutType = null)
         {
             switch (inOutType)
             {
                 case "in":
                     InOut = InOutType.In;
-                    break;
+                    return true;
                 case "out":
                     InOut = InOutType.Out;
-                    break;
+                    return true;
                 case "inout":
                     InOut = InOutType.InOut;
-                    break;
+                    return true;
                 default:
                     InOut = InOutType.None;
-                    break;
+                    return false;
             }
         }
     }
