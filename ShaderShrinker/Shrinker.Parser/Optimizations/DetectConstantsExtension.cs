@@ -38,11 +38,19 @@ namespace Shrinker.Parser.Optimizations
                         continue;
 
                     // Perhaps modified using an operator? (E.g. +=, *=, ...)
-                    var isModified = parentTree
+                    var uses = parentTree
                         .OfType<GenericSyntaxNode>()
-                        .Any(
-                             o => o.Token?.Content.StartsWithVarName(defCandidate.Name) == true &&
-                                  o.Next?.Token?.IsAnyOf(SymbolOperatorToken.ModifyingOperator) == true);
+                        .Where(o => o.Token?.Content.StartsWithVarName(defCandidate.Name) == true)
+                        .ToList();
+                    var isModified = uses.Any(o => o.Next?.Token?.IsAnyOf(SymbolOperatorToken.ModifyingOperator) == true);
+
+                    // ...or '++i' ?
+                    if (!isModified)
+                    {
+                        isModified = uses.Any(o => o.Previous?.Token is SymbolOperatorToken opToken &&
+                                                  (opToken.Content == "--" || opToken.Content == "++"));
+                    }
+
                     if (isModified)
                         continue;
 
