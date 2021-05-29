@@ -23,7 +23,6 @@ namespace Shrinker.Parser.Optimizations
         public static void CombineAssignmentWithSingleUse(this SyntaxNode rootNode)
         {
             var functionNodes = rootNode.FindFunctionDefinitions().ToList();
-            var functionNames = functionNodes.Select(o => o.Name).ToList();
             foreach (var functionNode in functionNodes)
             {
                 while (true)
@@ -31,7 +30,7 @@ namespace Shrinker.Parser.Optimizations
                     var didChange = false;
 
                     var localVariables = functionNode.LocalVariables().ToList();
-                    var localVariablesNames = localVariables.Select(o => o.Name).ToList(); // todo - inline
+                    var localVariablesNames = localVariables.Select(o => o.Name).ToList();
                     var assignments = functionNode.TheTree.OfType<VariableAssignmentSyntaxNode>()
                         .Where(o => o.HasValue && // Exclude declarations of the variable name.
                                     localVariablesNames.Contains(o.Name)) // Variable must be declared locally.
@@ -84,9 +83,9 @@ namespace Shrinker.Parser.Optimizations
                         var usage = nextAssignmentUsesOfVar.Single();
 
                         // Don't join if the next assignment uses a function call.
-                        // (Just in case it modifies the variable somehow.)
+                        // (Just in case it modifies the variable.)
                         var intermediateNodes = nextAssignment.TheTree.TakeWhile(o => o != usage);
-                        var hasFunctionCall = intermediateNodes.OfType<GenericSyntaxNode>().Any(o => functionNames.Contains(o.Token?.Content));
+                        var hasFunctionCall = intermediateNodes.OfType<FunctionCallSyntaxNode>().Any(o => o.HasOutParam);
                         if (hasFunctionCall)
                             continue;
 
