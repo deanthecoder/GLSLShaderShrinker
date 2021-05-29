@@ -94,6 +94,20 @@ namespace Shrinker.Parser.Optimizations
                 }
             }
 
+            // Simplify 'i += 1' to 'i++'
+            foreach (var operatorNode in
+                rootNode.TheTree
+                    .Where(
+                           o => o.Token is SymbolOperatorToken token &&
+                                token.Content is "+=" or "-=" &&
+                                (o.Next?.Token as INumberToken)?.IsOne() == true &&
+                                (o.Next.Next == null || o.Next.Next.Token is SemicolonToken))
+                    .ToList())
+            {
+                operatorNode.Next.Remove(); // Remove the '1'.
+                operatorNode.ReplaceWith(new GenericSyntaxNode(new SymbolOperatorToken(operatorNode.Token.Content == "+=" ? "++" : "--")));
+            }
+
             return repeatSimplifications;
         }
     }

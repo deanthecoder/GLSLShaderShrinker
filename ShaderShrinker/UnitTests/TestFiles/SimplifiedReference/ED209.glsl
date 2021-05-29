@@ -1,4 +1,4 @@
-// Processed by 'GLSL Shader Shrinker' (10,705 to 9,803 characters)
+// Processed by 'GLSL Shader Shrinker' (10,705 to 9,801 characters)
 // (https://github.com/deanthecoder/GLSLShaderShrinker)
 
 float stretch, gunsUp, gunsForward, edWalk, edTwist, edDown, edShoot, doorOpen, glow;
@@ -242,7 +242,7 @@ MarchData legs(vec3 p) {
 	silver = sdBox(p, vec3(.07, .05, 1.2));
 	cp -= vec3(0, -.7, 0);
 	r.d = sdBox(cp - vec3(0, 0, 1.15), vec3(.17, .17, .07)) - .04;
-	cp.z += 1.;
+	cp.z++;
 	r.d = min(r.d, sdChamferedCube(cp.xzy, vec2(.28 - sign(abs(cp.z) - .3) * .01, .5).xyx, .18));
 	r.d = min(r.d, foot(cp));
 	if (silver < r.d) {

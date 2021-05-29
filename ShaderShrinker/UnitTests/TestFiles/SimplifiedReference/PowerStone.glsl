@@ -1,4 +1,4 @@
-// Processed by 'GLSL Shader Shrinker' (3,968 to 3,960 characters)
+// Processed by 'GLSL Shader Shrinker' (3,968 to 3,958 characters)
 // (https://github.com/deanthecoder/GLSLShaderShrinker)
 
 #define Z0	min(iTime, 0.)
@@ -46,7 +46,7 @@ float sdOcta(vec3 p, float s) {
 float claws(vec3 p) {
 	p.yz = polar(p.yz, 3.);
 	p.x = abs(p.x) - .9;
-	p.y -= 1.;
+	p.y--;
 	p.xy *= rot(-.5);
 	float d = max(cap(p, 1.2, .12 * S(p.x + .5)), abs(p.z) - .06);
 	p.xy *= rot(-2.725);

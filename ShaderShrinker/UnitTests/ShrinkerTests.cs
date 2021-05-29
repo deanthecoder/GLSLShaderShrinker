@@ -1453,6 +1453,45 @@ namespace UnitTests
             Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(expected));
         }
 
+        [Test, Sequential]
+        public void CheckDetectingIncrementDecrementOperatorOpportunity(
+            [Values("i += 1;",
+                    "i += 1.0;",
+                    "i += 1.;",
+                    "float main() { vec2 v; v.x += 1.0; return v; }",
+                    "int main() { int v[1]; v[0] = 1; v[0] += 1; return v[0]; }",
+                    "void main() { for (int i = 0; i < 10; i += 1) { } }",
+                    "i -= 1;",
+                    "i -= 1.0;",
+                    "i -= 1.;",
+                    "float main() { vec2 v; v.x -= 1.0; return v; }",
+                    "int main() { int v[1]; v[0] = 1; v[0] -= 1; return v[0]; }",
+                    "void main() { for (int i = 10; i > 0; i -= 1) { } }")] string code,
+            [Values("i++;",
+                    "i++;",
+                    "i++;",
+                    "float main() { vec2 v; v.x++; return v; }",
+                    "int main() { int v[1]; v[0] = 1; v[0]++; return v[0]; }",
+                    "void main() { for (int i = 0; i < 10; i++) { } }",
+                    "i--;",
+                    "i--;",
+                    "i--;",
+                    "float main() { vec2 v; v.x--; return v; }",
+                    "int main() { int v[1]; v[0] = 1; v[0]--; return v[0]; }",
+                    "void main() { for (int i = 10; i > 0; i--) { } }")] string expected)
+        {
+            var lexer = new Lexer();
+            lexer.Load(code);
+
+            var options = CustomOptions.None();
+            options.IntroduceMathOperators = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(expected));
+        }
+
         [Test]
         public void CheckReturnStatementDoesNotTruncateFurtherStatementsIfWithinSwitchCase()
         {
