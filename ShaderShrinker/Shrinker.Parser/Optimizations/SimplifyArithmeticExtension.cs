@@ -111,6 +111,19 @@ namespace Shrinker.Parser.Optimizations
                 repeatSimplifications = true;
             }
 
+            // Remove unnecessary '+' prefixes.
+            foreach (var plusNode in rootNode.TheTree
+                .OfType<GenericSyntaxNode>()
+                .Where(
+                       o => o.Token is SymbolOperatorToken token &&
+                            token.Content == "+" &&
+                            (o.Previous == null || new[] { "=", "(", "return", ",", "*", "/", "%", "-" }.Contains(o.Previous.Token?.Content)))
+                .ToList())
+            {
+                plusNode.Remove();
+                repeatSimplifications = true;
+            }
+
             return repeatSimplifications;
         }
     }
