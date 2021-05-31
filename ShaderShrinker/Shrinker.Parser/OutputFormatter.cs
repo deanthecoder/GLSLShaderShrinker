@@ -327,7 +327,8 @@ namespace Shrinker.Parser
 
                     var braceCode = new StringBuilder();
                     AppendCode(braceCode, o.TrueBranch);
-                    sb.AppendLine(braceCode.ToString().AllowBraceRemoval());
+                    var trueBranch = braceCode.ToString().AllowBraceRemoval();
+                    sb.AppendLine(trueBranch);
 
                     if (o.FalseBranch != null)
                     {
@@ -341,6 +342,9 @@ namespace Shrinker.Parser
 
                         sb.AppendLine(braceCode.ToString().AllowBraceRemoval());
                     }
+
+                    if (o.Next != null && (o.FalseBranch != null || trueBranch.EndsWith("}")))
+                        sb.AppendLine();
 
                     break;
 
@@ -366,6 +370,10 @@ namespace Shrinker.Parser
                     var loopCode = new StringBuilder();
                     AppendCode(loopCode, o.LoopCode);
                     sb.AppendLine(loopCode.ToString().AllowBraceRemoval());
+
+                    if (o.Next != null)
+                        sb.AppendLine();
+
                     break;
 
                 case FunctionDeclarationSyntaxNode o:

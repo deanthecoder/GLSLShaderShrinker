@@ -72,6 +72,7 @@ vec3 calcN(vec3 p, float t) {
 		vec3 e = .5773 * (2. * vec3((((i + 3) >> 1) & 1), (i >> 1) & 1, i & 1) - 1.);
 		n += e * map(p + e * h);
 	}
+
 	return normalize(n);
 }
 
@@ -84,6 +85,7 @@ float calcShadow(vec3 p, vec3 ld) {
 		t += h;
 		if (s < .001) break;
 	}
+
 	return clamp(s, 0., 1.);
 }
 
@@ -117,6 +119,7 @@ vec3 march(vec3 ro, vec3 rd) {
 		if (abs(h) < .0015) break;
 		d += h;
 	}
+
 	return lights(p, rd, d) * exp(-d * .14);
 }
 

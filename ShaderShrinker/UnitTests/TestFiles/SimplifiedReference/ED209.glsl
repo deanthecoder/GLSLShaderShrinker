@@ -144,6 +144,7 @@ MarchData gunPod(vec3 p) {
 		r.d = d;
 		r.mat = vec3(.02);
 	}
+
 	fs = fireShock();
 	if (fs > .5) {
 		d = sdCappedCylinder(pp, .01 + pp.z * .05, fract(fs * 3322.423) * .5 + .9);
@@ -153,6 +154,7 @@ MarchData gunPod(vec3 p) {
 			glow += .1 / (.01 + d * d * 4e2);
 		}
 	}
+
 	return r;
 }
 
@@ -214,6 +216,7 @@ MarchData waist(vec3 p) {
 		r.d = d;
 		r.mat = vec3(.02);
 	}
+
 	return r;
 }
 
@@ -249,6 +252,7 @@ MarchData legs(vec3 p) {
 		r.d = silver;
 		r.mat = vec3(.8);
 	}
+
 	return r;
 }
 
@@ -283,6 +287,7 @@ MarchData room(vec3 p) {
 		ocp = min(max(ocp, min(.7 - abs(xy.x + 1.2), -xy.y)), max(abs(sdOctogon(xy, 1.2)), min(xy.x, .7 - abs(xy.y))));
 		if (ocp < .3) r.mat = vec3(.39, .57, .71);
 	}
+
 	doorFrame = max(sdBox(p, frameInner + vec3(.4, .4, .1)), -doorHole);
 	doorWidth = frameInner.x * .5;
 	p.x -= frameInner.x;
@@ -296,6 +301,7 @@ MarchData room(vec3 p) {
 		r.mat = vec3(.02, .02, .024);
 		r.specPower = 10.;
 	}
+
 	return r;
 }
 
@@ -306,6 +312,7 @@ MarchData map(vec3 p) {
 		r.d = gnd;
 		r.mat = vec3(.1);
 	}
+
 	return r;
 }
 
@@ -319,6 +326,7 @@ float calcShadow(vec3 p, vec3 lightPos) {
 		t += h;
 		if (res < .001 || t > 25.) break;
 	}
+
 	return clamp(res, 0., 1.);
 }
 
@@ -360,6 +368,7 @@ vec3 getSceneColor(vec3 ro, vec3 rd) {
 		if (d > 64.) return vec3(0);
 		d += h.d;
 	}
+
 	g = glow;
 	return applyLighting(p, rd, d, h) + fireShock() * .3 + g;
 }
@@ -416,6 +425,7 @@ void mainImage(out vec4 fragColor, vec2 fragCoord) {
 		edDown = remap(t, 3.2, 3.4, 0., 1.) * stretch;
 		edShoot = t <= 9.5 ? remap(t, 4., 9.5, 0., 1.) : 0.;
 	}
+
 	dim = 1. - cos(min(1., 2. * min(abs(time - startScene), abs(time - endScene))) * 1.5705);
 	col = vec3(0);
 #ifdef AA
@@ -431,6 +441,7 @@ void mainImage(out vec4 fragColor, vec2 fragCoord) {
 #ifdef AA
 		}
 	}
+
 	col /= 4.;
 #endif
 	fragColor = vec4(vignette(pow(col * dim, vec3(.4545)), fragCoord), 1);

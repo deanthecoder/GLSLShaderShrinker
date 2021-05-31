@@ -108,6 +108,7 @@ vec2 sdWalls(vec3 p) {
 		pp.yz *= rot(-atan(stepToStep.x / stepToStep.y));
 		d2 = smin(min(smin(d2, sdRailHolder(pp - vec3(0, 0, -.75)), .0255), sdCapsule(pp, vec3(0), vec3(0, 0, -length(stepToStep * 11.)), .1)), sdRailHolder(pp - vec3(0, 0, -length(stepToStep * 11.) + .75)), .025);
 	}
+
 	if (p.x > 0.) {
 		const float nearEndZ = -stepToStep.y * 12.;
 		float middleZ = mix(nearEndZ, 2.9, .5),
@@ -116,6 +117,7 @@ vec2 sdWalls(vec3 p) {
 		pp.z -= middleZ;
 		d = max(d, sdBox(pp, vec3(3, 1e3, depthToInclude / 2.)));
 	}
+
 	return min2(vec2(d, 1.5), vec2(d2, 2.5));
 }
 
@@ -148,6 +150,7 @@ vec2 map(vec3 p, bool useGlow) {
 		gd = sdCylinder(pp.yxz, .05, .92);
 		glow += endFade * .001 / (.001 + gd * gd * .3) * mix(.01, 1., p.z < 0. ? 1. : flicker);
 	}
+
 	pp = p;
 	pp.xz *= rot(-.78538);
 	d = min(d, sdBox(pp - vec3(0, 6, -20), vec3(10, 1, 20. + stepToStep * 12.)) - texture(iChannel0, p.xz * .8).r * .01);
@@ -177,6 +180,7 @@ float calcShadow(vec3 p, vec3 lightPos) {
 		p += st;
 		shadow = min(shadow, max(map(p, false).x, 0.) / (std * i));
 	}
+
 	return shadow / pow(d / 20. + 1., 2.);
 }
 
@@ -200,6 +204,7 @@ vec3 getMaterial(vec3 p, vec3 rd, vec3 n, float id) {
 	}
 	else if (id == 6.5) mat = vec3(mix(.3, .5, texture(iChannel0, p.xz * 1.743).r));
 	else mat = vec3(1);
+
 	diff = max(max(0., dot(lightDir1, n) * flicker), dot(lightDir2, n));
 	occ = min(1., .2 + calcAO(p, n, .15) * calcAO(p, n, .05));
 	sha = (calcShadow(p, vec3(0, 4.5, 4.3)) * flicker + calcShadow(p, vec3(0, 4.5, -.6))) / 2.;
@@ -233,6 +238,7 @@ void mainImage(out vec4 fragColor, vec2 fragCoord) {
 		ro = vec3(.5, -1. - 6. * (mix(.25, 0., ft) - .5), -1);
 		lookAt = vec3(0, 4.5, 4.3) - mix(vec3(5, 3.5, -1), vec3(0), ft);
 	}
+
 	rd = getRayDir(ro, lookAt, uv);
 	march(ro, rd, p, h);
 	n = calcNormal(p);
@@ -243,6 +249,7 @@ void mainImage(out vec4 fragColor, vec2 fragCoord) {
 		march(p, rd, p, h);
 		col = mix(col, getMaterial(p, rd, n, h.y), .75);
 	}
+
 #endif
 	col *= exp(-pow(distance(ro, p) / 30., 3.) * 5.);
 	fragColor = vec4(vignette(pow(col, vec3(.4545)), fragCoord), 1);

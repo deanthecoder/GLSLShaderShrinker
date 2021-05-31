@@ -49,6 +49,7 @@ vec3 N(vec3 p, float t) {
 		vec3 e = .005773 * (2. * vec3(((i + 3) >> 1) & 1, (i >> 1) & 1, i & 1) - 1.);
 		n += e * map(p + e * h).d;
 	}
+
 	return normalize(n);
 }
 
@@ -62,6 +63,7 @@ float shadow(vec3 p, vec3 ld) {
 		t += h;
 		if (s < .001 || t > 20.) break;
 	}
+
 	return sat(s);
 }
 
@@ -90,6 +92,7 @@ vec3 lights(vec3 p, vec3 rd, float d, Hit h) {
 	}
 	else if (h.id == 2) c = vec3(.5, .4, .3);
 	else c = vec3(.2);
+
 	_ao = mix(ao(p, n, .2), ao(p, n, 2.), .7);
 	l1 = sat(.1 + .9 * dot(ld, n)) * (.3 + .7 * shadow(p, ld)) * (.3 + .7 * _ao);
 	l2 = sat(.1 + .9 * dot(ld * vec3(-1, 0, -1), n)) * .3 + pow(sat(dot(rd, reflect(ld, n))), 10.);
@@ -111,6 +114,7 @@ vec4 march(inout vec3 p, vec3 rd, float s, float mx) {
 		if (d > mx) return vec4(0);
 		p += h.d * rd;
 	}
+
 	return vec4(g + lights(p, rd, d, h), h.id);
 }
 
@@ -123,6 +127,7 @@ vec3 scene(vec3 ro, vec3 rd) {
 		p += rd * .01;
 		col += .2 * march(p, rd, 64., 10.) * fog(ro - p);
 	}
+
 	return col.rgb;
 }
 
@@ -137,8 +142,10 @@ void mainImage(out vec4 fragColor, vec2 fc) {
 #ifdef AA
 	if (fwidth(col.r) > .01) {
 		for (float dx = Z0; dx <= 1.; dx++) { for (float dy = Z0; dy <= 1.; dy++) col += scene(ro, rayDir(ro, vec3(0, 2, 0), uv + (vec2(dx, dy) - .5) / iResolution.xy)); }
+
 		col /= 5.;
 	}
+
 #endif
 	fragColor = vec4(vig(pow(max(vec3(0), col), vec3(.45)) * sat(iTime), fc), 0);
 }
