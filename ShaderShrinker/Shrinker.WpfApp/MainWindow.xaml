@@ -27,99 +27,121 @@
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
             <!-- Project web link -->
-            <TextBlock HorizontalAlignment="Right" Margin="8,2">
+            <TextBlock Grid.Column="1" HorizontalAlignment="Right" Margin="8,2">
                 <Hyperlink NavigateUri="https://github.com/deanthecoder/GLSLShaderShrinker" RequestNavigate="OnOpenProjectPage">Project Page</Hyperlink>
             </TextBlock>
 
-            <!-- Import/Export/Options -->
-            <materialDesign:DialogHost x:Name="importHost" Identifier="ImportHost" Grid.Row="1">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0" Grid.Row="0" Grid.RowSpan="2">
+                <StackPanel.Resources>
+                    <Style TargetType="materialDesign:PackIcon">
+                        <Setter Property="Width" Value="24" />
+                        <Setter Property="Height" Value="24" />
+                    </Style>
 
-                    <UniformGrid Columns="2">
-                        <!-- Import options -->
-                        <GroupBox Margin="16,4,8,16">
-                            <GroupBox.Header>
-                                <StackPanel Orientation="Horizontal">
-                                    <materialDesign:PackIcon Kind="Import" Width="28" Height="28" Margin="0,0,8,0"/>
-                                    <TextBlock FontSize="16" Text="GLSL Import" VerticalAlignment="Center"/>
-                                </StackPanel>
-                            </GroupBox.Header>
+                    <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
+                        <Setter Property="Foreground" Value="White" />
+                        <Setter Property="Margin" Value="16,4" />
+                    </Style>
+                </StackPanel.Resources>
 
-                            <StackPanel>
-                                <Button Content="From Clipboard" Command="{Binding OnLoadFromClipboardCommand}" Foreground="White" Margin="16,4" ToolTip="CTRL+V"/>
-                                <Button Content="From File..." Command="{Binding OnLoadFromFileCommand}" Foreground="White" Margin="16,4"/>
-                                <Button Content="From Shadertoy..." Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}" Foreground="White" Margin="16,4"/>
-                            </StackPanel>
-                        </GroupBox>
+                <!-- Import options -->
+                <Border BorderThickness="1" BorderBrush="{DynamicResource PrimaryHueLightBrush}" Margin="4" Padding="2,16">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
 
-                        <!-- Export options -->
-                        <GroupBox Foreground="White" Margin="16,4,8,16">
-                            <GroupBox.Header>
-                                <StackPanel Orientation="Horizontal">
-                                    <materialDesign:PackIcon Kind="Export" Width="28" Height="28" Margin="0,0,8,0"/>
-                                    <TextBlock FontSize="16" Text="GLSL Export" VerticalAlignment="Center"/>
-                                </StackPanel>
-                            </GroupBox.Header>
+                        <StackPanel Grid.Column="0">
+                            <Button ToolTip="From Clipboard (CTRL+V)" Command="{Binding OnLoadFromClipboardCommand}">
+                                <materialDesign:PackIcon Kind="ClipboardArrowDown"/>
+                            </Button>
+                            <Button ToolTip="From File..." Command="{Binding OnLoadFromFileCommand}">
+                                <materialDesign:PackIcon Kind="FileDownload"/>
+                            </Button>
+                            <Button ToolTip="From Shadertoy..." Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}">
+                                <materialDesign:PackIcon Kind="CloudDownload"/>
+                            </Button>
+                        </StackPanel>
 
-                            <StackPanel>
-                                <Button Content="To Clipboard" Command="{Binding OnSaveToClipboardCommand}" Foreground="White" Margin="16,4" ToolTip="CTRL+C"/>
-                                <Button Content="To File..." Command="{Binding OnSaveToFileCommand}" Foreground="White" Margin="16,4"/>
-                            </StackPanel>
-                        </GroupBox>
-                    </UniformGrid>
+                        <TextBlock Grid.Column="1" Text="GLSL Import" VerticalAlignment="Center">
+                            <TextBlock.LayoutTransform>
+                                <RotateTransform Angle="-90"/>
+                            </TextBlock.LayoutTransform>
+                        </TextBlock>
+                    </Grid>
+                </Border>
 
-                    <!-- Shrink options -->
-                    <GroupBox Grid.Column="2" Margin="16,4,8,16">
-                        <GroupBox.Header>
-                            <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon Kind="ArrowCompress" Width="28" Height="28" Margin="0,0,8,0"/>
-                                <TextBlock FontSize="16" Text="Shrink" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </GroupBox.Header>
+                <!-- Shrink options -->
+                <Border BorderThickness="1" BorderBrush="{DynamicResource PrimaryHueLightBrush}" Margin="4" Padding="2,16">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
 
-                        <StackPanel HorizontalAlignment="Left">
+                        <StackPanel Grid.Column="0" IsEnabled="{Binding IsFileOpen}">
                             <!-- Maximum -->
-                            <RadioButton Margin="16,4" Loaded="OnMaxRadioButtonLoaded" IsEnabled="{Binding IsFileOpen}">
-                                <Button Content="Maximum" Command="{Binding OnShrinkCommand}" CommandParameter="Max" Foreground="White" MinWidth="170"/>
-                            </RadioButton>
+                            <Button ToolTip="Maximum" Command="{Binding OnShrinkCommand}" CommandParameter="Max">
+                                <materialDesign:PackIcon Kind="ArrowCollapse"/>
+                            </Button>
 
                             <!-- Minimum -->
-                            <RadioButton Margin="16,4" Loaded="OnMinRadioButtonLoaded" IsEnabled="{Binding IsFileOpen}">
-                                <Button Content="Minimum (/Reformat)" Command="{Binding OnShrinkCommand}" CommandParameter="Min" Foreground="White" MinWidth="170"/>
-                            </RadioButton>
+                            <Button ToolTip="Minimum (/Reformat)" Command="{Binding OnShrinkCommand}" CommandParameter="Min">
+                                <materialDesign:PackIcon Kind="FormatAlignLeft"/>
+                            </Button>
 
                             <!-- Custom -->
-                            <RadioButton Margin="16,4" Loaded="OnCustomRadioButtonLoaded" IsEnabled="{Binding IsFileOpen}">
-                                <Grid MinWidth="170">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-
-                                    <Button x:Name="customShrinkButton" Content="Custom" Command="{Binding OnShrinkCommand}" CommandParameter="Custom" Foreground="White" Margin="0,0,4,0"/>
-                                    <Grid Grid.Column="1" IsEnabled="{Binding IsEnabled, ElementName=customShrinkButton}">
-                                        <Button Foreground="White"
-                                                Click="OnSettingsButtonClicked">
-                                            <materialDesign:PackIcon Kind="Settings"/>
-                                        </Button>
-                                    </Grid>
-                                </Grid>
-                            </RadioButton>
+                            <Button ToolTip="Custom" Click="OnSettingsButtonClicked">
+                                <materialDesign:PackIcon Kind="FormatListChecks"/>
+                            </Button>
                         </StackPanel>
-                    </GroupBox>
-                </Grid>
 
-                <!-- Shadertoy import options -->
+                        <TextBlock Grid.Column="1" Text="Shrink" VerticalAlignment="Center">
+                            <TextBlock.LayoutTransform>
+                                <RotateTransform Angle="-90"/>
+                            </TextBlock.LayoutTransform>
+                        </TextBlock>
+                    </Grid>
+                </Border>
+
+                <!-- Export options -->
+                <Border BorderThickness="1" BorderBrush="{DynamicResource PrimaryHueLightBrush}" Margin="4" Padding="2,16">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0">
+                            <Button ToolTip="To Clipboard (CTRL+C)" Command="{Binding OnSaveToClipboardCommand}">
+                                <materialDesign:PackIcon Kind="ClipboardArrowRight"/>
+                            </Button>
+                            <Button ToolTip="To File..." Command="{Binding OnSaveToFileCommand}">
+                                <materialDesign:PackIcon Kind="FileSend"/>
+                            </Button>
+                        </StackPanel>
+
+                        <TextBlock Grid.Column="1" Text="GLSL Export" VerticalAlignment="Center">
+                            <TextBlock.LayoutTransform>
+                                <RotateTransform Angle="-90"/>
+                            </TextBlock.LayoutTransform>
+                        </TextBlock>
+                    </Grid>
+                </Border>
+            </StackPanel>
+
+            <!-- Shadertoy import options -->
+            <materialDesign:DialogHost Grid.Column="0" Grid.Row="0" x:Name="importHost" Identifier="ImportHost" Grid.ColumnSpan="2" Grid.RowSpan="2">
                 <materialDesign:DialogHost.DialogContent>
                     <StackPanel Orientation="Horizontal" Margin="32">
                         <TextBox materialDesign:HintAssist.Hint="Shadertoy Shader ID (E.g. tt3yRH)"
@@ -139,7 +161,7 @@
             </materialDesign:DialogHost>
 
             <!-- Code preview -->
-            <Grid Grid.Row="2">
+            <Grid Grid.Column="1" Grid.Row="1">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="Auto"/>
@@ -205,7 +227,7 @@
                 </UniformGrid>
             </Grid>
 
-            <materialDesign:Snackbar Grid.Row="2" VerticalAlignment="Bottom" MessageQueue="{Binding MyMessageQueue}" />
+            <materialDesign:Snackbar Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" VerticalAlignment="Bottom" MessageQueue="{Binding MyMessageQueue}" />
         </Grid>
 
         <!-- Custom options dialog -->

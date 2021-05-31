@@ -11,9 +11,7 @@
 
 using System.Diagnostics;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Navigation;
-using Shrinker.WpfApp.Properties;
 
 namespace Shrinker.WpfApp
 {
@@ -45,20 +43,5 @@ namespace Shrinker.WpfApp
 
         private void OnOpenProjectPage(object sender, RequestNavigateEventArgs e) =>
             Process.Start("explorer.exe", e.Uri.AbsoluteUri);
-
-        private void OnMaxRadioButtonLoaded(object sender, RoutedEventArgs e) => InitRadioButton(sender, "Max");
-        private void OnMinRadioButtonLoaded(object sender, RoutedEventArgs e) => InitRadioButton(sender, "Min");
-        private void OnCustomRadioButtonLoaded(object sender, RoutedEventArgs e) => InitRadioButton(sender, "Custom");
-
-        private static void InitRadioButton(object sender, string level)
-        {
-            var button = (RadioButton)sender;
-            button.IsChecked = Settings.Default.DefaultLevel == level;
-            button.Click += (o, args) =>
-            {
-                Settings.Default.DefaultLevel = level;
-                button.IsChecked = true;
-            };
-        }
     }
 }

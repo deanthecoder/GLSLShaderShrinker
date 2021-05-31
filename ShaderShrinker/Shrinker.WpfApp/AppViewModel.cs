@@ -32,7 +32,6 @@ namespace Shrinker.WpfApp
 {
     public class AppViewModel : ViewModelBase
     {
-        private int m_originalSize;
         private int m_optimizedSize;
         private SyntaxNode m_optimizedRoot;
         private RelayCommand m_loadFromClipboardCommand;
@@ -45,6 +44,7 @@ namespace Shrinker.WpfApp
         private string m_optimizedCode;
         private bool m_showProgress;
         private string m_originalCode;
+        private int m_originalSize;
 
         public event EventHandler<(string originalCode, string newCode)> GlslLoaded;
 
@@ -59,6 +59,20 @@ namespace Shrinker.WpfApp
         public CustomOptions CustomOptions { get; }
 
         public string ShadertoyShaderId { get; set; }
+
+        private string OriginalCode
+        {
+            get => m_originalCode;
+            set
+            {
+                if (m_originalCode == value)
+                    return;
+                m_originalCode = value;
+                OriginalSize = value?.GetCodeCharCount() ?? 0;
+                OnPropertyChanged(nameof(IsFileOpen));
+                OnPropertyChanged();
+            }
+        }
 
         private string OptimizedCode
         {
@@ -83,7 +97,6 @@ namespace Shrinker.WpfApp
                     return;
                 m_originalSize = value;
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(DeltaSize));
             }
         }
 
@@ -116,7 +129,7 @@ namespace Shrinker.WpfApp
 
         public SnackbarMessageQueue MyMessageQueue { get; } = new SnackbarMessageQueue();
 
-        public bool IsFileOpen => m_optimizedRoot != null;
+        public bool IsFileOpen => !string.IsNullOrWhiteSpace(OriginalCode);
         public string AppTitle
         {
             get
@@ -197,8 +210,10 @@ namespace Shrinker.WpfApp
 
         private void LoadGlslFromStringAsync(string glsl)
         {
-            m_originalCode = glsl;
-            Shrink();
+            OriginalCode = glsl;
+            OptimizedCode = string.Empty;
+            OptimizedSize = 0;
+            GlslLoaded?.Invoke(this, (OriginalCode, OptimizedCode));
         }
 
         private void AcceptCustomOptions(object obj)
@@ -211,21 +226,18 @@ namespace Shrinker.WpfApp
         {
             try
             {
-                var level = (string)levelParam ?? Settings.Default.DefaultLevel;
-                Settings.Default.DefaultLevel = level;
                 ShowProgress = true;
 
-                var (originalSize, optimizedSize, optimizedCode) = await Task.Run(() =>
+                var (optimizedSize, optimizedCode) = await Task.Run(() =>
                 {
                     Thread.Sleep(500);
-                    return LoadGlslFromString(m_originalCode, level);
+                    return LoadGlslFromString(OriginalCode, (string)levelParam);
                 });
 
-                OriginalSize = originalSize;
                 OptimizedCode = optimizedCode;
                 OptimizedSize = optimizedSize;
 
-                GlslLoaded?.Invoke(this, (m_originalCode, OptimizedCode));
+                GlslLoaded?.Invoke(this, (OriginalCode, OptimizedCode));
                 return;
             }
             catch (SyntaxErrorException e)
@@ -244,12 +256,12 @@ namespace Shrinker.WpfApp
             m_optimizedRoot = null;
             OptimizedCode = null;
             OptimizedSize = 0;
-            GlslLoaded?.Invoke(this, (m_originalCode, string.Empty));
+            GlslLoaded?.Invoke(this, (OriginalCode, string.Empty));
 
             SaveCustomOptions();
         }
 
-        private (int originalSize, int optimizedSize, string optimizedCode) LoadGlslFromString(string glsl, string level)
+        private (int optimizedSize, string optimizedCode) LoadGlslFromString(string glsl, string level)
         {
             var lexer = new Lexer.Lexer();
             lexer.Load(glsl);
@@ -266,7 +278,7 @@ namespace Shrinker.WpfApp
             m_optimizedRoot = rootNode.Simplify(options);
 
             var optimizedCode = m_optimizedRoot.ToCode();
-            return (glsl.GetCodeCharCount(), optimizedCode.GetCodeCharCount(), optimizedCode);
+            return (optimizedCode.GetCodeCharCount(), optimizedCode);
         }
 
         public void SaveCustomOptions()
