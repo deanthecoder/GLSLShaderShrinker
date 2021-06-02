@@ -47,7 +47,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Shrinker.CmdApp\Shrinker.CmdApp.csproj" />
     <ProjectReference Include="..\Shrinker.Lexer\Shrinker.Lexer.csproj" />
     <ProjectReference Include="..\Shrinker.Parser\Shrinker.Parser.csproj" />
   </ItemGroup>

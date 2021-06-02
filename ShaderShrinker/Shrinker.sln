@@ -3,15 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31005.135
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shrinker.CmdApp", "Shrinker.CmdApp\Shrinker.CmdApp.csproj", "{4970A5E7-A2F7-4FC2-804F-48D3B5842A11}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "UnitTests\UnitTests.csproj", "{4FCCD054-26D9-4B20-A976-3AF536A784EC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{4FCCD054-26D9-4B20-A976-3AF536A784EC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shrinker.Lexer", "Shrinker.Lexer\Shrinker.Lexer.csproj", "{8FF19F6C-6592-4BC8-BA26-5EC14832F754}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shrinker.Lexer", "Shrinker.Lexer\Shrinker.Lexer.csproj", "{8FF19F6C-6592-4BC8-BA26-5EC14832F754}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shrinker.Parser", "Shrinker.Parser\Shrinker.Parser.csproj", "{4B02CF1B-391C-42C8-84B1-2CA6E5B8F504}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shrinker.Parser", "Shrinker.Parser\Shrinker.Parser.csproj", "{4B02CF1B-391C-42C8-84B1-2CA6E5B8F504}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shrinker.WpfApp", "Shrinker.WpfApp\Shrinker.WpfApp.csproj", "{AF072632-A49C-4EF1-B77F-9AA9666F92F6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shrinker.WpfApp", "Shrinker.WpfApp\Shrinker.WpfApp.csproj", "{AF072632-A49C-4EF1-B77F-9AA9666F92F6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,18 +21,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{4970A5E7-A2F7-4FC2-804F-48D3B5842A11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4970A5E7-A2F7-4FC2-804F-48D3B5842A11}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4970A5E7-A2F7-4FC2-804F-48D3B5842A11}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{4970A5E7-A2F7-4FC2-804F-48D3B5842A11}.Debug|x64.Build.0 = Debug|Any CPU
-		{4970A5E7-A2F7-4FC2-804F-48D3B5842A11}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{4970A5E7-A2F7-4FC2-804F-48D3B5842A11}.Debug|x86.Build.0 = Debug|Any CPU
-		{4970A5E7-A2F7-4FC2-804F-48D3B5842A11}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4970A5E7-A2F7-4FC2-804F-48D3B5842A11}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4970A5E7-A2F7-4FC2-804F-48D3B5842A11}.Release|x64.ActiveCfg = Release|Any CPU
-		{4970A5E7-A2F7-4FC2-804F-48D3B5842A11}.Release|x64.Build.0 = Release|Any CPU
-		{4970A5E7-A2F7-4FC2-804F-48D3B5842A11}.Release|x86.ActiveCfg = Release|Any CPU
-		{4970A5E7-A2F7-4FC2-804F-48D3B5842A11}.Release|x86.Build.0 = Release|Any CPU
 		{4FCCD054-26D9-4B20-A976-3AF536A784EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4FCCD054-26D9-4B20-A976-3AF536A784EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4FCCD054-26D9-4B20-A976-3AF536A784EC}.Debug|x64.ActiveCfg = Debug|Any CPU
