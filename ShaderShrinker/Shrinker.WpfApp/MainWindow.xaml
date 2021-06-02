@@ -62,6 +62,8 @@
                         </Grid.ColumnDefinitions>
 
                         <StackPanel Grid.Column="0">
+                            <TextBlock Text="Step 1" FontSize="10" Margin="0,-16,0,0"/>
+
                             <Button ToolTip="From Clipboard (CTRL+V)" Command="{Binding OnLoadFromClipboardCommand}">
                                 <materialDesign:PackIcon Kind="ClipboardArrowDown"/>
                             </Button>
@@ -90,6 +92,8 @@
                         </Grid.ColumnDefinitions>
 
                         <StackPanel Grid.Column="0" IsEnabled="{Binding IsFileOpen}">
+                            <TextBlock Text="Step 2" FontSize="10" Margin="0,-16,0,0"/>
+
                             <!-- Maximum -->
                             <Button ToolTip="Maximum" Command="{Binding OnShrinkCommand}" CommandParameter="Max">
                                 <materialDesign:PackIcon Kind="ArrowCollapse"/>
@@ -123,6 +127,8 @@
                         </Grid.ColumnDefinitions>
 
                         <StackPanel Grid.Column="0">
+                            <TextBlock Text="Step 3" FontSize="10" Margin="0,-16,0,0"/>
+
                             <Button ToolTip="To Clipboard (CTRL+C)" Command="{Binding OnSaveToClipboardCommand}">
                                 <materialDesign:PackIcon Kind="ClipboardArrowRight"/>
                             </Button>
