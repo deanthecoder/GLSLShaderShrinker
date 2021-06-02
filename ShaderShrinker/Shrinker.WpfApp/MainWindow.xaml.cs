@@ -29,13 +29,16 @@ namespace Shrinker.WpfApp
             {
                 importHost.IsOpen = false;
 
-                if (args.originalCode != DiffControl.OldText)
-                    DiffControl.OldText = args.originalCode;
+                using (new BusyCursor())
+                {
+                    if (args.originalCode != DiffControl.OldText)
+                        DiffControl.OldText = args.originalCode;
 
-                if (args.newCode != DiffControl.NewText)
-                    DiffControl.NewText = args.newCode;
+                    if (args.newCode != DiffControl.NewText)
+                        DiffControl.NewText = args.newCode;
 
-                DiffControl.GoTo(0);
+                    DiffControl.GoTo(0);
+                }
             };
         }
 

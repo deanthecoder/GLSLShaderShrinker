@@ -53,7 +53,7 @@ namespace Shrinker.WpfApp
         public ICommand OnLoadFromShadertoyCommand => m_loadFromShadertoyCommand ??= new RelayCommand(LoadGlslFromShadertoy);
         public ICommand OnSaveToClipboardCommand => m_saveToClipboardCommand ??= new RelayCommand(SaveGlslToClipboard, _ => IsFileOpen);
         public ICommand OnSaveToFileCommand => m_saveToFileCommand ??= new RelayCommand(SaveGlslToFile, _ => IsFileOpen);
-        public ICommand OnShrinkCommand => m_shrinkCommand ??= new RelayCommand(Shrink, _ => IsFileOpen);
+        public ICommand OnShrinkCommand => m_shrinkCommand ??= new RelayCommand(ShrinkAsync, _ => IsFileOpen);
         public ICommand OnCustomOptionsAcceptedCommand => m_customOptionsAcceptedCommand ??= new RelayCommand(AcceptCustomOptions);
 
         public CustomOptions CustomOptions { get; }
@@ -219,23 +219,26 @@ namespace Shrinker.WpfApp
         private void AcceptCustomOptions(object obj)
         {
             DialogHost.CloseDialogCommand.Execute(null, null);
-            Shrink("Custom");
+            ShrinkAsync("Custom");
         }
 
-        private async void Shrink(object levelParam = null)
+        private async void ShrinkAsync(object levelParam = null)
         {
             try
             {
                 ShowProgress = true;
 
-                var (optimizedSize, optimizedCode) = await Task.Run(() =>
+                using (new BusyCursor())
                 {
-                    Thread.Sleep(500);
-                    return LoadGlslFromString(OriginalCode, (string)levelParam);
-                });
+                    var (optimizedSize, optimizedCode) = await Task.Run(() =>
+                    {
+                        Thread.Sleep(500);
+                        return Shrink(OriginalCode, (string)levelParam);
+                    });
 
-                OptimizedCode = optimizedCode;
-                OptimizedSize = optimizedSize;
+                    OptimizedCode = optimizedCode;
+                    OptimizedSize = optimizedSize;
+                }
 
                 GlslLoaded?.Invoke(this, (OriginalCode, OptimizedCode));
                 return;
@@ -261,7 +264,7 @@ namespace Shrinker.WpfApp
             SaveCustomOptions();
         }
 
-        private (int optimizedSize, string optimizedCode) LoadGlslFromString(string glsl, string level)
+        private (int optimizedSize, string optimizedCode) Shrink(string glsl, string level)
         {
             var lexer = new Lexer.Lexer();
             lexer.Load(glsl);
