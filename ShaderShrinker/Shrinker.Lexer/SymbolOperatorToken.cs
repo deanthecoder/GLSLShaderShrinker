@@ -21,7 +21,7 @@ namespace Shrinker.Lexer
 
         public SymbolOperatorToken(string symbol)
         {
-            if (!DoubleCharacterOperators.Contains(symbol) &&
+            if (!MultiCharacterOperators.Contains(symbol) &&
                 !ModifyingOperator.Contains(symbol) &&
                 !SingleCharacterOperators.Contains(symbol))
                 throw new SyntaxErrorException($"Unrecognized operator: '{symbol}'");
@@ -31,17 +31,25 @@ namespace Shrinker.Lexer
 
         public override IToken TryMatch(string code, ref int offset)
         {
-            var s = Peek(code, offset, 2);
+            foreach (var peekLength in new[] { 3, 2, 1 })
+            {
+                var s = Peek(code, offset, peekLength);
 
-            if (DoubleCharacterOperators.Contains(s) || ModifyingOperator.Contains(s))
-                return new SymbolOperatorToken(Read(code, ref offset, 2));
+                var match = MultiCharacterOperators.FirstOrDefault(o => o == s) ??
+                            ModifyingOperator.FirstOrDefault(o => o == s);
+                if (match != null)
+                    return new SymbolOperatorToken(Read(code, ref offset, match.Length));
 
-            return SingleCharacterOperators.Contains(s[0]) ? new SymbolOperatorToken(Read(code, ref offset)) : null;
+                if (peekLength == 1 && SingleCharacterOperators.Contains(s[0]))
+                    return new SymbolOperatorToken(Read(code, ref offset));
+            }
+
+            return null;
         }
 
         private static string SingleCharacterOperators => ":!+-*/|<>@?&^%";
 
-        private static string[] DoubleCharacterOperators { get; } = { "||", "&&", "<=", ">=", "<<=", ">>=", "<<", ">>" };
+        private static string[] MultiCharacterOperators { get; } = { "||", "&&", "<=", ">=", "<<=", ">>=", "<<", ">>" };
         public static string[] ModifyingOperator { get; } = { "--", "++", "+=", "-=", "/=", "!=", "%=", "^=", "&=", "*=" };
     }
 }

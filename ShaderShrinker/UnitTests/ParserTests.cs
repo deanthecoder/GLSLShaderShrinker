@@ -578,7 +578,7 @@ namespace UnitTests
         }
 
         [Test, Sequential]
-        public void CheckDetectingNegativeFloats3([Values("*", "/", "+", "-", "+=", "-=", "/=", "*=")] string mathOp)
+        public void CheckDetectingNegativeFloats3([Values("*", "/", "+", "-")] string mathOp)
         {
             var lexer = new Lexer();
             lexer.Load($"{mathOp} -4.3");
@@ -587,6 +587,18 @@ namespace UnitTests
 
             var numberToken = rootNode.TheTree.Single(o => o.Token is FloatToken).Token;
             Assert.That(((FloatToken)numberToken).Content, Is.EqualTo("-4.3"));
+        }
+        
+        [Test, Sequential]
+        public void CheckDetectingMathSymbols([Values("+=", "-=", "/=", "*=", ">>=", "<<=")] string mathOp)
+        {
+            var code = $"int i = 1;\ni {mathOp} -1;";
+
+            var lexer = new Lexer();
+            lexer.Load(code);
+
+            var rootNode = new Parser(lexer).Parse();
+            Assert.That(rootNode.ToCode(), Is.EqualTo(code));
         }
 
         [Test]
