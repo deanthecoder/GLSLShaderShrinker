@@ -1,8 +1,7 @@
-// Processed by 'GLSL Shader Shrinker' (7,733 to 6,464 characters)
+// Processed by 'GLSL Shader Shrinker' (7,733 to 6,431 characters)
 // (https://github.com/deanthecoder/GLSLShaderShrinker)
 
 #define MY_GPU_CAN_TAKE_IT
-#define ZERO	min(iTime, 0.)
 
 const vec2 stepToStep = vec2(.36, .66);
 float smin(float a, float b, float k) {
@@ -176,7 +175,7 @@ float calcShadow(vec3 p, vec3 lightPos) {
 	vec3 st = (lightPos - p) / 37.5;
 	std = length(st);
 	p += normalize(lightPos - p) * .01;
-	for (float i = ZERO; i < 30.; i++) {
+	for (float i = min(iTime, 0.); i < 30.; i++) {
 		p += st;
 		shadow = min(shadow, max(map(p, false).x, 0.) / (std * i));
 	}
@@ -191,11 +190,10 @@ vec3 vignette(vec3 col, vec2 fragCoord) {
 }
 
 vec3 getMaterial(vec3 p, vec3 rd, vec3 n, float id) {
-	vec3 mat,
+	vec3 mat, col,
 	     lightDir1 = normalize(vec3(0, 4.5, 4.3) - p),
 	     lightDir2 = normalize(vec3(0, 4.5, -.6) - p);
-	float diff, occ, sha,
-	      spec = pow(max(max(dot(reflect(lightDir1, n), rd) * flicker, dot(reflect(lightDir2, n), rd)), 0.), 50.);
+	float spec = pow(max(max(dot(reflect(lightDir1, n), rd) * flicker, dot(reflect(lightDir2, n), rd)), 0.), 50.);
 	if (id == 3.5) mat = vec3(.1);
 	else if (id == 4.5) mat = vec3(smoothstep(0., .6, texture(iChannel0, (abs(n.y) < .1 ? p.xy : p.xz) * 1.4125).r));
 	else if (id == 5.5) {
@@ -205,15 +203,13 @@ vec3 getMaterial(vec3 p, vec3 rd, vec3 n, float id) {
 	else if (id == 6.5) mat = vec3(mix(.3, .5, texture(iChannel0, p.xz * 1.743).r));
 	else mat = vec3(1);
 
-	diff = max(max(0., dot(lightDir1, n) * flicker), dot(lightDir2, n));
-	occ = min(1., .2 + calcAO(p, n, .15) * calcAO(p, n, .05));
-	sha = (calcShadow(p, vec3(0, 4.5, 4.3)) * flicker + calcShadow(p, vec3(0, 4.5, -.6))) / 2.;
-	return mat * vec3(1, 1, 1.1) * ((diff + spec) * sha + occ * .025) + min(glow, 1.);
+	col = mat * vec3(1, 1, 1.1) * ((max(max(0., dot(lightDir1, n) * flicker), dot(lightDir2, n)) + spec) * (calcShadow(p, vec3(0, 4.5, 4.3)) * flicker + calcShadow(p, vec3(0, 4.5, -.6))) / 2. + min(1., .2 + calcAO(p, n, .15) * calcAO(p, n, .05)) * .025);
+	return col + min(glow, 1.);
 }
 
 void march(vec3 ro, vec3 rd, out vec3 p, out vec2 h) {
 	float d = .01;
-	for (float steps = ZERO; steps < 60.; steps++) {
+	for (float steps = min(iTime, 0.); steps < 60.; steps++) {
 		p = ro + rd * d;
 		h = map(p, true);
 		if (abs(h.x) < .0015 * d) break;

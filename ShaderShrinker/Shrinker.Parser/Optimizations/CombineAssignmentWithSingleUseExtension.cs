@@ -22,7 +22,7 @@ namespace Shrinker.Parser.Optimizations
         /// </summary>
         public static void CombineAssignmentWithSingleUse(this SyntaxNode rootNode)
         {
-            var functionNodes = rootNode.FindFunctionDefinitions().ToList();
+            var functionNodes = rootNode.FunctionDefinitions().ToList();
             foreach (var functionNode in functionNodes)
             {
                 while (true)

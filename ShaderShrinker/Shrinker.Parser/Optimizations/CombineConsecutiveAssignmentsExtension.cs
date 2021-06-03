@@ -20,7 +20,7 @@ namespace Shrinker.Parser.Optimizations
         public static void CombineConsecutiveAssignments(this SyntaxNode rootNode)
         {
             // Merge consecutive assignments of the same variable.
-            foreach (var functionNode in rootNode.FindFunctionDefinitions())
+            foreach (var functionNode in rootNode.FunctionDefinitions())
             {
                 foreach (var braces in functionNode.TheTree.OfType<BraceSyntaxNode>().ToList())
                 {

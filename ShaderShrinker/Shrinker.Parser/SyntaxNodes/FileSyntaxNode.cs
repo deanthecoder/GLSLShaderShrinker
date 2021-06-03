@@ -577,18 +577,10 @@ namespace Shrinker.Parser.SyntaxNodes
 
         private void FindFunctionCalls()
         {
-            var knownFunctionNames = new List<string>();
-            WalkTree(
-                     node =>
-                     {
-                         if (node is FunctionDeclarationSyntaxNode declarationNode)
-                             knownFunctionNames.Add(declarationNode.Name);
-                         else if (node is FunctionDefinitionSyntaxNode definitionNode)
-                             knownFunctionNames.Add(definitionNode.Name);
+            var userDefinedFunctions = this.FunctionDefinitions().Select(o => o.Name).ToList();
+            userDefinedFunctions.AddRange(this.FunctionDeclarations().Select(o => o.Name));
 
-                         return true;
-                     });
-            knownFunctionNames = knownFunctionNames.Distinct().ToList();
+            var macros = TheTree.OfType<PragmaDefineSyntaxNode>().Select(o => o.Name).ToList();
 
             var didChange = true;
             while (didChange)
@@ -604,12 +596,37 @@ namespace Shrinker.Parser.SyntaxNodes
                                  return true;
                              if (node.Parent is FunctionDeclarationSyntaxNode || node.Parent is FunctionDefinitionSyntaxNode)
                                  return true;
-                             if (!knownFunctionNames.Contains(node.Token.Content))
+
+                             var functionName = node.Token.Content;
+                             var roundBrackets = (RoundBracketSyntaxNode)match.Single();
+
+                             FunctionCallSyntaxNode functionCall = null;
+                             if (userDefinedFunctions.Contains(functionName))
+                             {
+                                 // User-defined function.
+                                 functionCall = new FunctionCallSyntaxNode((GenericSyntaxNode)node, roundBrackets);
+                             }
+                             else if (GlslFunctionCallSyntaxNode.IsGlslFunction(functionName))
+                             {
+                                 // GLSL function.
+                                 functionCall = new GlslFunctionCallSyntaxNode((GenericSyntaxNode)node, roundBrackets);
+                             }
+                             else if (macros.Contains(functionName))
+                             {
+                                 // #defined macro - Ignore.
+                                 return true;
+                             }
+                             else if (!roundBrackets.TheTree.Any(o => o.Token is SemicolonToken))
+                             {
+                                 // External function - Hopefully defined in another buffer.
+                                 functionCall = new ExternalFunctionCallSyntaxNode((GenericSyntaxNode)node, roundBrackets);
+                             }
+
+                             if (functionCall == null)
                                  return true;
 
-                             node.ReplaceWith(new FunctionCallSyntaxNode((GenericSyntaxNode)node, (RoundBracketSyntaxNode)match.Single()));
+                             node.ReplaceWith(functionCall);
                              didChange = true;
-
                              return false;
                          }
                         );

@@ -60,6 +60,40 @@ namespace UnitTests
 
             Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo("vec2 uv = vec2(1);"));
         }
+        
+        [Test]
+        public void GivenKnownFunctionCallSettingVariableFollowedByExplicitAssignmentCheckJoiningAssignmentToDeclarationDoesNotOccur()
+        {
+            const string Code = "void setA(out int a) { a = 1; } void main() { int a; setA(a); a = 2; }";
+
+            var lexer = new Lexer();
+            lexer.Load(Code);
+
+            var options = CustomOptions.None();
+            options.JoinVariableDeclarationsWithAssignments = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(Code));
+        }
+
+        [Test]
+        public void GivenUnknownFunctionCallSettingVariableFollowedByExplicitAssignmentCheckJoiningAssignmentToDeclarationDoesNotOccur()
+        {
+            const string Code = "void main() { int a; setA(a); a = 2; }";
+
+            var lexer = new Lexer();
+            lexer.Load(Code);
+
+            var options = CustomOptions.None();
+            options.JoinVariableDeclarationsWithAssignments = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(Code));
+        }
 
         [Test]
         public void CheckConstDeclarationsAreGrouped()

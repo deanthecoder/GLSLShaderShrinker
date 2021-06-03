@@ -9,6 +9,9 @@
 //  </summary>
 // -----------------------------------------------------------------------
 
+using System.Linq;
+using Shrinker.Lexer;
+
 namespace Shrinker.Parser.SyntaxNodes
 {
     public abstract class FunctionSyntaxNodeBase : SyntaxNode
@@ -16,7 +19,10 @@ namespace Shrinker.Parser.SyntaxNodes
         public string ReturnType { get; protected set; }
         public string Name => Children[0].Token.Content;
         public RoundBracketSyntaxNode Params => (RoundBracketSyntaxNode)Children[1];
+        public bool HasOutParam => Params.TheTree.Select(o => o.Token as TypeToken).Any(o => o?.InOut == TypeToken.InOutType.InOut || o?.InOut == TypeToken.InOutType.Out);
 
         public bool IsVoidParam() => Params.Children.Count == 1 && Params.Children[0].HasNodeContent("void");
+
+        public bool IsMain() => Name.StartsWith("main");
     }
 }

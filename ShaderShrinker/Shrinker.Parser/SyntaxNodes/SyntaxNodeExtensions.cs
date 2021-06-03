@@ -57,8 +57,11 @@ namespace Shrinker.Parser.SyntaxNodes
             }
         }
 
-        public static IEnumerable<FunctionDefinitionSyntaxNode> FindFunctionDefinitions(this SyntaxNode node) =>
+        public static IEnumerable<FunctionDefinitionSyntaxNode> FunctionDefinitions(this SyntaxNode node) =>
             node.Children.OfType<FunctionDefinitionSyntaxNode>();
+
+        public static IEnumerable<FunctionDeclarationSyntaxNode> FunctionDeclarations(this SyntaxNode node) =>
+            node.Children.OfType<FunctionDeclarationSyntaxNode>();
 
         public static SyntaxNode Root(this SyntaxNode node)
         {
@@ -67,7 +70,7 @@ namespace Shrinker.Parser.SyntaxNodes
             return node;
         }
 
-        public static IEnumerable<VariableAssignmentSyntaxNode> FindGlobalVariables(this SyntaxNode node) =>
+        public static IEnumerable<VariableAssignmentSyntaxNode> GlobalVariables(this SyntaxNode node) =>
             node.Root().Children.OfType<VariableDeclarationSyntaxNode>().SelectMany(o => o.Definitions);
 
         public static bool IsComment(this SyntaxNode node) => node is CommentSyntaxNodeBase || node.Token is CommentTokenBase;

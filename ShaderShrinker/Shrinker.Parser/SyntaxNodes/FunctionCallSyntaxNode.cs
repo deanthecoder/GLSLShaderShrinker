@@ -14,6 +14,9 @@ using System.Linq;
 
 namespace Shrinker.Parser.SyntaxNodes
 {
+    /// <summary>
+    /// Represents a user-defined function.
+    /// </summary>
     public class FunctionCallSyntaxNode : SyntaxNode
     {
         public string Name { get; }
@@ -33,6 +36,6 @@ namespace Shrinker.Parser.SyntaxNodes
 
         protected override SyntaxNode CreateSelf() => new FunctionCallSyntaxNode(Name);
 
-        public bool HasOutParam => this.Root().FindFunctionDefinitions().Any(o => o.Name == Name && o.HasOutParam);
+        public virtual bool HasOutParam => this.Root().Children.OfType<FunctionSyntaxNodeBase>().Any(o => o.Name == Name && o.HasOutParam);
     }
 }

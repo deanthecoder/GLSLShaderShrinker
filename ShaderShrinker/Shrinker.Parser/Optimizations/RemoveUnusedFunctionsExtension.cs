@@ -22,7 +22,7 @@ namespace Shrinker.Parser.Optimizations
             // (E.g. Prevents the 'common' code from all being removed.)
             if (!rootNode
                 .Root()
-                .FindFunctionDefinitions()
+                .FunctionDefinitions()
                 .Select(o => o.Name)
                 .Any(o => o.StartsWith("main")))
                 return;
@@ -31,7 +31,7 @@ namespace Shrinker.Parser.Optimizations
             {
                 var functionRemoved = false;
 
-                var localFunctions = rootNode.FindFunctionDefinitions().ToList();
+                var localFunctions = rootNode.FunctionDefinitions().ToList();
                 foreach (var testFunction in localFunctions.Where(o => !o.IsMain()))
                 {
                     var otherFunctions = localFunctions.Where(o => o != testFunction).ToList();
@@ -46,7 +46,7 @@ namespace Shrinker.Parser.Optimizations
 
                     // Function not used - Remove it (and any matching declaration).
                     testFunction.Remove();
-                    rootNode.Children.OfType<FunctionDeclarationSyntaxNode>().FirstOrDefault(o => o.Name == testFunction.Name)?.Remove();
+                    rootNode.FunctionDeclarations().FirstOrDefault(o => o.Name == testFunction.Name)?.Remove();
                     functionRemoved = true;
                 }
 

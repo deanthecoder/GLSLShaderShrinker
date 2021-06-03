@@ -77,6 +77,21 @@ namespace Shrinker.Parser.Optimizations
                                               var declDef = decl.Definitions.FirstOrDefault(o => o.FullName == defn.FullName && !o.HasValue);
                                               if (declDef != null)
                                               {
+                                                  // Variable may be assigned via a function call's 'out' param.
+                                                  // If so, we can't 'join'.
+                                                  if (declDef
+                                                      .FindDeclarationScope()
+                                                      .TakeWhile(o => o != defn)
+                                                      .OfType<FunctionCallSyntaxNode>()
+                                                      .Where(o => o.HasOutParam)
+                                                      .SelectMany(o => o.Params.TheTree)
+                                                      .OfType<GenericSyntaxNode>()
+                                                      .Any(o => o.StartsWithVarName(declDef.Name)))
+                                                  {
+                                                      n = n.Next;
+                                                      continue;
+                                                  }
+
                                                   // If the (non-const) decl variable list has a defined value _after_
                                                   // the name we just found, we can't join them.
                                                   var indexOfDeclName = decl.Definitions.ToList().IndexOf(declDef);

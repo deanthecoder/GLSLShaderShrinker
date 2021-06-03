@@ -19,7 +19,7 @@ namespace Shrinker.Parser.Optimizations
     {
         public static void SimplifyFunctionDeclarations(this SyntaxNode rootNode)
         {
-            var functionDeclarations = rootNode.Children.OfType<FunctionDeclarationSyntaxNode>().ToList();
+            var functionDeclarations = rootNode.FunctionDeclarations().ToList();
 
             // Remove param names.
             foreach (var declaration in functionDeclarations.Where(o => o.Params.Children.Any()))
@@ -32,14 +32,14 @@ namespace Shrinker.Parser.Optimizations
             }
 
             // Remove declaration if no matching definition.
-            var functionDefinitionNames = rootNode.FindFunctionDefinitions().Select(o => o.Name);
+            var functionDefinitionNames = rootNode.FunctionDefinitions().Select(o => o.Name);
             var surplusDeclarations = functionDeclarations.Where(o => !functionDefinitionNames.Contains(o.Name)).ToList();
 
             // Remove declaration if next reference is the definition.
             var flatNodes = rootNode.TheTree.ToList();
             foreach (var declaration in functionDeclarations)
             {
-                var definitionSite = rootNode.FindFunctionDefinitions().FirstOrDefault(o => o.Name == declaration.Name);
+                var definitionSite = rootNode.FunctionDefinitions().FirstOrDefault(o => o.Name == declaration.Name);
                 var definitionIndex = flatNodes.IndexOf(definitionSite);
 
                 var firstCallSite = flatNodes.OfType<FunctionCallSyntaxNode>().FirstOrDefault(o => o.Name == declaration.Name);

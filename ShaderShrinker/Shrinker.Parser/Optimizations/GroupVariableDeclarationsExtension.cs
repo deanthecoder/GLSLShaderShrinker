@@ -21,7 +21,7 @@ namespace Shrinker.Parser.Optimizations
         /// </summary>
         public static void GroupVariableDeclarations(this SyntaxNode rootNode)
         {
-            var functionNames = rootNode.Root().FindFunctionDefinitions().Select(o => o.Name).ToList();
+            var functionNames = rootNode.Root().FunctionDefinitions().Select(o => o.Name).ToList();
 
             rootNode.WalkTree(
                               node =>

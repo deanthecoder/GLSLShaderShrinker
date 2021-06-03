@@ -26,7 +26,7 @@ namespace Shrinker.Parser.Optimizations
             var repeatSimplifications = false;
 
             // Join simple arithmetic into +=, -=, /=, *=.
-            foreach (var functionContent in rootNode.FindFunctionDefinitions().Select(o => o.Braces))
+            foreach (var functionContent in rootNode.FunctionDefinitions().Select(o => o.Braces))
             {
                 while (true)
                 {

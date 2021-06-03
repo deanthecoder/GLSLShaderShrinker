@@ -25,7 +25,7 @@ namespace UnitTests
         {
             var lexer = new Lexer();
             lexer.Load("void main() { return; }");
-            var functionNode = new Parser(lexer).Parse().FindFunctionDefinitions().Single();
+            var functionNode = new Parser(lexer).Parse().FunctionDefinitions().Single();
 
             Assert.That(functionNode.LocalVariables().Select(o => o.Name), Is.Empty);
         }
@@ -35,7 +35,7 @@ namespace UnitTests
         {
             var lexer = new Lexer();
             lexer.Load("int a = 1; void main() { a = 2; }");
-            var functionNode = new Parser(lexer).Parse().FindFunctionDefinitions().Single();
+            var functionNode = new Parser(lexer).Parse().FunctionDefinitions().Single();
 
             Assert.That(functionNode.LocalVariables().Select(o => o.Name), Is.Empty);
         }
@@ -45,7 +45,7 @@ namespace UnitTests
         {
             var lexer = new Lexer();
             lexer.Load("void main() { float one; int two; }");
-            var functionNode = new Parser(lexer).Parse().FindFunctionDefinitions().Single();
+            var functionNode = new Parser(lexer).Parse().FunctionDefinitions().Single();
 
             Assert.That(functionNode.LocalVariables().Select(o => o.Name), Is.EqualTo(new[] { "one", "two" }));
         }
@@ -55,7 +55,7 @@ namespace UnitTests
         {
             var lexer = new Lexer();
             lexer.Load("void main() { int a = 1, b, c; b = 2; }");
-            var functionNode = new Parser(lexer).Parse().FindFunctionDefinitions().Single();
+            var functionNode = new Parser(lexer).Parse().FunctionDefinitions().Single();
 
             Assert.That(functionNode.LocalVariables().Select(o => o.Name), Is.EqualTo(new[] { "a", "b", "c" }));
         }
@@ -65,7 +65,7 @@ namespace UnitTests
         {
             var lexer = new Lexer();
             lexer.Load("void main(int a) { }");
-            var functionNode = new Parser(lexer).Parse().FindFunctionDefinitions().Single();
+            var functionNode = new Parser(lexer).Parse().FunctionDefinitions().Single();
 
             Assert.That(functionNode.LocalVariables().Select(o => o.Name), Is.Empty);
         }

@@ -22,7 +22,7 @@ namespace Shrinker.Parser.Optimizations
         /// </summary>
         public static void CombineAssignmentWithReturn(this SyntaxNode rootNode)
         {
-            foreach (var functionNode in rootNode.FindFunctionDefinitions())
+            foreach (var functionNode in rootNode.FunctionDefinitions())
             {
                 foreach (var braces in functionNode.TheTree.OfType<BraceSyntaxNode>().ToList())
                 {
@@ -71,7 +71,7 @@ namespace Shrinker.Parser.Optimizations
                             if (functionsInReturn.Any() ||
                                 assignment.TheTree.OfType<FunctionCallSyntaxNode>().Any())
                             {
-                                var globals = rootNode.FindGlobalVariables()
+                                var globals = rootNode.GlobalVariables()
                                     .Where(o => (o.Parent as VariableDeclarationSyntaxNode)?.VariableType.IsConst != true)
                                     .Select(o => o.Name)
                                     .ToList();
@@ -94,7 +94,7 @@ namespace Shrinker.Parser.Optimizations
                             // If variable is passed into a function with an 'out' param, skip it...
                             if (functionsInReturn.Any())
                             {
-                                var allFunctions = rootNode.Root().Children.OfType<FunctionDefinitionSyntaxNode>();
+                                var allFunctions = rootNode.Root().FunctionDefinitions();
                                 var calledFunctionNames = functionsInReturn.Select(o => o.Name).ToList();
                                 var calledFunctions = allFunctions.Where(o => calledFunctionNames.Contains(o.Name));
                                 if (calledFunctions.Any(o => o.HasOutParam))
