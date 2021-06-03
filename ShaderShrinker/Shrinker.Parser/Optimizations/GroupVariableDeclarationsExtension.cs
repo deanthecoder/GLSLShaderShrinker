@@ -21,6 +21,8 @@ namespace Shrinker.Parser.Optimizations
         /// </summary>
         public static void GroupVariableDeclarations(this SyntaxNode rootNode)
         {
+            var functionNames = rootNode.Root().FindFunctionDefinitions().Select(o => o.Name).ToList();
+
             rootNode.WalkTree(
                               node =>
                               {
@@ -68,18 +70,25 @@ namespace Shrinker.Parser.Optimizations
                                                   .Where(o => o.VariableType.Content == decl.VariableType.Content)
                                                   .ToList();
 
+                                          // If the declaration is assigning a value which matches a function name, ignore it.
+                                          // (Splitting the declaration and assignment will cause a compiler error.)
+                                          similarDecls = similarDecls
+                                              .Where(d => !functionNames.Any(d.IsDeclared))
+                                              .ToList();
+
                                           // Append the variables to the first declaration variable list.
                                           var decls =
                                               similarDecls
                                                   .SelectMany(o => o.Definitions)
                                                   .ToList();
-                                          decls.ForEach(o =>
-                                          {
-                                              var newNode = new VariableAssignmentSyntaxNode(o.Name);
-                                              if (o.IsArray)
-                                                  newNode.Adopt(o.Children.First().Clone());
-                                              decl.Adopt(newNode);
-                                          });
+                                          decls.ForEach(
+                                                        o =>
+                                                        {
+                                                            var newNode = new VariableAssignmentSyntaxNode(o.Name);
+                                                            if (o.IsArray)
+                                                                newNode.Adopt(o.Children.First().Clone());
+                                                            decl.Adopt(newNode);
+                                                        });
 
                                           // ...and make the assignment stand on its own (outside of its declaration).
                                           similarDecls.SelectMany(o => o.Definitions).Where(o => !o.HasValue).ToList().ForEach(o => o.Remove());

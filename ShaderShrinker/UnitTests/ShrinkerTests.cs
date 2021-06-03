@@ -39,11 +39,9 @@ namespace UnitTests
             var lexer = new Lexer();
             lexer.Load("// Header\n#define FOO\nconst vec2 uv = vec2(1);");
 
-            var options = CustomOptions.None();
-            options.GroupVariableDeclarations = true;
             var rootNode = new Parser(lexer)
                 .Parse()
-                .Simplify(options);
+                .Simplify(CustomOptions.None());
 
             Assert.That(rootNode.ToCode().Trim(), Is.EqualTo("// Header\n#define FOO\n\nconst vec2 uv = vec2(1);"));
         }
@@ -76,6 +74,23 @@ namespace UnitTests
                 .Simplify(options);
 
             Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo("const int z, a; int foo; vec3 bar;"));
+        }
+
+        [Test]
+        public void GivenVariableNameMatchingFunctionNameCheckDeclarationIsNotSplitFromDefinition()
+        {
+            const string Code = "int f() { return 1; } void main() { float a; int b; float f = f(); }";
+
+            var lexer = new Lexer();
+            lexer.Load(Code);
+
+            var options = CustomOptions.None();
+            options.GroupVariableDeclarations = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(Code));
         }
 
         [Test]
