@@ -38,13 +38,13 @@ namespace Shrinker.Parser.Optimizations
                     foreach (var assignment in assignments)
                     {
                         // Find the declaration matching the variable being assigned to.
-                        var variableDecl = localVariables.LastOrDefault(o => o.FindDeclarationScope().Contains(assignment));
+                        var variableDecl = assignment.GetDeclaration();
                         if (variableDecl == null)
                             continue;
 
                         // Variable must only ever be used once after the assignment.
                         var scopedNodesAfterAssignment = 
-                            variableDecl
+                            assignment
                                 .FindDeclarationScope() // Get the entire scope of the variable.
                                 .SkipWhile(o => o != assignment) // ...starting from the RHS of the assignment.
                                 .Skip(1)

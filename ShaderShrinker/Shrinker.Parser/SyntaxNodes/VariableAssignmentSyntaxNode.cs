@@ -90,7 +90,7 @@ namespace Shrinker.Parser.SyntaxNodes
         /// </summary>
         public IEnumerable<SyntaxNode> FindDeclarationScope()
         {
-            var decl = Parent as VariableDeclarationSyntaxNode ?? this.Root().TheTree.TakeWhile(o => o != this).OfType<VariableDeclarationSyntaxNode>().LastOrDefault(o => o.IsDeclared(Name));
+            var decl = GetDeclaration();
             if (decl == null)
                 yield break;
 
@@ -102,5 +102,8 @@ namespace Shrinker.Parser.SyntaxNodes
             foreach (var node in decl.NextSiblings.SelectMany(o => o.TheTree))
                 yield return node;
         }
+
+        public VariableDeclarationSyntaxNode GetDeclaration() =>
+            Parent as VariableDeclarationSyntaxNode ?? this.Root().TheTree.TakeWhile(o => o != this).OfType<VariableDeclarationSyntaxNode>().LastOrDefault(o => o.IsDeclared(Name));
     }
 }
