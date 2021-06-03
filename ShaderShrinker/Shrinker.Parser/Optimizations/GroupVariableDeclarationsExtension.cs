@@ -77,22 +77,32 @@ namespace Shrinker.Parser.Optimizations
                                               .ToList();
 
                                           // Append the variables to the first declaration variable list.
-                                          var decls =
+                                          var assignments =
                                               similarDecls
                                                   .SelectMany(o => o.Definitions)
                                                   .ToList();
-                                          decls.ForEach(
-                                                        o =>
-                                                        {
-                                                            var newNode = new VariableAssignmentSyntaxNode(o.Name);
-                                                            if (o.IsArray)
-                                                                newNode.Adopt(o.Children.First().Clone());
-                                                            decl.Adopt(newNode);
-                                                        });
+                                          if (decl.VariableType.IsConst)
+                                          {
+                                              // Const assignments move to the target location.
+                                              decl.Adopt(assignments.OfType<SyntaxNode>().ToArray());
+                                              similarDecls.ForEach(o => o.Remove());
+                                          }
+                                          else
+                                          {
+                                              // The declarations are moved to the target location, but assignments left where they are.
+                                              assignments.ForEach(
+                                                            o =>
+                                                            {
+                                                                var newNode = new VariableAssignmentSyntaxNode(o.Name);
+                                                                if (o.IsArray)
+                                                                    newNode.Adopt(o.Children.First().Clone());
+                                                                decl.Adopt(newNode);
+                                                            });
 
-                                          // ...and make the assignment stand on its own (outside of its declaration).
-                                          similarDecls.SelectMany(o => o.Definitions).Where(o => !o.HasValue).ToList().ForEach(o => o.Remove());
-                                          similarDecls.ForEach(o => o.ReplaceWith(o.Definitions));
+                                              // ...and make the assignment stand on its own (outside of its declaration).
+                                              similarDecls.SelectMany(o => o.Definitions).Where(o => !o.HasValue).ToList().ForEach(o => o.Remove());
+                                              similarDecls.ForEach(o => o.ReplaceWith(o.Definitions));
+                                          }
 
                                           i = decl.NodeIndex + 1;
                                       }

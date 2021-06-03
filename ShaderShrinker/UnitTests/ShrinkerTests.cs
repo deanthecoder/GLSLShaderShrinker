@@ -77,6 +77,21 @@ namespace UnitTests
         }
 
         [Test]
+        public void CheckConstDeclarationsWithAssignmentsAreGrouped()
+        {
+            var lexer = new Lexer();
+            lexer.Load("const int a = 1; const int b = 2;");
+
+            var options = CustomOptions.None();
+            options.GroupVariableDeclarations = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo("const int a = 1, b = 2;"));
+        }
+
+        [Test]
         public void GivenVariableNameMatchingFunctionNameCheckDeclarationIsNotSplitFromDefinition()
         {
             const string Code = "int f() { return 1; } void main() { float a; int b; float f = f(); }";
