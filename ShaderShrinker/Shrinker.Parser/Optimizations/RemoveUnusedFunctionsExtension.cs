@@ -18,6 +18,15 @@ namespace Shrinker.Parser.Optimizations
     {
         public static void RemoveUnusedFunctions(this SyntaxNode rootNode)
         {
+            // There must be an entry point function defined, otherwise do nothing.
+            // (E.g. Prevents the 'common' code from all being removed.)
+            if (!rootNode
+                .Root()
+                .FindFunctionDefinitions()
+                .Select(o => o.Name)
+                .Any(o => o.StartsWith("main")))
+                return;
+
             while (true)
             {
                 var functionRemoved = false;
