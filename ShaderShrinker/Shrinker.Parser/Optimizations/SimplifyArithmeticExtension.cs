@@ -117,7 +117,7 @@ namespace Shrinker.Parser.Optimizations
                 .Where(
                        o => o.Token is SymbolOperatorToken token &&
                             token.Content == "+" &&
-                            (o.Previous == null || new[] { "=", "(", "return", ",", "*", "/", "%", "-" }.Contains(o.Previous.Token?.Content)))
+                            (o.Previous == null || o.Previous.Token?.Content?.IsAnyOf("=", "(", "return", ",", "*", "/", "%", "-") == true))
                 .ToList())
             {
                 plusNode.Remove();

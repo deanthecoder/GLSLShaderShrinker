@@ -105,9 +105,9 @@ namespace Shrinker.Parser.Optimizations
                 // Can we simplify by removing the components?
                 var canSimplify = vecType.VariableType.Content switch
                 {
-                    "vec2" => new[] { "xy", "rg" }.Any(o => lhsRhs[1] == o),
-                    "vec3" => new[] { "xyz", "rgb" }.Any(o => lhsRhs[1] == o),
-                    "vec4" => new[] { "xyzw", "rgba" }.Any(o => lhsRhs[1] == o),
+                    "vec2" => lhsRhs[1].IsAnyOf("xy", "rg"),
+                    "vec3" => lhsRhs[1].IsAnyOf("xyz", "rgb"),
+                    "vec4" => lhsRhs[1].IsAnyOf("xyzw", "rgba"),
                     _ => false
                 };
 
