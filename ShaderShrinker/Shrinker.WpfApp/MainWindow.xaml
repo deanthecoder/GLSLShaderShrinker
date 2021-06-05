@@ -91,7 +91,7 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
-                        <StackPanel Grid.Column="0" IsEnabled="{Binding IsFileOpen}">
+                        <StackPanel Grid.Column="0" IsEnabled="{Binding IsSrcFileOpen}">
                             <TextBlock Text="Step 2" FontSize="10" Margin="0,-16,0,0"/>
 
                             <!-- Maximum -->
@@ -210,7 +210,17 @@
                                              ToolTip="Excludes whitespace and comments"/>
                     </StackPanel>
 
-                    <Grid>
+                    <Grid IsEnabled="{Binding IsOptimizedFileOpen}">
+                        <Grid.Style>
+                            <Style TargetType="Grid">
+                                <Style.Triggers>
+                                    <Trigger Property="IsEnabled" Value="False">
+                                        <Setter Property="Opacity" Value="0.5"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Grid.Style>
+
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>

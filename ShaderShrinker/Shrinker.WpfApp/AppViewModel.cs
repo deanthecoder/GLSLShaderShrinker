@@ -51,9 +51,9 @@ namespace Shrinker.WpfApp
         public ICommand OnLoadFromClipboardCommand => m_loadFromClipboardCommand ??= new RelayCommand(LoadGlslFromClipboard, _ => Clipboard.ContainsText());
         public ICommand OnLoadFromFileCommand => m_loadFromFileCommand ??= new RelayCommand(LoadGlslFromFile);
         public ICommand OnLoadFromShadertoyCommand => m_loadFromShadertoyCommand ??= new RelayCommand(LoadGlslFromShadertoy);
-        public ICommand OnSaveToClipboardCommand => m_saveToClipboardCommand ??= new RelayCommand(SaveGlslToClipboard, _ => IsFileOpen);
-        public ICommand OnSaveToFileCommand => m_saveToFileCommand ??= new RelayCommand(SaveGlslToFile, _ => IsFileOpen);
-        public ICommand OnShrinkCommand => m_shrinkCommand ??= new RelayCommand(ShrinkAsync, _ => IsFileOpen);
+        public ICommand OnShrinkCommand => m_shrinkCommand ??= new RelayCommand(ShrinkAsync, _ => IsSrcFileOpen);
+        public ICommand OnSaveToClipboardCommand => m_saveToClipboardCommand ??= new RelayCommand(SaveGlslToClipboard, _ => IsOptimizedFileOpen);
+        public ICommand OnSaveToFileCommand => m_saveToFileCommand ??= new RelayCommand(SaveGlslToFile, _ => IsOptimizedFileOpen);
         public ICommand OnCustomOptionsAcceptedCommand => m_customOptionsAcceptedCommand ??= new RelayCommand(AcceptCustomOptions);
 
         public CustomOptions CustomOptions { get; }
@@ -69,7 +69,7 @@ namespace Shrinker.WpfApp
                     return;
                 m_originalCode = value;
                 OriginalSize = value?.GetCodeCharCount() ?? 0;
-                OnPropertyChanged(nameof(IsFileOpen));
+                OnPropertyChanged(nameof(IsSrcFileOpen));
                 OnPropertyChanged();
             }
         }
@@ -84,7 +84,7 @@ namespace Shrinker.WpfApp
 
                 m_optimizedCode = value;
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(IsFileOpen));
+                OnPropertyChanged(nameof(IsOptimizedFileOpen));
             }
         }
 
@@ -129,7 +129,9 @@ namespace Shrinker.WpfApp
 
         public SnackbarMessageQueue MyMessageQueue { get; } = new SnackbarMessageQueue();
 
-        public bool IsFileOpen => !string.IsNullOrWhiteSpace(OriginalCode);
+        public bool IsSrcFileOpen => !string.IsNullOrWhiteSpace(OriginalCode);
+        public bool IsOptimizedFileOpen => !string.IsNullOrWhiteSpace(OptimizedCode);
+
         public string AppTitle
         {
             get
