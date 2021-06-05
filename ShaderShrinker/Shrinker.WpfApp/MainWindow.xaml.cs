@@ -27,8 +27,6 @@ namespace Shrinker.WpfApp
             Closing += (sender, args) => appViewModel.SaveCustomOptions();
             appViewModel.GlslLoaded += (sender, args) =>
             {
-                importHost.IsOpen = false;
-
                 using (new BusyCursor())
                 {
                     if (args.originalCode != DiffControl.OldText)

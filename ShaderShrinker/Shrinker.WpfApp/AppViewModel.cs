@@ -185,6 +185,7 @@ namespace Shrinker.WpfApp
             if (string.IsNullOrWhiteSpace(id) || id.Length != 6)
                 return;
 
+            using (new BusyCursor())
             using (var wc = new WebClient())
             {
                 var json = wc.DownloadString($"https://www.shadertoy.com/api/v1/shaders/{id}?key=BtntM4");
@@ -194,6 +195,8 @@ namespace Shrinker.WpfApp
                 if (!string.IsNullOrWhiteSpace(shaderCode))
                     LoadGlslFromStringAsync(shaderCode);
             }
+
+            DialogHost.CloseDialogCommand.Execute(null, null);
         }
 
         private void SaveGlslToFile(object obj)

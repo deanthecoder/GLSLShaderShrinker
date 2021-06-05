@@ -71,6 +71,24 @@
                                 <materialDesign:PackIcon Kind="FileDownload"/>
                             </Button>
                             <Button ToolTip="From Shadertoy..." Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}">
+                                <Button.CommandParameter>
+                                    <!-- Shadertoy import options -->
+                                    <StackPanel Orientation="Horizontal" Margin="32">
+                                        <TextBox materialDesign:HintAssist.Hint="Shadertoy Shader ID (E.g. tt3yRH)"
+                                                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                                 Text="{Binding ShadertoyShaderId}"
+                                                 Foreground="White"
+                                                 materialDesign:HintAssist.Foreground="LightGray"
+                                                 Margin="0,0,8,0"/>
+                                        <Button Command="{Binding OnLoadFromShadertoyCommand}" Margin="4" Foreground="White" ToolTip="Download">
+                                            <materialDesign:PackIcon Kind="Download" Width="16" Height="16"/>
+                                        </Button>
+                                        <Button Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Margin="4" Foreground="White" ToolTip="Cancel">
+                                            <materialDesign:PackIcon Kind="Cancel" Width="16" Height="16"/>
+                                        </Button>
+                                    </StackPanel>
+                                </Button.CommandParameter>
+
                                 <materialDesign:PackIcon Kind="CloudDownload"/>
                             </Button>
                         </StackPanel>
@@ -145,26 +163,6 @@
                     </Grid>
                 </Border>
             </StackPanel>
-
-            <!-- Shadertoy import options -->
-            <materialDesign:DialogHost Grid.Column="0" Grid.Row="0" x:Name="importHost" Identifier="ImportHost" Grid.ColumnSpan="2" Grid.RowSpan="2">
-                <materialDesign:DialogHost.DialogContent>
-                    <StackPanel Orientation="Horizontal" Margin="32">
-                        <TextBox materialDesign:HintAssist.Hint="Shadertoy Shader ID (E.g. tt3yRH)"
-                                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                                 Text="{Binding ShadertoyShaderId}"
-                                 Foreground="White"
-                                 materialDesign:HintAssist.Foreground="LightGray"
-                                 Margin="0,0,8,0"/>
-                        <Button Command="{Binding OnLoadFromShadertoyCommand}" Margin="4" Foreground="White" ToolTip="Download">
-                            <materialDesign:PackIcon Kind="Download" Width="16" Height="16"/>
-                        </Button>
-                        <Button Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Margin="4" Foreground="White" ToolTip="Cancel">
-                            <materialDesign:PackIcon Kind="Cancel" Width="16" Height="16"/>
-                        </Button>
-                    </StackPanel>
-                </materialDesign:DialogHost.DialogContent>
-            </materialDesign:DialogHost>
 
             <!-- Code preview -->
             <Grid Grid.Column="1" Grid.Row="1">
