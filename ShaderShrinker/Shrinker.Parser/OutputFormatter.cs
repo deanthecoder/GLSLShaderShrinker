@@ -154,7 +154,7 @@ namespace Shrinker.Parser
 
                                 sb.Append(o.Token.Content);
 
-                                if (o.Next is VariableAssignmentSyntaxNode)
+                                if (o.Next is VariableAssignmentSyntaxNode or FunctionCallSyntaxNode)
                                     sb.Append(' ');
                                 break;
 
