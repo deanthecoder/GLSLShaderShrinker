@@ -9,10 +9,13 @@
 //  </summary>
 // -----------------------------------------------------------------------
 
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
+using Shrinker.Lexer;
 
 namespace UnitTests
 {
@@ -32,17 +35,22 @@ namespace UnitTests
             var readmeLines = File.ReadAllLines(readmeFile.FullName).TakeWhile(o => !o.StartsWith("# Features")).ToList();
             readmeLines.Add("# Features");
 
+            var tocIndex = readmeLines.Count;
+            var toc = new List<string>();
+
             // Find options XAML.
             var optionsXamlFile = rootDir.EnumerateFiles("OptionsDialog.xaml", SearchOption.AllDirectories).FirstOrDefault();
             Assert.That(optionsXamlFile, Is.Not.Null);
 
             // Read all the Markdown tooltip content.
             var inTooltip = false;
+            var indent = 0;
             foreach (var xamlLine in File.ReadAllLines(optionsXamlFile.FullName))
             {
                 if (xamlLine.Contains("<MdXaml:MarkdownScrollViewer"))
                 {
                     inTooltip = true;
+                    indent = xamlLine.IndexOf('<') + 4;
                 }
                 else if (xamlLine.Contains("</MdXaml:MarkdownScrollViewer"))
                 {
@@ -52,10 +60,33 @@ namespace UnitTests
                 }
 
                 if (inTooltip && !xamlLine.TrimStart().StartsWith("<"))
-                    readmeLines.Add(xamlLine.Trim());
+                {
+                    var mdLine = xamlLine
+                        .Substring(Math.Min(xamlLine.Length, indent))
+                        .TrimEnd()
+                        .Replace("```c", "```glsl");
+
+                    if (xamlLine.TrimStart().StartsWith("### "))
+                    {
+                        // Build 'features' TOC.
+                        var heading = xamlLine.Trim(' ', '#');
+                        toc.Add($"* [{heading}](#{ToHeaderLink(heading)})");
+
+                        mdLine = mdLine.Replace("### ", "## "); // Elevate the header level one-above what we use in the XAML.
+                    }
+
+                    readmeLines.Add(mdLine);
+                }
             }
 
+            readmeLines.InsertRange(tocIndex, toc);
             File.WriteAllLines(readmeFile.FullName, readmeLines);
+        }
+
+        private static string ToHeaderLink(string s)
+        {
+            s = s.Replace(' ', '-');
+            return s.ToLower();
         }
     }
 }
