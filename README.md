@@ -2,6 +2,8 @@
 ## What Is It For?
 GLSL Shader Shrinker is a Windows GUI tool that attempts to reduce the size of GLSL fragment shader code, whilst keeping it _readable_ and understandable.
 
+It is written in C# using WPF and Visual Studio 2019, and has several hundred NUnit-powered unit tests.
+
 ![Main UI](img/ED209.png?raw=true "Main UI")
 
 It is designed to work primarily with code from [Shadertoy](https://www.shadertoy.com/), but has limited support for other styles of GLSL too (E.g. [Bonzomatic](https://github.com/Gargaj/Bonzomatic))

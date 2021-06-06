@@ -88,6 +88,9 @@ namespace Shrinker.Parser.Optimizations
                             continue; // Can't find what type of 'vec' we have, or different types.
                     }
 
+                    if (lhsRhs.Length >= 2 && lhsRhs[1].Length != vectorLength)
+                        continue; // RHS does not define the entire vector.
+
                     // They match - Remove the surrounding vecN keyword.
                     brackets.Remove();
                     vectorNode.ReplaceWith(vecParam);

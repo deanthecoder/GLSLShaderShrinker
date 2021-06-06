@@ -1085,6 +1085,7 @@ namespace UnitTests
                     "vec2 ab; vec4 v = vec4(ab, ab.x, ab.y);",
                     "vec2 ab; vec4 v = vec4(ab, .1, .2);",
                     "vec3 ab; vec2 v = vec2(ab.x, ab.z);",
+                    "vec3 ab; vec2 v = vec2(ab.x);",
                     "struct S{ float A, B, C; }; S s; vec3 v = vec3(s.A, s.B, s.C);")] string code,
             [Values("vec3 ab; vec4 v = vec4(ab, 1);",
                     "vec3 ab; vec4 v = vec4(1, ab);",
@@ -1096,6 +1097,7 @@ namespace UnitTests
                     "vec2 ab; vec4 v = vec4(ab, ab);",
                     "vec2 ab; vec4 v = vec4(ab, .1, .2);",
                     "vec3 ab; vec2 v = ab.xz;",
+                    "vec3 ab; vec2 v = vec2(ab.x);",
                     "struct S { float A, B, C; }; S s; vec3 v = vec3(s.A, s.B, s.C);")] string expected)
         {
             var lexer = new Lexer();
