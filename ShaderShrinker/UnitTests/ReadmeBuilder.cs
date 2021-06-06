@@ -64,7 +64,7 @@ namespace UnitTests
                     var mdLine = xamlLine
                         .Substring(Math.Min(xamlLine.Length, indent))
                         .TrimEnd()
-                        .Replace("```c", "```glsl");
+                        .Replace("&lt;", "<");
 
                     if (xamlLine.TrimStart().StartsWith("### "))
                     {

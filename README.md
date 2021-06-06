@@ -15,7 +15,7 @@ After writing a Shadertoy shader, usually from my boilerplate starting code, the
 It occurred to me all of these steps can be automated.
 
 ## What Is It *Not* For?
-This is *not* a tool to compete with certain other GLSL tools to absolutely MINIMIZE the size of the GLSL code - Useful for preparing GLSL for use in 4KB graphics demos, etc.
+This is *not* a tool to compete with certain other tools to absolutely MINIMIZE the size of the code - Useful for preparing GLSL for use in 4KB graphics demos, etc.
 
 GLSL Shader Shrink will _not_:
 * Rename functions and variable to single-characters.
@@ -25,6 +25,8 @@ GLSL Shader Shrink will _not_:
 * ...or otherwise '[GOLF](https://en.wikipedia.org/wiki/Code_golf)' anything.
 
 ## Example (Shadertoy Starting Point)
+A small snippet of GLSL which shows **some** of the optimizations available.
+
 ### Before Processing
 ```glsl
 void mainImage( out vec4 fragColor, in vec2 fragCoord )
@@ -51,7 +53,7 @@ void mainImage(out vec4 fragColor, vec2 fragCoord) {
 * Numbers simplified - Decimal places and in ```vec4``` construction.
 * Comments removed.
 
-**Note:** All these changes are optional within the tool.
+**Note:** All these changes are optional within the tool, and many other optimizations are available.
 
 ---
 ## Getting Started
@@ -64,7 +66,7 @@ You first need to import your GLSL into the tool.
 ![Import](img/Import.png?raw=true "Import")
 
 This can be achieved using:
-* Cut'n'paste from the clipboard. (CTRL-V)
+* Copy'n'paste from the clipboard. (CTRL-V)
 * Import from a text file.
 * Download from [Shadertoy](https://www.shadertoy.com/) using an 'id'.
 
@@ -77,7 +79,7 @@ Next choose the level of processing you want to apply.
 
 * Maximum processing - All options enabled.
 * Minimal processing - Minimal changes (Mostly code reformatting).
-* Custom options - Toggle exactly which processing features yoiu require.
+* Custom options - Toggle exactly which processing features you require.
 
 ### Step 3 - Exporting GLSL Code
 Export the 'shrunk' GLSL.
@@ -85,14 +87,14 @@ Export the 'shrunk' GLSL.
 ![Export](img/Export.png?raw=true "Export")
 
 This can be achieved using:
-* Cut'n'paste from the clipboard. (CTRL-C)
+* Copy'n'paste from the clipboard. (CTRL-C)
 * Export from a text file.
 
 ...and then use with Shadertoy, Bonzomatic, etc.
 
 ---
 ## Limitations
-Despite a lot of effort being spent trying to ensure the tool produces great output every time, there are always going to be edge cases caused by different coding styles and patterns of content.
+Despite a lot of effort spent trying to ensure the tool produces great output every time, there are always going to be edge cases caused by different coding styles and patterns of content.
 
 Heavy use of ```#define``` macros and ```#if...#else...#endif``` blocks can cause confusion when trying to parse the code.  Compilers have the luxury of seeing which specific code path is enabled, but a tool like this needs to understand **all** possible code paths at the same time - Not always easy!
 
@@ -127,12 +129,12 @@ In most cases they can be worked-around using a set of 'custom' settings which d
 ## Remove Comments
 Remove all C/C++ -style comments from the code.
 #### Before
-```glsl
+```c
 // This comment will be removed.
 int myFunc(vec3 p) { return 1; }
 ```
 #### After
-```glsl
+```c
 int myFunc(vec3 p) { return 1; }
 ```
 
@@ -140,7 +142,7 @@ int myFunc(vec3 p) { return 1; }
 ## Keep Header Comments
 Keep the top-most comments in the code, even when removing all others.
 #### Before
-```glsl
+```c
 // 'My Shader' written Me.
 // This comment will stay.
 int aGlobal = 2;
@@ -149,7 +151,7 @@ int aGlobal = 2;
 int myFunc(vec3 p) { return 1; }
 ```
 #### After
-```glsl
+```c
 // 'My Shader' written Me.
 // This comment will stay.
 int aGlobal = 2;
@@ -167,14 +169,14 @@ Remove any functions that are not called within the code.
 ## Remove Unused Variables
 Remove any global or local variables not used within the code.
 #### Before
-```glsl
+```c
 int myFunc() {
-    int unused = 2; // &lt;-This will be removed.
+    int unused = 2; // <-This will be removed.
     return 1;
 }
 ```
 #### After
-```glsl
+```c
 int myFunc(vec3 p) { return 1; }
 ```
 
@@ -182,7 +184,7 @@ int myFunc(vec3 p) { return 1; }
 ## Remove Unreachable Code
 Remove any code which cannot be reached.
 #### Before
-```glsl
+```c
 float myFunc(vec3 p) {
     return p.x + p.y - p.z;
 
@@ -191,7 +193,7 @@ float myFunc(vec3 p) {
 }
 ```
 #### After
-```glsl
+```c
 float myFunc(vec3 p) {
     return p.x + p.y - p.z;
 }
@@ -201,7 +203,7 @@ float myFunc(vec3 p) {
 ## Remove Disabled Code
 Remove any commented-out code, or code surrounded with `#if 0...#endif`.
 #### Before
-```glsl
+```c
 #if 1
 float myFunc(vec3 p) { return p.x + p.y - p.z; }
 #else
@@ -209,7 +211,7 @@ float myFunc(vec3 p) { return 3.141; }
 #endif
 ```
 #### After
-```glsl
+```c
 float myFunc(vec3 p) { return p.x + p.y - p.z; }
 ```
 
@@ -220,7 +222,7 @@ float myFunc(vec3 p) { return p.x + p.y - p.z; }
 * Removes declaration parameter names.
 
 #### Before
-```glsl
+```c
 // Declare a function.
 float sum(float value1, float value2);
 
@@ -231,7 +233,7 @@ float sum(float value1, float value2) { return value1 + value2; }
 void main() { myFunc(1, 2); }
 ```
 #### After
-```glsl
+```c
 // Define the function.
 float sum(float value1, float value2) { return value1 + value2; }
 
@@ -245,12 +247,12 @@ void main() { myFunc(1, 2); }
 * Removes `in` keywords (which is the default in GLSL).
 
 #### Before
-```glsl
+```c
 float myFunc(void) { return 3.141; }
 float sum(in float a, in float b) { return a + b; }
 ```
 #### After
-```glsl
+```c
 float myFunc() { return 3.141; }
 float sum(float a, float b) { return a + b; }
 ```
@@ -261,7 +263,7 @@ float sum(float a, float b) { return a + b; }
 * Applies to global variables, local variables, and fields in a `struct`.
 
 #### Before
-```glsl
+```c
 struct MyType {
     vec3 hit;
     vec3 color;
@@ -269,7 +271,7 @@ struct MyType {
 };
 ```
 #### After
-```glsl
+```c
 struct MyType {
     vec3 hit, color;
     vec2 uv;
@@ -281,7 +283,7 @@ struct MyType {
 Join variable declarations with their corresponding assignments, removing the need for the variable name to be specified twice.
 
 #### Before
-```glsl
+```c
 float myFunc() {
     float result; // This will move.
     float b = 1.0;
@@ -290,7 +292,7 @@ float myFunc() {
 }
 ```
 #### After
-```glsl
+```c
 float myFunc() {
     float b = 1.0;
     float result = b * 3.141;
@@ -298,7 +300,7 @@ float myFunc() {
 }
 ```
 **Note:** Fully simplified this would become...
-```glsl
+```c
 float myFunc() { return 3.141; }
 ```
 
@@ -309,14 +311,14 @@ Find any variables assigned a value that can be made `const`.
 **Note:** These can become candidates for inlining into the code, when used with other options.
 
 #### Before
-```glsl
+```c
 float myFunc() {
     float PI = 3.141;
     return 2.0 * PI;
 }
 ```
 #### After
-```glsl
+```c
 float myFunc() {
     const float PI = 3.141;
     return 2.0 * PI;
@@ -330,14 +332,14 @@ Remove a `const` variable by inlining it in all the places it is used.
 **Note:** This will only be performed if it will result in shorter code.
 
 #### Before
-```glsl
+```c
 const float MAX_DIST = 128.0;
 
-bool isVisible(float dist) { return dist &lt;= MAX_DIST; }
+bool isVisible(float dist) { return dist <= MAX_DIST; }
 ```
 #### After
-```glsl
-bool isVisible(float dist) { return dist &lt;= 128.0; }
+```c
+bool isVisible(float dist) { return dist <= 128.0; }
 ```
 
 ---
@@ -347,21 +349,21 @@ Remove a `#define` by inlining its (constant) value in all the places it is used
 **Note:** This will only be performed if it will result in shorter code.
 
 #### Before
-```glsl
+```c
 #define MAX_DIST 128.0
 
-bool isVisible(float dist) { return dist &lt;= MAX_DIST; }
+bool isVisible(float dist) { return dist <= MAX_DIST; }
 ```
 #### After
-```glsl
-bool isVisible(float dist) { return dist &lt;= 128.0; }
+```c
+bool isVisible(float dist) { return dist <= 128.0; }
 ```
 
 ---
 ## Simplify Float Number Format
 Performs a variety of formatting changes to represent numbers using less characters.
 #### Before
-```glsl
+```c
 float a = 1.200;
 float b = 1.00;
 float c = 23.0f;
@@ -372,7 +374,7 @@ int   g = int(1.2);
 int   h = int(23);
 ```
 #### After
-```glsl
+```c
 float a = 1.2;
 float b = 1.;
 float c = 23.;
@@ -387,14 +389,14 @@ int   h = 23;
 ## Simplify Vector Construction
 Simplify the construction of vector and matrix types.
 #### Before
-```glsl
+```c
 vec3 a = vec3(1.0, 2.0, 3.0);
 vec2 b = vec2(4.0, 4.0);
 vec3 c = a.xyz;
 vec3 d = vec3(a);
 ```
 #### After
-```glsl
+```c
 vec3 a = vec3(1, 2, 3);
 vec2 b = vec2(4);
 vec3 c = a;
@@ -405,13 +407,13 @@ vec3 d = a;
 ## Simplify Vector References
 Simplify the construction of vector and matrix types.
 #### Before
-```glsl
+```c
 vec3 a = vec3(1, 2, 3);
 vec2 b = vec2(a.x, a.y);
 vec3 c = vec2(a.x, a.y, a.z, a.x);
 ```
 #### After
-```glsl
+```c
 vec3 a = vec3(1, 2, 3);
 vec2 b = a.xy;
 vec3 c = a.xyzx;
@@ -421,14 +423,14 @@ vec3 c = a.xyzx;
 ## Simplify Code Branching
 Simplify branches by removing the ```else``` keyword where possible.
 #### Before
-```glsl
+```c
 if (a == b)
     return a;
-else // &lt; Not required.
+else // < Not required.
     return a + b;
 ```
 #### After
-```glsl
+```c
 if (a == b)
     return a;
 return a + b;
@@ -438,7 +440,7 @@ return a + b;
 ## Combine Consecutive Assignments
 Consecutive assignments of the same variable can often be inlined.
 #### Before
-```glsl
+```c
 float doMaths() {
     float a = myFunc();
     a = pow(a, 2.0);
@@ -447,7 +449,7 @@ float doMaths() {
 }
 ```
 #### After
-```glsl
+```c
 float doMaths() {
     float a = pow(myFunc(), 2.0) + 23.3;
     return a;
@@ -458,7 +460,7 @@ float doMaths() {
 ## Combine Assignment With Single Use
 An assignment used on the next line can often be inlined.
 #### Before
-```glsl
+```c
 float doMaths() {
     float a, b, c;
     a = myFunc();
@@ -468,7 +470,7 @@ float doMaths() {
 }
 ```
 #### After
-```glsl
+```c
 float doMaths() {
     float c;
     c = pow(myFunc(), 2.0) * 2.2;
@@ -480,7 +482,7 @@ float doMaths() {
 ## Introduce +=, -=, /=, *=
 Make use of a combined math operator/assignment when possible.
 #### Before
-```glsl
+```c
 float doMaths() {
     float a = 2.1;
     a += 1.0;
@@ -489,7 +491,7 @@ float doMaths() {
 }
 ```
 #### After
-```glsl
+```c
 float doMaths() {
     float a = 2.1;
     a++;
@@ -502,13 +504,13 @@ float doMaths() {
 ## Simplify Mathematical Expressions
 Reduce unnecessary round brackets when performing arithmetic.
 #### Before
-```glsl
+```c
 float doMaths() {
     return (2.0 * (3.141)) * (1.1 + 2.2);
 }
 ```
 #### After
-```glsl
+```c
 float doMaths() {
     return 2.0 * 3.141 * (1.1 + 2.2);
 }
