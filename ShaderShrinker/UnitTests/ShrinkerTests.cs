@@ -1014,6 +1014,24 @@ namespace UnitTests
         }
 
         [Test, Sequential]
+        public void CheckCombiningAssignmentWithUseNotPerformedIfVariableDeclaredInOuterScope(
+            [Values("int main() { int a; { a = 1; return a; } }",
+                    "int main() { int a = 1; { a = 2; return a; } }",
+                    "int main() { int a = 1; { int b; a = 2; b = a + 1; } }")] string code)
+        {
+            var lexer = new Lexer();
+            lexer.Load(code);
+
+            var options = CustomOptions.None();
+            options.CombineAssignmentWithSingleUse = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(code));
+        }
+
+        [Test, Sequential]
         public void CheckCombiningConsecutiveReassignments(
             [Values("int main() { int a = 1; a = a + 2; a = a - 4; return a; }",
                     "int main() { int a = 1; a = a * 2; a = a / 4; return a; }",

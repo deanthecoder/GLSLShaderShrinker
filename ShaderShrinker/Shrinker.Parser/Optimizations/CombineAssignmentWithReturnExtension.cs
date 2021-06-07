@@ -52,6 +52,10 @@ namespace Shrinker.Parser.Optimizations
                             if (usages.Count != 1)
                                 continue; // Used more than once.  Ignore...
 
+                            // The assignment must happen in the same scope as the variable declaration.
+                            if (localVariable.FindAncestor<BraceSyntaxNode>() != returnNode.FindAncestor<BraceSyntaxNode>())
+                                continue;
+
                             // Find the last assignment of the variable.
                             var assignment = braces
                                 .FindLastChild<VariableAssignmentSyntaxNode>(o => o.Name.StartsWithVarName(localVariable.Name));

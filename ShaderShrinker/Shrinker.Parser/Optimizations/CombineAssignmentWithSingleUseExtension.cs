@@ -70,6 +70,10 @@ namespace Shrinker.Parser.Optimizations
                         if (nextAssignment.Name == assignment.Name)
                             continue;
 
+                        // The assignment must happen in the same scope as the variable declaration.
+                        if (variableDecl.FindAncestor<BraceSyntaxNode>() != nextAssignment.FindAncestor<BraceSyntaxNode>())
+                            continue;
+
                         // ...and must use the variable exactly once...
                         var nextAssignmentUsesOfVar =
                             nextAssignment

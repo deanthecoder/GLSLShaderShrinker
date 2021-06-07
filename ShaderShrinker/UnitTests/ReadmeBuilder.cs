@@ -15,7 +15,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
-using Shrinker.Lexer;
 
 namespace UnitTests
 {
