@@ -49,7 +49,7 @@ namespace Shrinker.Parser.Optimizations
                     .Where(
                            o => o.Token is INumberToken &&
                                 o.Token.Content.StartsWith("-") &&
-                                o.Previous?.Token.GetMathSymbolType() == TokenExtensions.MathSymbolType.AddSubtract)
+                                o.Previous?.Token?.GetMathSymbolType() == TokenExtensions.MathSymbolType.AddSubtract)
                     .ToList())
                 {
                     var symbol = numNode.Previous.Token.Content[0] == '-' ? "+" : "-";
@@ -63,7 +63,7 @@ namespace Shrinker.Parser.Optimizations
                     .OfType<GenericSyntaxNode>()
                     .Where(
                            o => (o.Token as INumberToken)?.IsOne() == true &&
-                                o.Previous?.Token.GetMathSymbolType() == TokenExtensions.MathSymbolType.MultiplyDivide)
+                                o.Previous?.Token?.GetMathSymbolType() == TokenExtensions.MathSymbolType.MultiplyDivide)
                     .ToList())
                 {
                     oneNode.Previous.Remove();
@@ -76,7 +76,7 @@ namespace Shrinker.Parser.Optimizations
                     .OfType<GenericSyntaxNode>()
                     .Where(
                            o => (o.Token as INumberToken)?.IsZero() == true &&
-                                o.Previous?.Token.Content == "/")
+                                o.Previous?.Token?.Content == "/")
                     .ToList())
                 {
                     zeroNode.Previous.ReplaceWith(new GenericSyntaxNode(new SymbolOperatorToken("*")));
@@ -90,7 +90,7 @@ namespace Shrinker.Parser.Optimizations
                         .OfType<GenericSyntaxNode>()
                         .Where(
                                o => (o.Token as INumberToken)?.IsZero() == true &&
-                                    o.Previous?.Token.Content == "*" &&
+                                    o.Previous?.Token?.Content == "*" &&
                                     (o.Next == null || o.Next?.Token is CommaToken))
                         .ToList())
                     {
@@ -112,7 +112,7 @@ namespace Shrinker.Parser.Optimizations
                         .OfType<GenericSyntaxNode>()
                         .Where(
                                o => (o.Token as INumberToken)?.IsZero() == true &&
-                                    o.Previous?.Token.GetMathSymbolType() == TokenExtensions.MathSymbolType.AddSubtract &&
+                                    o.Previous?.Token?.GetMathSymbolType() == TokenExtensions.MathSymbolType.AddSubtract &&
                                     (o.Next == null || o.Next?.Token is CommaToken))
                         .ToList())
                     {

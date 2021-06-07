@@ -1311,7 +1311,8 @@ namespace UnitTests
                     "float a = 1.0, v = a * 0.0;",
                     "int a = 1, v = a * 0;",
                     "vec2 v = vec2(1, 2); float a = v.x * 0.0;",
-                    "vec2 v = vec2(1, 2); float a = v * 0.0;")] string code,
+                    "vec2 v = vec2(1, 2); float a = v * 0.0;",
+                    "int a[3] = (1, 2, 3); a[0] = 0;")] string code,
             [Values("int i = 0;",
                     "float o = 0.;",
                     "float o = 0.;",
@@ -1320,7 +1321,8 @@ namespace UnitTests
                     "float a = 1.0, v = 0.0;",
                     "int a = 1, v = 0;",
                     "vec2 v = vec2(1, 2); float a = 0.0;",
-                    "vec2 v = vec2(1, 2); float a = 0.0;")] string expected)
+                    "vec2 v = vec2(1, 2); float a = 0.0;",
+                    "int a[3] = (1, 2, 3); a[0] = 0;")] string expected)
         {
             var lexer = new Lexer();
             lexer.Load(code);
