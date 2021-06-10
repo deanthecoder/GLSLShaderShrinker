@@ -1,4 +1,4 @@
-// Processed by 'GLSL Shader Shrinker' (2,803 to 2,780 characters)
+// Processed by 'GLSL Shader Shrinker' (Shrunk by 23 characters)
 // (https://github.com/deanthecoder/GLSLShaderShrinker)
 
 float n31(vec3 p) {

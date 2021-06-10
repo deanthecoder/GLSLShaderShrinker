@@ -1,4 +1,4 @@
-// Processed by 'GLSL Shader Shrinker' (7,733 to 6,431 characters)
+// Processed by 'GLSL Shader Shrinker' (Shrunk by 1,302 characters)
 // (https://github.com/deanthecoder/GLSLShaderShrinker)
 
 #define MY_GPU_CAN_TAKE_IT

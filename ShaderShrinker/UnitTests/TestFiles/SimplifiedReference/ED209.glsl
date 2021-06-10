@@ -1,4 +1,4 @@
-// Processed by 'GLSL Shader Shrinker' (10,705 to 9,801 characters)
+// Processed by 'GLSL Shader Shrinker' (Shrunk by 904 characters)
 // (https://github.com/deanthecoder/GLSLShaderShrinker)
 
 float stretch, gunsUp, gunsForward, edWalk, edTwist, edDown, edShoot, doorOpen, glow;

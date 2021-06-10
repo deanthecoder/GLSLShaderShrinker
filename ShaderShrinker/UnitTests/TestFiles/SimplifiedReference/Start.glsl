@@ -1,4 +1,4 @@
-// Processed by 'GLSL Shader Shrinker' (4,188 to 2,559 characters)
+// Processed by 'GLSL Shader Shrinker' (Shrunk by 1,629 characters)
 // (https://github.com/deanthecoder/GLSLShaderShrinker)
 
 #define Z0	min(iTime, 0.)

@@ -1,4 +1,4 @@
-// Processed by 'GLSL Shader Shrinker' (752 to 594 characters)
+// Processed by 'GLSL Shader Shrinker' (Shrunk by 158 characters)
 // (https://github.com/deanthecoder/GLSLShaderShrinker)
 
 #version 410 core
