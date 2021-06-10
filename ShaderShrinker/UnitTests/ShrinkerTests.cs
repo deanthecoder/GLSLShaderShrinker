@@ -60,7 +60,25 @@ namespace UnitTests
 
             Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo("vec2 uv = vec2(1);"));
         }
-        
+
+        [Test]
+        public void CheckJoiningConsecutiveDeclarationsWithAssignmentByFunctionDoesNotGetStuckInfinitely()
+        {
+            // As each declaration is processed it would nudge in front of the other one, infinitely.
+            const string Code = "void f(out int a, out float b) { } void main() { int a; float b; f(a, b); }";
+
+            var lexer = new Lexer();
+            lexer.Load(Code);
+
+            var options = CustomOptions.None();
+            options.JoinVariableDeclarationsWithAssignments = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(Code));
+        }
+
         [Test]
         public void GivenKnownFunctionCallSettingVariableFollowedByExplicitAssignmentCheckJoiningAssignmentToDeclarationDoesNotOccur()
         {

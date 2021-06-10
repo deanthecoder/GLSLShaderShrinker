@@ -140,8 +140,15 @@ namespace Shrinker.Parser.Optimizations
                                           break;
                                       }
 
+                                      // Already next to each other?
                                       if (declWithNoDefs.NextNonComment == nearestUseNode)
-                                          break; // Already next to each other.
+                                          break;
+
+                                      // Or separated only by declarations all assigned in the single next statement?
+                                      // (Only possible if the next statement is a multi-param function with out params.)
+                                      if (nearestUseNode is FunctionCallSyntaxNode &&
+                                          declWithNoDefs.NextSiblings.TakeWhile(o => o != nearestUseNode).All(o => o is VariableDeclarationSyntaxNode))
+                                          break;
 
                                       // Move declaration to before definition.
                                       declWithNoDefs.Remove();
