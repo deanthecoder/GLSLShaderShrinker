@@ -337,15 +337,15 @@
     </StackPanel>
 
     <StackPanel Grid.Row="0" Grid.Column="2">
-        <CheckBox Content="Simplify float number format" IsChecked="{Binding CustomOptions.SimplifyFloatFormat}">
+        <CheckBox Content="Simplify float number format" IsChecked="{Binding CustomOptions.SimplifyNumberFormat}">
             <CheckBox.ToolTip>
                 <MdXaml:MarkdownScrollViewer xml:space="preserve">
-                    ### Simplify Float Number Format
+                    ### Simplify Number Format
                     Performs a variety of formatting changes to represent numbers using less characters.
                     #### Before
                     ```c
                     float a = 1.200;
-                    float b = 1.00;
+                    float b = 001.00;
                     float c = 23.0f;
                     float d = float(1.2);
                     float e = float(12);

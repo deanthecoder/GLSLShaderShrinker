@@ -17,5 +17,7 @@ namespace Shrinker.Lexer
         void MakePositive();
         bool IsOne();
         bool IsZero();
+
+        IToken Simplify();
     }
 }

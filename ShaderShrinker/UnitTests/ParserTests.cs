@@ -541,7 +541,7 @@ namespace UnitTests
         }
 
         [Test, Sequential]
-        public void CheckDetectingFloats([Values("0.", "1.", ".1", "1.1", "1e3", "1e-2", "-12.3", "1.1e4")] string code)
+        public void CheckDetectingFloats([Values("0.", "1.", ".1", "1.1", "1e3", "1e-2", "-12.3", "1.1e4", "00.0")] string code)
         {
             var lexer = new Lexer();
             Assert.That(lexer.Load(code), Is.True);
@@ -554,7 +554,7 @@ namespace UnitTests
         }
 
         [Test]
-        public void CheckDetectingNegativeFloats1()
+        public void CheckDetectingNegativeFloat()
         {
             var lexer = new Lexer();
             lexer.Load("-4.1");
@@ -566,7 +566,7 @@ namespace UnitTests
         }
 
         [Test]
-        public void CheckDetectingNegativeFloats2()
+        public void CheckDetectingNegativeFloatsInBrackets()
         {
             var lexer = new Lexer();
             lexer.Load("(-4.2)");
@@ -578,7 +578,7 @@ namespace UnitTests
         }
 
         [Test, Sequential]
-        public void CheckDetectingNegativeFloats3([Values("*", "/", "+", "-")] string mathOp)
+        public void CheckDetectingNegativeFloatWithPrecedingSymbol([Values("*", "/", "+", "-")] string mathOp)
         {
             var lexer = new Lexer();
             lexer.Load($"{mathOp} -4.3");

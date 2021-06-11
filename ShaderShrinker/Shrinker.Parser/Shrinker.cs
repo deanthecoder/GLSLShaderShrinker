@@ -59,8 +59,8 @@ namespace Shrinker.Parser
                 if (options.InlineConstantVariables)
                     rootNode.InlineConstantVariables();
 
-                if (options.SimplifyFloatFormat)
-                    rootNode.SimplifyFloatFormat();
+                if (options.SimplifyNumberFormat)
+                    rootNode.SimplifyNumberFormat();
 
                 if (options.SimplifyVectorConstructors)
                     rootNode.SimplifyVectorConstructors();

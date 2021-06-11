@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-//  <copyright file="SimplifyFloatFormatExtension.cs">
+//  <copyright file="SimplifyNumberFormatExtension.cs">
 //      Copyright (c) 2021 Dean Edis. All rights reserved.
 //  </copyright>
 //  <summary>
@@ -15,12 +15,12 @@ using Shrinker.Parser.SyntaxNodes;
 
 namespace Shrinker.Parser.Optimizations
 {
-    public static class SimplifyFloatFormatExtension
+    public static class SimplifyNumberFormatExtension
     {
-        public static void SimplifyFloatFormat(this SyntaxNode rootNode)
+        public static void SimplifyNumberFormat(this SyntaxNode rootNode)
         {
-            // Simplify float numbers to minimize space. (E.g. 1.1000 => 1.1, 1000.0 => 1e3)
-            rootNode.TheTree.ToList().ForEach(o => (o.Token as FloatToken)?.Simplify());
+            // Simplify numbers to minimize space. (E.g. 1.1000 => 1.1, 1000.0 => 1e3)
+            rootNode.TheTree.ToList().ForEach(o => (o.Token as INumberToken)?.Simplify());
 
             // Simplify 'float(...)'
             var nodes = rootNode.TheTree

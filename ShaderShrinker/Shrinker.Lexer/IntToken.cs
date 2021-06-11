@@ -61,5 +61,20 @@ namespace Shrinker.Lexer
 
         public bool IsOne() => long.Parse(Content) == 1;
         public bool IsZero() => long.Parse(Content) == 0;
+
+        public IToken Simplify()
+        {
+            var isNegative = Content.StartsWith("-");
+            Content = Content.TrimStart('-');
+
+            // Trim unnecessary leading zeros.
+            while (Content.Length > 1 && Content.StartsWith("0") && char.IsNumber(Content[1]))
+                Content = Content.Substring(1);
+
+            if (isNegative)
+                Content = $"-{Content}";
+
+            return this;
+        }
     }
 }

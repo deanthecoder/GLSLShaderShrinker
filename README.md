@@ -119,7 +119,7 @@ In most cases they can be worked-around using a set of 'custom' settings which d
 * [Detect New Constants](#detect-new-constants)
 * [Inline Constant Variables](#inline-constant-variables)
 * [Inline Constant #defines](#inline-constant-#defines)
-* [Simplify Float Number Format](#simplify-float-number-format)
+* [Simplify Number Format](#simplify-number-format)
 * [Simplify Vector Construction](#simplify-vector-construction)
 * [Simplify Vector References](#simplify-vector-references)
 * [Simplify Code Branching](#simplify-code-branching)
@@ -362,12 +362,12 @@ bool isVisible(float dist) { return dist <= 128.0; }
 ```
 
 ---
-## Simplify Float Number Format
+## Simplify Number Format
 Performs a variety of formatting changes to represent numbers using less characters.
 #### Before
 ```c
 float a = 1.200;
-float b = 1.00;
+float b = 001.00;
 float c = 23.0f;
 float d = float(1.2);
 float e = float(12);

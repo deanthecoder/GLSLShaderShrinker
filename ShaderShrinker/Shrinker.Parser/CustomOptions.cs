@@ -35,7 +35,7 @@ namespace Shrinker.Parser
         public bool DetectConstants { get; set; }
         public bool InlineConstantVariables { get; set; }
         public bool InlineDefines { get; set; }
-        public bool SimplifyFloatFormat { get; set; }
+        public bool SimplifyNumberFormat { get; set; }
         public bool SimplifyVectorConstructors { get; set; }
         public bool SimplifyVectorReferences { get; set; }
         public bool RemoveUnreachableCode { get; set; }

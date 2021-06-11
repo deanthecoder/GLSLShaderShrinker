@@ -26,7 +26,7 @@ namespace Shrinker.Lexer
         public override IToken TryMatch(string code, ref int offset) =>
             throw new InvalidOperationException("Should be created by DotToken.");
 
-        public FloatToken Simplify()
+        public IToken Simplify()
         {
             const int MaxSigFigs = 9;
 
@@ -45,6 +45,10 @@ namespace Shrinker.Lexer
             // Strip starting '-'.
             var isNeg = Content.StartsWith("-");
             Content = Content.TrimStart('-');
+
+            // Trim unnecessary leading zeros.
+            while (Content.Length > 1 && Content.StartsWith("0") && char.IsNumber(Content[1]))
+                Content = Content.Substring(1);
 
             // Strip trailing 'f'.
             Content = Content.TrimEnd('f', 'F');

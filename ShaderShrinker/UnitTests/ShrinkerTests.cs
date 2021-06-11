@@ -46,11 +46,13 @@ namespace UnitTests
             Assert.That(rootNode.ToCode().Trim(), Is.EqualTo("// Header\n#define FOO\n\nconst vec2 uv = vec2(1);"));
         }
 
-        [Test]
-        public void CheckJoiningSingleDeclarationAndDefinition()
+        [Test, Sequential]
+        public void CheckJoiningSingleDeclarationAndDefinition(
+            [Values("vec2 uv; uv = vec2(1);", "int a; a = 12;", "int a; a = 0xbeef;")] string code,
+            [Values("vec2 uv = vec2(1);", "int a = 12;", "int a = 0xbeef;")] string expected)
         {
             var lexer = new Lexer();
-            lexer.Load("vec2 uv; uv = vec2(1);");
+            lexer.Load(code);
 
             var options = CustomOptions.None();
             options.JoinVariableDeclarationsWithAssignments = true;
@@ -58,7 +60,7 @@ namespace UnitTests
                 .Parse()
                 .Simplify(options);
 
-            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo("vec2 uv = vec2(1);"));
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(expected));
         }
 
         [Test]
@@ -381,14 +383,14 @@ namespace UnitTests
 
         [Test, Sequential]
         public void CheckSimplifyingFloats(
-            [Values("10.0", "1.1", "0.10", "0.0000", "-0.09", "100.0", "100.1", "1100000.", "1.23f", "-0.1f", ".0f", "0.f", "10.00F", "102.", "001.1", "3.141592653589793238462643383279502884197", "-3.141592653589793238462643383279502884197", "1.541182543454656e-4", "1e10")] string code,
-            [Values("10.", "1.1", ".1", "0.", "-.09", "1e2", "100.1", "11e5", "1.23", "-.1", "0.", "0.", "10.", "102.", "1.1", "3.1415926", "-3.1415926", "1.5411e-4", "1e10")] string expectedOutput)
+            [Values("10.0", "1.1", "0.10", "0.0000", "-0.09", "100.0", "100.1", "1100000.", "1.23f", "-0.1f", ".0f", "0.f", "10.00F", "102.", "001.1", "3.141592653589793238462643383279502884197", "-3.141592653589793238462643383279502884197", "1.541182543454656e-4", "1e10", "0011.0", "-0011.0", "00.0")] string code,
+            [Values("10.", "1.1", ".1", "0.", "-.09", "1e2", "100.1", "11e5", "1.23", "-.1", "0.", "0.", "10.", "102.", "1.1", "3.1415926", "-3.1415926", "1.5411e-4", "1e10", "11.", "-11.", "0.")] string expectedOutput)
         {
             var lexer = new Lexer();
             lexer.Load(code);
 
             var options = CustomOptions.None();
-            options.SimplifyFloatFormat = true;
+            options.SimplifyNumberFormat = true;
             var rootNode = new Parser(lexer)
                 .Parse()
                 .Simplify(options);
@@ -405,7 +407,24 @@ namespace UnitTests
             lexer.Load(code);
 
             var options = CustomOptions.None();
-            options.SimplifyFloatFormat = true;
+            options.SimplifyNumberFormat = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(expectedOutput));
+        }
+
+        [Test, Sequential]
+        public void CheckSimplifyingInts(
+            [Values("0011", "-0011", "000", "00")] string code,
+            [Values("11", "-11", "0", "0")] string expectedOutput)
+        {
+            var lexer = new Lexer();
+            lexer.Load(code);
+
+            var options = CustomOptions.None();
+            options.SimplifyNumberFormat = true;
             var rootNode = new Parser(lexer)
                 .Parse()
                 .Simplify(options);
@@ -422,7 +441,7 @@ namespace UnitTests
             lexer.Load(code);
 
             var options = CustomOptions.None();
-            options.SimplifyFloatFormat = true;
+            options.SimplifyNumberFormat = true;
             var rootNode = new Parser(lexer)
                 .Parse()
                 .Simplify(options);
