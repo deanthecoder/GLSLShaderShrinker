@@ -691,6 +691,22 @@ namespace UnitTests
             Assert.That(nodes.Single().ToCode().ToSimple(), Is.EqualTo("if (1) { break; continue; }"));
         }
 
+        [Test, Sequential]
+        public void CheckDetectingForStatement([Values("for (i = 0; i < 1; i++) { break; }", "for (i = 0; i < 1; i++) // comment\n{ break; }")] string code)
+        {
+            var lexer = new Lexer();
+            Assert.That(lexer.Load(code), Is.True);
+
+            var parser = new Parser(lexer);
+            parser.Parse();
+
+            var forSyntaxNode = (ForSyntaxNode)parser.RootNode.Children.Single();
+            Assert.That(forSyntaxNode.ToCode().ToSimple(), Is.EqualTo("for (i = 0; i < 1; i++) break;"));
+            Assert.That(forSyntaxNode.LoopCode.Children, Has.Count.EqualTo(2));
+            Assert.That(forSyntaxNode.LoopCode.Children[0].Token.Content, Is.EqualTo("break"));
+            Assert.That(forSyntaxNode.LoopCode.Children[1].Token, Is.TypeOf<SemicolonToken>());
+        }
+
         [Test]
         public void GivenVoidReturnCheckReturnSyntaxNodeCreated()
         {

@@ -404,13 +404,16 @@ namespace Shrinker.Parser.SyntaxNodes
                          {
                              var node = n.Children[i];
 
-                             if (node.Token is not KeywordToken || node.Token.Content != "for")
+                             if ((node.Token as KeywordToken)?.Content != "for")
                                  continue;
 
                              if (node.Next is not RoundBracketSyntaxNode loopSetup)
                                  continue;
 
-                             var peekNode = loopSetup.Next;
+                             var peekNode = loopSetup.NextNonComment;
+                             while (peekNode.Previous != loopSetup) // Remove any comments between () and {}.
+                                 peekNode.Previous.Remove();
+
                              var loopCode = ReadNodesIntoBraceSyntaxNode(ref peekNode);
 
                              node.ReplaceWith(new ForSyntaxNode(loopSetup, loopCode));
