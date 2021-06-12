@@ -29,7 +29,7 @@ namespace UnitTests
             Assert.That(() => parser.Parse(), Throws.Nothing);
 
             var newCode = parser.RootNode.ToCode().Trim();
-            Assert.That(newCode, Is.EqualTo("for (i = 0; i < 2; i++) continue;"));
+            Assert.That(newCode, Is.EqualTo("for (i = 0; i < 2; i++)\n\tcontinue;"));
         }
 
         [Test]

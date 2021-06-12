@@ -363,13 +363,26 @@ namespace Shrinker.Parser
                     break;
 
                 case ForSyntaxNode o:
+                    var indent = sb.GetColumn();
                     sb.Append("for ");
                     AppendCode(sb, o.LoopSetup);
-                    sb.Append(' ');
 
                     var loopCode = new StringBuilder();
                     AppendCode(loopCode, o.LoopCode);
-                    sb.AppendLine(loopCode.ToString().AllowBraceRemoval());
+                    var braceSection = loopCode.ToString().AllowBraceRemoval();
+
+                    if (braceSection.StartsWith("{"))
+                    {
+                        sb.Append(' ');
+                    }
+                    else
+                    {
+                        sb.AppendLine();
+                        sb.Append(new string(' ', indent));
+                        sb.Append('\t');
+                    }
+
+                    sb.AppendLine(braceSection);
 
                     if (o.Next != null)
                         sb.AppendLine();

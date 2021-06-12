@@ -141,7 +141,10 @@ void mainImage(out vec4 fragColor, vec2 fc) {
 	col = scene(ro, rayDir(ro, vec3(0, 2, 0), uv));
 #ifdef AA
 	if (fwidth(col.r) > .01) {
-		for (float dx = Z0; dx <= 1.; dx++) { for (float dy = Z0; dy <= 1.; dy++) col += scene(ro, rayDir(ro, vec3(0, 2, 0), uv + (vec2(dx, dy) - .5) / iResolution.xy)); }
+		for (float dx = Z0; dx <= 1.; dx++) {
+			for (float dy = Z0; dy <= 1.; dy++)
+				col += scene(ro, rayDir(ro, vec3(0, 2, 0), uv + (vec2(dx, dy) - .5) / iResolution.xy));
+		}
 
 		col /= 5.;
 	}
