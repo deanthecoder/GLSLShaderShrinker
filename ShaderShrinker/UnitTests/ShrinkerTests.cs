@@ -1029,20 +1029,22 @@ namespace UnitTests
                     "int f(int i) { return i; } void main() { int a; for (int i = 0; i < 2; i++) { a = 2 + i; f(a); } return a; }",
                     "int main(out int i) { i = 2; return i; }",
                     "int main(inout int i) { i = 2; return i; }",
-                    "int main(int i) { i = 2; return i; }")] string code,
+                    "int main(int i) { i = 2; return i; }",
+                    "int main() { int a, b; a = 1; b = a + 1; return b; }")] string code,
             [Values("int main() { return 2 + 1; }",
                     "vec3 cam(vec3 ro, vec3 la, vec2 uv) { vec3 f = normalize(la - ro), r = normalize(cross(vec3(0, 1, 0), f)); return normalize(f + r * uv.x + cross(f, r) * uv.y); }",
                     "int f(int i) { return i; } void main() { int a; for (int i = 0; i < 2; i++) { a = 2 + i; f(a); } return a; }",
                     "int main(out int i) { i = 2; return i; }",
                     "int main(inout int i) { i = 2; return i; }",
-                    "int main(int i) { i = 2; return i; }")] string expected)
+                    "int main(int i) { i = 2; return i; }",
+                    "int main() { return 1 + 1; }")] string expected)
         {
             var lexer = new Lexer();
             lexer.Load(code);
 
             var options = CustomOptions.None();
             options.CombineAssignmentWithSingleUse = true;
-            options.GroupVariableDeclarations = true;
+            options.RemoveUnusedVariables = true;
             var rootNode = new Parser(lexer)
                 .Parse()
                 .Simplify(options);

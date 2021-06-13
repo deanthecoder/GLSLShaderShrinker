@@ -20,8 +20,9 @@ namespace Shrinker.Parser.Optimizations
         /// <summary>
         /// Merge variable assignment with single use in an return statement on the next line.
         /// </summary>
-        public static void CombineAssignmentWithReturn(this SyntaxNode rootNode)
+        public static bool CombineAssignmentWithReturn(this SyntaxNode rootNode)
         {
+            var anyChanges = false;
             foreach (var functionNode in rootNode.FunctionDefinitions())
             {
                 foreach (var braces in functionNode.TheTree.OfType<BraceSyntaxNode>().ToList())
@@ -117,6 +118,7 @@ namespace Shrinker.Parser.Optimizations
                                 assignmentDecl.Remove(); // Declaration is now empty - Remove it.
 
                             didChange = true;
+                            anyChanges = true;
 
                             if (addBrackets)
                             {
@@ -137,6 +139,8 @@ namespace Shrinker.Parser.Optimizations
                     }
                 }
             }
+
+            return anyChanges;
         }
     }
 }

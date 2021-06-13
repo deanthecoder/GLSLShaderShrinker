@@ -20,8 +20,9 @@ namespace Shrinker.Parser.Optimizations
         /// <summary>
         /// Merge variable assignment with single use in an assignment on the next line.
         /// </summary>
-        public static void CombineAssignmentWithSingleUse(this SyntaxNode rootNode)
+        public static bool CombineAssignmentWithSingleUse(this SyntaxNode rootNode)
         {
+            var anyChanges = false;
             var functionNodes = rootNode.FunctionDefinitions().ToList();
             foreach (var functionNode in functionNodes)
             {
@@ -116,12 +117,15 @@ namespace Shrinker.Parser.Optimizations
                             declParent.Remove();
 
                         didChange = true;
+                        anyChanges = true;
                     }
 
                     if (!didChange)
                         break;
                 }
             }
+
+            return anyChanges;
         }
     }
 }

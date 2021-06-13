@@ -82,8 +82,10 @@ namespace Shrinker.Parser
 
                 if (options.CombineAssignmentWithSingleUse)
                 {
-                    rootNode.CombineAssignmentWithReturn();
-                    rootNode.CombineAssignmentWithSingleUse();
+                    var anyChanges = rootNode.CombineAssignmentWithReturn();
+                    anyChanges |= rootNode.CombineAssignmentWithSingleUse();
+                    if (anyChanges && options.RemoveUnusedVariables)
+                        rootNode.RemoveUnusedVariables();
                 }
 
                 if (options.SimplifyBranching)
