@@ -1,4 +1,4 @@
-// Processed by 'GLSL Shader Shrinker' (Shrunk by 10 characters)
+// Processed by 'GLSL Shader Shrinker' (Shrunk by 13 characters)
 // (https://github.com/deanthecoder/GLSLShaderShrinker)
 
 #define Z0	min(iTime, 0.)
@@ -97,13 +97,13 @@ Hit map(vec3 p) {
 		d2 = min(d2, sdOcta(p, .3) - .005);
 	}
 
-	g += .00008 / (.001 + d2 * d2);
+	g += 8e-5 / (.001 + d2 * d2);
 	minH(Hit(d2, 4));
 	p = op;
 	p.x = abs(p.x);
 	p.y += cos(p.x + t) * .05;
 	d2 = length(p.yz) - .01;
-	g += .0005 / (.001 + d2 * d2);
+	g += 5e-4 / (.001 + d2 * d2);
 	minH(Hit(min(d, d2), 2));
 	return h;
 }

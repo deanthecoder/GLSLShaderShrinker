@@ -60,10 +60,30 @@ namespace Shrinker.Lexer
 
                 Content = Content.TrimEnd('0');
 
+                // Any decimal places?
                 if (!Content.EndsWith("."))
                 {
-                    // Remove leading zeroes.
+                    // Yes - Remove leading zeroes.
                     Content = Content.TrimStart('0');
+
+                    // Can we simplify using the 'e' format?
+                    if (Content.StartsWith("."))
+                    {
+                        var eFormat = Content.Substring(1);
+                        var zeros = 0;
+                        while (eFormat.Length > 0 && eFormat[0] == '0')
+                        {
+                            zeros++;
+                            eFormat = eFormat.Substring(1);
+                        }
+
+                        if (eFormat.Length > 0 && zeros > 0)
+                        {
+                            eFormat = $"{eFormat}e-{zeros + 1}";
+                            if (eFormat.Length < Content.Length)
+                                Content = eFormat;
+                        }
+                    }
                 }
                 else
                 {
