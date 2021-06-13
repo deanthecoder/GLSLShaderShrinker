@@ -1106,6 +1106,55 @@ namespace UnitTests
             Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(Code));
         }
 
+        [Test]
+        public void CheckCombiningAssignmentsRecognizesCommonVectorAccessors()
+        {
+            var lexer = new Lexer();
+            lexer.Load("void main() { vec2 v; v.x = 1.0; v.x = v.x + 1.0; }");
+
+            var options = CustomOptions.None();
+            options.CombineConsecutiveAssignments = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo("void main() { vec2 v; v.x = 1.0 + 1.0; }"));
+        }
+
+        [Test]
+        public void CheckCombiningAssignmentsIgnoresCommonVectorAccessorsIfWholeVariableIsUsed()
+        {
+            const string Code = "void main() { vec2 v; v.x = 1.0; v.x = v.x + 1.0 + f(v); }";
+
+            var lexer = new Lexer();
+            lexer.Load(Code);
+
+            var options = CustomOptions.None();
+            options.CombineConsecutiveAssignments = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(Code));
+        }
+
+        [Test]
+        public void CheckCombiningAssignmentsIgnoresDifferentVectorAccessors()
+        {
+            const string Code = "void main() { vec2 v; v.x = 1.0; v.y = v.x + 1.0; }";
+
+            var lexer = new Lexer();
+            lexer.Load(Code);
+
+            var options = CustomOptions.None();
+            options.CombineConsecutiveAssignments = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(Code));
+        }
+
         [Test, Sequential]
         public void GivenVectorReferencingAllComponentsCheckSimplifyingToJustVariableName(
             [Values("vec4 a = vec4(1, 2, 3, 4), b = a.rgba;",

@@ -33,18 +33,23 @@ namespace Shrinker.Parser.Optimizations
                             // Find consecutive assignment of same variable.
                             var assignment = braces.Children.OfType<VariableAssignmentSyntaxNode>()
                                 .Where(o => o.HasValue && o.Parent is not VariableDeclarationSyntaxNode)
-                                .Where(o => o.Next is VariableAssignmentSyntaxNode)
-                                .Where(o => o.Name == localVariable.Name &&
-                                            o.Next is VariableAssignmentSyntaxNode ass2 &&
-                                            ass2.Name == localVariable.Name &&
-                                            o.FullName == ass2.FullName)
+                                .Where(o => o.Name.StartsWith(localVariable.Name) &&
+                                            o.FullName == (o.Next as VariableAssignmentSyntaxNode)?.FullName)
                                 .FirstOrDefault(o => o.Next.TheTree.OfType<GenericSyntaxNode>().Count(n => n.StartsWithVarName(localVariable.Name)) == 1);
 
                             if (assignment == null)
                                 continue;
 
+                            // If assigning to a component of the variable (E.g. v.x or v[1]), there must be no other references to
+                            // the variable in the second assignment.
+                            if (assignment.FullName.IndexOfAny(new[] { '.', '[' }) > 0)
+                            {
+                                if (((VariableAssignmentSyntaxNode)assignment.Next).TheTree.Any(o => o.HasNodeContent(localVariable.Name)))
+                                    continue;
+                            }
+
                             // Inline the definition (adding (...) if necessary).
-                            var usage = assignment.Next.TheTree.OfType<GenericSyntaxNode>().Single(o => o.IsVarName(localVariable.Name));
+                            var usage = assignment.Next.TheTree.OfType<GenericSyntaxNode>().Single(o => o.HasNodeContent(assignment.FullName));
                             var addBrackets = assignment.Children.Any(o => o.Token is SymbolOperatorToken);
                             if (addBrackets)
                                 usage.ReplaceWith(new RoundBracketSyntaxNode(assignment.Children));

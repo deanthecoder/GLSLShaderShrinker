@@ -1,4 +1,4 @@
-// Processed by 'GLSL Shader Shrinker' (Shrunk by 904 characters)
+// Processed by 'GLSL Shader Shrinker' (Shrunk by 946 characters)
 // (https://github.com/deanthecoder/GLSLShaderShrinker)
 
 float stretch, gunsUp, gunsForward, edWalk, edTwist, edDown, edShoot, doorOpen, glow;
@@ -94,8 +94,7 @@ float headSphere(vec3 p) { return (length(p / vec3(1, .8, 1)) - 1.) * .8; }
 MarchData headVisor(vec3 p, float h, float bump) {
 	bump *= sin(p.x * 150.) * sin(p.y * 150.) * .002;
 	MarchData result;
-	result.d = sdBox(p, vec3(1, h, 2));
-	result.d = max(mix(result.d, headSphere(p), .57), -p.y) - bump;
+	result.d = max(mix(sdBox(p, vec3(1, h, 2)), headSphere(p), .57), -p.y) - bump;
 	result.mat = vec3(.05);
 	result.specPower = 30.;
 	return result;
@@ -126,8 +125,7 @@ MarchData gunPod(vec3 p) {
 	p.yz += vec2(.1, .45);
 	vec3 pp = p;
 	pp.z = abs(pp.z) - .5;
-	r.d = sdCappedCone(pp, vec3(0), vec3(0, 0, -.1), .35 - .1, .35);
-	r.d = min(r.d, sdCappedCylinder(p, .35, .4));
+	r.d = min(sdCappedCone(pp, vec3(0), vec3(0, 0, -.1), .35 - .1, .35), sdCappedCylinder(p, .35, .4));
 	pp = vec3(p.x, .28 - p.y, p.z);
 	r.d = min(r.d, sdTriPrism(pp, vec2(.1, .5)));
 	pp = p;
@@ -205,8 +203,7 @@ MarchData waist(vec3 p) {
 	pp.x = abs(pp.x);
 	pp.yz *= rot(-.58525 + legAngle * sign(p.x));
 	pp.x -= .98;
-	r.d = min(r.d, max(sdCappedCylinder(pp.zyx, .4, .24), -pp.y));
-	r.d = min(r.d, sdBox(pp, vec3(.24, .2, .14 + .2 * pp.y)));
+	r.d = min(min(r.d, max(sdCappedCylinder(pp.zyx, .4, .24), -pp.y)), sdBox(pp, vec3(.24, .2, .14 + .2 * pp.y)));
 	p = pp;
 	pp.xz = abs(pp.xz) - vec2(.12, .25);
 	r.d = min(r.d, max(min(sdCappedCylinder(pp.xzy, .1, .325), sdCappedCylinder(pp.xzy, .05, .5)), pp.y));
@@ -246,8 +243,7 @@ MarchData legs(vec3 p) {
 	cp -= vec3(0, -.7, 0);
 	r.d = sdBox(cp - vec3(0, 0, 1.15), vec3(.17, .17, .07)) - .04;
 	cp.z++;
-	r.d = min(r.d, sdChamferedCube(cp.xzy, vec2(.28 - sign(abs(cp.z) - .3) * .01, .5).xyx, .18));
-	r.d = min(r.d, foot(cp));
+	r.d = min(min(r.d, sdChamferedCube(cp.xzy, vec2(.28 - sign(abs(cp.z) - .3) * .01, .5).xyx, .18)), foot(cp));
 	if (silver < r.d) {
 		r.d = silver;
 		r.mat = vec3(.8);
