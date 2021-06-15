@@ -203,7 +203,7 @@ namespace Shrinker.Parser.SyntaxNodes
                     continue;
 
                 // Does struct declare variable instance too?
-                string declaresVar = null;
+                var declaredVarNodes = new List<SyntaxNode>();
                 var nextNonComment = matches.Last().NextNonComment;
                 if (nextNonComment?.Token is SemicolonToken)
                 {
@@ -213,10 +213,13 @@ namespace Shrinker.Parser.SyntaxNodes
                 else
                 {
                     // Yes - Remove it (for now).
-                    declaresVar = nextNonComment.Token?.Content;
-                    var toRemove = matches.Last().NextSiblings.TakeWhile(o => o.Token is not SemicolonToken).ToList();
-                    toRemove.ForEach(o => o.Remove());
-                    matches.Last().Next.Remove(); // Remove the ';'
+                    declaredVarNodes.AddRange(
+                                              nextNonComment
+                                                  .SelfAndNextSiblings
+                                                  .Where(o => o is not CommentSyntaxNodeBase)
+                                                  .TakeWhile(o => o.Token is not SemicolonToken));
+                    declaredVarNodes.Last().Next.Remove(); // Remove the ';'
+                    declaredVarNodes.ForEach(o => o.Remove());
                 }
 
                 // Make a struct node.
@@ -225,9 +228,13 @@ namespace Shrinker.Parser.SyntaxNodes
                 Children[i].ReplaceWith(structs.Last());
 
                 // Re-add the variable declaration (if there was one).
-                if (declaresVar != null)
+                if (declaredVarNodes.Any())
                 {
-                    structNode.InsertNextSibling(new VariableDeclarationSyntaxNode(new GenericSyntaxNode(new TypeToken(structNode.Name)), declaresVar));
+                    var replacementDeclaration = new VariableDeclarationSyntaxNode(new GenericSyntaxNode(new TypeToken(structNode.Name)));
+
+                    var flatNodeList = new GroupSyntaxNode(declaredVarNodes);
+                    replacementDeclaration.Adopt(new VariableAssignmentSyntaxNode((GenericSyntaxNode)flatNodeList.Children.First()));
+                    structNode.InsertNextSibling(replacementDeclaration);
                 }
 
                 // Replace later occurrences of the struct name with a type token.

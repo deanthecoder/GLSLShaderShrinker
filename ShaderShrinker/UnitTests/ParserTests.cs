@@ -230,7 +230,7 @@ namespace UnitTests
         }
 
         [Test]
-        public void CheckDetectingStructDefinitionsWithVariableInstance()
+        public void CheckDetectingStructDefinitionsWithNonArrayVariableInstance()
         {
             var lexer = new Lexer();
             Assert.That(lexer.Load("struct FOO { int i; vec2 xy; } foo;"), Is.True);
@@ -241,6 +241,19 @@ namespace UnitTests
             Assert.That(parser.RootNode.Children, Has.Count.EqualTo(2));
             Assert.That(parser.RootNode.Children[0], Is.TypeOf<StructDefinitionSyntaxNode>());
             Assert.That(parser.RootNode.Children[1], Is.TypeOf<VariableDeclarationSyntaxNode>());
+        }
+
+        [Test]
+        public void CheckDetectingStructDefinitionsWithArrayVariableInstance()
+        {
+            var lexer = new Lexer();
+            Assert.That(lexer.Load("struct FOO { int i; } foo[2];"), Is.True);
+
+            var parser = new Parser(lexer);
+            parser.Parse();
+
+            var declaration = (VariableDeclarationSyntaxNode)parser.RootNode.Children[1];
+            Assert.That(declaration.Definitions.Single().FullName, Is.EqualTo("foo[2]"));
         }
 
         [Test]
