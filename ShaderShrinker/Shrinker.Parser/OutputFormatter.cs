@@ -228,7 +228,7 @@ namespace Shrinker.Parser
                     var strings = s.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
                     var lineCount = strings.Length;
 
-                    if (lineCount < 2)
+                    if (lineCount < 2 && o.Children.LastOrDefault() is not CommentSyntaxNodeBase)
                     {
                         sb.AppendLine($"{{ {s} }}");
                     }

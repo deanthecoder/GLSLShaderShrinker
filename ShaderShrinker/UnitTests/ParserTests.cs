@@ -479,6 +479,19 @@ namespace UnitTests
             Assert.That(((SingleLineCommentSyntaxNode)nodes[1]).IsAppendedToLine, Is.True);
         }
 
+        [Test]
+        public void CheckBraceExpressionEndingWithCommentIsNotRepresentedInASingleLine()
+        {
+            const string Code = "int f() {\n\treturn 1; // comment\n}";
+            var lexer = new Lexer();
+            Assert.That(lexer.Load(Code), Is.True);
+
+            var parser = new Parser(lexer);
+            parser.Parse();
+
+            Assert.That(parser.RootNode.ToCode(), Is.EqualTo(Code));
+        }
+
         [Test, Sequential]
         public void CheckDetectingIntegers([Values("0", "1", "10", "-3")] string code)
         {
