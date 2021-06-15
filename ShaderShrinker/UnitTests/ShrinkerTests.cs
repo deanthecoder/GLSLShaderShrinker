@@ -1020,7 +1020,24 @@ namespace UnitTests
                 .Simplify(options);
 
             Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(Code));
-        } 
+        }
+
+        [Test]
+        public void CheckArrayAssignmentsAreNotCombined()
+        {
+            const string Code = "vec2 f() { int arr[2] = int[2](23, 32); return arr[0]; }";
+
+            var lexer = new Lexer();
+            lexer.Load(Code);
+
+            var options = CustomOptions.None();
+            options.CombineAssignmentWithSingleUse = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(Code));
+        }
 
         [Test, Sequential]
         public void CheckCombiningAssignmentWithUseWhenUsedOnlyOnce(
@@ -1792,7 +1809,7 @@ namespace UnitTests
         [Test]
         public void CheckConstArrayAssignmentsAreNotInlined()
         {
-            const string Code = "int foo() { const int arr[2] = int[2](23, 32); return arr[0]; }";
+            const string Code = "int f() { const int arr[2] = int[2](23, 32); return arr[0]; }";
 
             var lexer = new Lexer();
             lexer.Load(Code);
@@ -1929,11 +1946,11 @@ namespace UnitTests
                        "int main() { int arr[] = int[](1); arr[0] = arr[1] * 2; }",
                        "int main() { int arr[2] = int[2](23, 32), i = 1; return arr[i]; }")] string code,
             [Values(
-                       "int main() { return int[2](23, 32)[0]; }",
+                       "int main() { const int arr[2] = int[2](23, 32); return arr[0]; }",
                        "int main() { int arr[2]; arr[0] = 1; }",
                        "int main() { const int arr[] = int[](1); arr[0] *= 2; }",
                        "int main() { int arr[] = int[](1); arr[0] = arr[1] * 2; }",
-                       "int main() { return int[2](23, 32)[1]; }")] string expected)
+                       "int main() { const int arr[2] = int[2](23, 32); return arr[1]; }")] string expected)
         {
             var lexer = new Lexer();
             lexer.Load(code);

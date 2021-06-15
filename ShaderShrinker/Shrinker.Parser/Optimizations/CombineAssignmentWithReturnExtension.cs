@@ -41,7 +41,8 @@ namespace Shrinker.Parser.Optimizations
                             var usagesWithSuffix = returnNode
                                 .TheTree
                                 .OfType<GenericSyntaxNode>()
-                                .Where(o => o.StartsWithVarName(localVariable.Name) && !o.IsVarName(localVariable.Name));
+                                .Where(o => o.StartsWithVarName(localVariable.Name))
+                                .Where(o => !o.IsVarName(localVariable.Name) || o.Next is SquareBracketSyntaxNode);
                             if (usagesWithSuffix.Any())
                                 continue; // There is a use, but it has an array accessor. Ignore...
 

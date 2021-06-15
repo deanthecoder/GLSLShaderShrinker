@@ -38,6 +38,9 @@ namespace Shrinker.Parser.Optimizations
                         .ToList();
                     foreach (var assignment in assignments)
                     {
+                        if (assignment.IsArray)
+                            continue;
+
                         // Find the declaration matching the variable being assigned to.
                         var variableDecl = assignment.GetDeclaration();
                         if (variableDecl == null)
