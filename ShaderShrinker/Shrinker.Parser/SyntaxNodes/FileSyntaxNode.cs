@@ -550,23 +550,19 @@ namespace Shrinker.Parser.SyntaxNodes
                              if (node.Token is not AlphaNumToken)
                                  return true;
 
-                             var nextNonComment = node.NextNonComment;
-                             var isAssigned = nextNonComment?.Token is AssignmentOperatorToken;
-                             var isArrayElementAssigned = nextNonComment is SquareBracketSyntaxNode && nextNonComment.NextNonComment?.Token is AssignmentOperatorToken;
-                             if (!isAssigned && !isArrayElementAssigned)
+                             var assignmentNode = node.NextSiblings.SkipWhile(o => o is CommentSyntaxNodeBase || o is SquareBracketSyntaxNode).FirstOrDefault();
+                             if (assignmentNode == null || assignmentNode.Token is not AssignmentOperatorToken)
                                  return true;
 
-                             var assignmentStartNode = (isArrayElementAssigned ? nextNonComment.NextNonComment : nextNonComment).NextNonComment;
-
                              // Find terminating ';'
-                             var semicolonNode = node.NextSiblings.FirstOrDefault(o => o.Token is SemicolonToken);
+                             var semicolonNode = assignmentNode.NextSiblings.FirstOrDefault(o => o.Token is SemicolonToken);
                              if (semicolonNode == null)
                                  return true; // None found.
 
-                             var valueNodes = assignmentStartNode.SelfAndNextSiblings.TakeWhile(o => o != semicolonNode).ToList();
+                             var valueNodes = assignmentNode.NextSiblings.TakeWhile(o => o != semicolonNode).ToList();
 
                              // Remove the '=' and ';' nodes.
-                             node.NextSiblings.First(o => o.Token is AssignmentOperatorToken).Remove();
+                             assignmentNode.Remove();
                              semicolonNode.Remove();
 
                              node.ReplaceWith(new VariableAssignmentSyntaxNode((GenericSyntaxNode)node, valueNodes));

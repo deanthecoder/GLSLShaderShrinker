@@ -12,6 +12,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Shrinker.Lexer;
 
 namespace Shrinker.Parser.SyntaxNodes
@@ -23,7 +24,16 @@ namespace Shrinker.Parser.SyntaxNodes
         /// <summary>
         /// The variable name, including any array [].
         /// </summary>
-        public string FullName => IsArray ? $"{Name}{Children[0].ToCode()}" : Name;
+        public string FullName
+        {
+            get
+            {
+                var sb = new StringBuilder(Name);
+                foreach (var squareBrackets in Children.TakeWhile(o => o is SquareBracketSyntaxNode))
+                    sb.Append(squareBrackets.ToCode());
+                return sb.ToString();
+            }
+        }
 
         public VariableAssignmentSyntaxNode(string nameNode, List<SyntaxNode> valueNodes = null) : this(new GenericSyntaxNode(nameNode), valueNodes)
         {
@@ -37,8 +47,9 @@ namespace Shrinker.Parser.SyntaxNodes
                 Adopt(valueNodes.ToArray());
 
             // Include the array brackets []?
-            if (nameNode.NextNonComment is SquareBracketSyntaxNode)
-                InsertChild(0, nameNode.NextNonComment);
+            var i = 0;
+            while (nameNode.NextNonComment is SquareBracketSyntaxNode)
+                InsertChild(i++, nameNode.NextNonComment);
         }
 
         public override string UiName =>
@@ -47,7 +58,7 @@ namespace Shrinker.Parser.SyntaxNodes
         protected override SyntaxNode CreateSelf() => new VariableAssignmentSyntaxNode(Name);
 
         public bool IsArray => Children.FirstOrDefault() is SquareBracketSyntaxNode;
-        public IEnumerable<SyntaxNode> ValueNodes => IsArray ? Children.Skip(1) : Children;
+        public IEnumerable<SyntaxNode> ValueNodes => Children.SkipWhile(o => o is SquareBracketSyntaxNode);
         public bool HasValue => ValueNodes.Any();
 
         /// <summary>

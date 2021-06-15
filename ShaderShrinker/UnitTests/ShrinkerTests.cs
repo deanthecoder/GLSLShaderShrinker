@@ -1606,6 +1606,23 @@ namespace UnitTests
 
             Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(code));
         }
+        
+        [Test, Sequential]
+        public void CheckNonConstVariablesAreNotMadeConstIfAssignedUsingMultiArrayIndex([Values("[0]", "[0][0]")] string arrayIndexer)
+        {
+            var code = $"void f() {{ mat4 m = mat4(1); m{arrayIndexer} = 1.0; }}";
+
+            var lexer = new Lexer();
+            lexer.Load(code);
+
+            var options = CustomOptions.None();
+            options.DetectConstants = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(code));
+        }
 
         [Test, Sequential]
         public void CheckAssignmentAndMathOpCanBeJoined(
