@@ -79,7 +79,7 @@ namespace Shrinker.Lexer
 
                         if (eFormat.Length > 0 && zeros > 0)
                         {
-                            eFormat = $"{eFormat}e-{zeros + 1}";
+                            eFormat = $"{eFormat}e-{zeros + eFormat.Length}";
                             if (eFormat.Length < Content.Length)
                                 Content = eFormat;
                         }
