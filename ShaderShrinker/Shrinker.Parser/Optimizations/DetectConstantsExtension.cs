@@ -9,6 +9,7 @@
 //  </summary>
 // -----------------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Linq;
 using Shrinker.Lexer;
 using Shrinker.Parser.SyntaxNodes;
@@ -25,21 +26,25 @@ namespace Shrinker.Parser.Optimizations
                 .OfType<VariableDeclarationSyntaxNode>()
                 .Where(o => !o.VariableType.IsConst && !o.VariableType.IsUniform && o.VariableType.IsGlslType))
             {
-                foreach (var defCandidate in decl.Definitions.Where(o => o.IsSimpleAssignment()))
+                // Find all assignments of each declared variable.
+                var nodesInScope = decl.Definitions.First().FindDeclarationScope().ToList();
+                var assignmentsInScope = nodesInScope.OfType<VariableAssignmentSyntaxNode>().ToList();
+
+                foreach (var defCandidate in assignmentsInScope.Where(o => decl.IsDeclared(o.Name)).ToList())
                 {
                     var parentTree = decl.Parent.TheTree;
 
-                    // Is this variable assigned anywhere else?
-                    var isReassigned = parentTree
-                        .OfType<VariableAssignmentSyntaxNode>()
-                        .Where(o => o != defCandidate)
-                        .Any(o => o.Name.StartsWithVarName(defCandidate.Name));
-                    if (isReassigned)
+                    // Is this variable assigned multiple times?
+                    var assignmentsOfVar = assignmentsInScope.Where(o => o.HasValue && o.Name.StartsWithVarName(defCandidate.Name)).ToList();
+                    if (assignmentsOfVar.Count != 1)
+                        continue;
+
+                    // Assignment a non-trivial(/simple/'const-able') value?
+                    if (assignmentsOfVar.Any(o => !o.IsSimpleAssignment()))
                         continue;
 
                     // Perhaps modified using an operator? (E.g. +=, *=, ...)
-                    var uses = parentTree
-                        .OfType<GenericSyntaxNode>()
+                    var uses = nodesInScope
                         .Where(o => o.Token?.Content.StartsWithVarName(defCandidate.Name) == true)
                         .ToList();
                     var isModified = uses.Any(o => o.Next?.Token?.IsAnyOf(SymbolOperatorToken.ModifyingOperator) == true);
