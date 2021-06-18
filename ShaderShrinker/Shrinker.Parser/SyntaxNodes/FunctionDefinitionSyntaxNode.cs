@@ -11,6 +11,7 @@
 
 using System;
 using System.Linq;
+using Shrinker.Lexer;
 
 namespace Shrinker.Parser.SyntaxNodes
 {
@@ -41,5 +42,18 @@ namespace Shrinker.Parser.SyntaxNodes
         public override string UiName => $"{ReturnType} {Name}{(Params.Children.Any() ? "(...)" : "()")} {{...}}";
 
         protected override SyntaxNode CreateSelf() => new FunctionDefinitionSyntaxNode { ReturnType = ReturnType };
+
+        public bool ModifiesGlobalVariables()
+        {
+            var globals = this.GlobalVariables().Select(o => o.Name).ToList();
+            var theTree = Braces.TheTree.ToList();
+
+            // Check self.
+            if (theTree.Any(o => globals.Any(g => o.Token?.Content?.StartsWithVarName(g) == true)))
+                return true;
+
+            // Check any calls made by self...
+            return theTree.OfType<FunctionCallSyntaxNode>().Any(o => o.ModifiesGlobalVariables());
+        }
     }
 }

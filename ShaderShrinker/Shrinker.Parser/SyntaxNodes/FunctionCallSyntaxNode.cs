@@ -37,5 +37,8 @@ namespace Shrinker.Parser.SyntaxNodes
         protected override SyntaxNode CreateSelf() => new FunctionCallSyntaxNode(Name);
 
         public virtual bool HasOutParam => this.Root().Children.OfType<FunctionSyntaxNodeBase>().Any(o => o.Name == Name && o.HasOutParam);
+
+        public bool ModifiesGlobalVariables() =>
+            this.Root().FunctionDefinitions().FirstOrDefault(o => o.Name == Name)?.ModifiesGlobalVariables() == true;
     }
 }

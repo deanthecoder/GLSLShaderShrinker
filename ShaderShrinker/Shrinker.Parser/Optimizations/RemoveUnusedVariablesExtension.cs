@@ -46,9 +46,9 @@ namespace Shrinker.Parser.Optimizations
                         .Where(o => o.Name == varName).ToList();
                     foreach (var assignment in assignments)
                     {
-                        // If RHS of the assignment calls a function with an 'out/inout' param, it is not save to remove.
+                        // If RHS of the assignment calls a function with an 'out/inout' param, it is not safe to remove.
                         // Instead, replace the assignment with the RHS component.
-                        if (assignment.TheTree.OfType<FunctionCallSyntaxNode>().Any(o => o.HasOutParam))
+                        if (assignment.TheTree.OfType<FunctionCallSyntaxNode>().Any(o => o.HasOutParam || o.ModifiesGlobalVariables()))
                         {
                             var rhs = assignment.ValueNodes.ToList();
                             rhs.Add(new GenericSyntaxNode(new SemicolonToken()));

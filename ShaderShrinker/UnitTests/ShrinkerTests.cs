@@ -1597,6 +1597,23 @@ namespace UnitTests
             Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(Code));
         }
 
+        [Test]
+        public void CheckUnusedVariableAssignmentWhichCallsFunctionWhichModifiedGlobalVariableDoesNotRemoveFunctionCall()
+        {
+            const string Code = "int g; int f() { g = 1; return 1; } int ff() { return f(); } void main() { int n = ff(n); }";
+
+            var lexer = new Lexer();
+            lexer.Load(Code);
+
+            var options = CustomOptions.None();
+            options.CombineAssignmentWithSingleUse = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(Code));
+        }
+
         [Test, Sequential]
         public void CheckFindingVariablesToMakeConst(
             [Values("int g = 2; int main() { return g; }",
