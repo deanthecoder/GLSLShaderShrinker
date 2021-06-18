@@ -1,4 +1,4 @@
-// Processed by 'GLSL Shader Shrinker' (Shrunk by 23 characters)
+// Processed by 'GLSL Shader Shrinker' (Shrunk by 25 characters)
 // (https://github.com/deanthecoder/GLSLShaderShrinker)
 
 float n31(vec3 p) {
@@ -69,7 +69,7 @@ vec3 calcN(vec3 p, float t) {
 	float h = .005 * t;
 	vec3 n = vec3(0);
 	for (int i = min(iFrame, 0); i < 4; i++) {
-		vec3 e = .5773 * (2. * vec3((((i + 3) >> 1) & 1), (i >> 1) & 1, i & 1) - 1.);
+		vec3 e = .5773 * (2. * vec3(((i + 3) >> 1) & 1, (i >> 1) & 1, i & 1) - 1.);
 		n += e * map(p + e * h);
 	}
 

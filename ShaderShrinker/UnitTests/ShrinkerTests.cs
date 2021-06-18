@@ -1254,7 +1254,9 @@ namespace UnitTests
                     "float main() { return 1.0 * (2.0 / 3.0); }",
                     "void main() { float d = 1.0, t = 2.0; if ((d < (.003 * t)) || (t >= 25.)) return; }",
                     "void main() { float f = (1. - exp((-.12 * t))); }",
-                    "void main() { float n = 2.0, f = (1.0 + ((1.2 * n * 3.0) * (4.0 + n))); }")] string code,
+                    "void main() { float n = 2.0, f = (1.0 + ((1.2 * n * 3.0) * (4.0 + n))); }",
+                    "int f(int a) { return a; } void main() { f((3)); }",
+                    "int f(int a) { return a; } void main() { f(1, (4 + 2)); }")] string code,
             [Values("float main() { return 1.23; }",
                     "int main() { return 1 + 2; }",
                     "int main() { return 1 + 2 * 3; }",
@@ -1269,7 +1271,9 @@ namespace UnitTests
                     "float main() { return 1.0 * 2.0 / 3.0; }",
                     "void main() { float d = 1.0, t = 2.0; if (d < .003 * t || t >= 25.) return; }",
                     "void main() { float f = 1. - exp(-.12 * t); }",
-                    "void main() { float n = 2.0, f = 1.0 + 1.2 * n * 3.0 * (4.0 + n); }")] string expected)
+                    "void main() { float n = 2.0, f = 1.0 + 1.2 * n * 3.0 * (4.0 + n); }",
+                    "int f(int a) { return a; } void main() { f(3); }",
+                    "int f(int a) { return a; } void main() { f(1, 4 + 2); }")] string expected)
         {
             var lexer = new Lexer();
             lexer.Load(code);

@@ -67,6 +67,19 @@ namespace Shrinker.Parser.Optimizations
                     didChange = true;
                 }
 
+                // Brackets within list of arguments. (E.g. 'f(a, (b + 1))' => 'f(a, b + 1)')
+                foreach (var toRemove in
+                    rootNode.TheTree
+                        .OfType<RoundBracketSyntaxNode>()
+                        .Where(
+                               o => o.Previous?.Token is CommaToken && (o.NextNonComment?.Token is CommaToken || o.Next == null) ||
+                                    o.Previous == null && o.NextNonComment?.Token is CommaToken)
+                        .ToList())
+                {
+                    toRemove.ReplaceWith(toRemove.Children.ToArray());
+                    didChange = true;
+                }
+
                 // Multiplication/division sequence.
                 // E.g (a * 2.0 / b) => a * 2.0 / b
                 foreach (var toRemove in
