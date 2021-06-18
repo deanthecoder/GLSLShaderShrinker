@@ -1490,6 +1490,27 @@ namespace UnitTests
         }
 
         [Test, Sequential]
+        public void CheckArithmeticWithAbsFunction(
+            [Values("float f = abs(2.0);",
+                    "float f = abs(-2.2);",
+                    "float f = abs(1e3);")] string code,
+            [Values("float f = 2.;",
+                    "float f = 2.2;",
+                    "float f = 1e3;")] string expected)
+        {
+            var lexer = new Lexer();
+            lexer.Load(code);
+
+            var options = CustomOptions.None();
+            options.PerformArithmetic = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(expected));
+        }
+
+        [Test, Sequential]
         public void CheckRemovingUnusedVariables(
             [Values("void main() { int a; }",
                     "void main() { int a = 1; }",

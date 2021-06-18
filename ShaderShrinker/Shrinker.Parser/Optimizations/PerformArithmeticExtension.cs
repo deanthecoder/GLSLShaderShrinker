@@ -128,11 +128,26 @@ namespace Shrinker.Parser.Optimizations
                     .Where(o => o.Name == "pow" && o.Params.IsSimpleCsv())
                     .ToList())
                 {
-                    var xy = powNode.Params.Children.Where(o => o.Token is FloatToken).Select(o => (FloatToken)o.Token).ToList();
-                    if (xy.Count == 2 && xy.All(o => o.Number > 0.0))
+                    var xy = powNode.Params.Children.Where(o => o.Token is FloatToken).Select(o => ((FloatToken)o.Token).Number).ToList();
+                    if (xy.Count == 2 && xy.All(o => o > 0.0))
                     {
                         powNode.Params.Remove();
-                        powNode.ReplaceWith(new GenericSyntaxNode(new FloatToken($"{Math.Pow(xy[0].Number, xy[1].Number):F}").Simplify()));
+                        powNode.ReplaceWith(new GenericSyntaxNode(new FloatToken($"{Math.Pow(xy[0], xy[1]):F}").Simplify()));
+                        didChange = true;
+                    }
+                }
+
+                // abs(-1.1) => <the result>
+                foreach (var absNode in rootNode.TheTree
+                    .OfType<GlslFunctionCallSyntaxNode>()
+                    .Where(o => o.Name == "abs" && o.Params.IsSimpleCsv())
+                    .ToList())
+                {
+                    var x = absNode.Params.Children.Where(o => o.Token is FloatToken).Select(o => ((FloatToken)o.Token).Number).ToList();
+                    if (x.Count == 1)
+                    {
+                        absNode.Params.Remove();
+                        absNode.ReplaceWith(new GenericSyntaxNode(new FloatToken($"{Math.Abs(x[0]):F}").Simplify()));
                         didChange = true;
                     }
                 }
