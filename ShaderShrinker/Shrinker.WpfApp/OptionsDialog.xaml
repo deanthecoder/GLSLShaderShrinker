@@ -545,7 +545,8 @@
                     * Change ```f + 0.0``` or ```f - 0.0``` to ```f```
                     * Remove ```f * 0.0``` (when safe).
                     * Change ```pow(3.0, 2.0)``` to ```9.0```
-                    * Change ```float a = 1.2 / 2.3 * 4.5``` to ```a = 2.3478```
+                    * Change ```float a = 1.2 / 2.3 * 4.5;``` to ```float a = 2.3478;```
+                    * Change ```vec2 f = vec2(1.1, 2.2) + 3.3 * 4.4;``` to ```vec2 f = vec2(15.62, 16.72);```
                 </MdXaml:MarkdownScrollViewer>
             </CheckBox.ToolTip>
         </CheckBox>

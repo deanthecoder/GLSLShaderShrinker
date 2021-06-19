@@ -10,7 +10,7 @@ It is written in C# using WPF and Visual Studio 2019, and has several hundred NU
 
 It is designed to work primarily with code from [Shadertoy](https://www.shadertoy.com/), but has limited support for other styles of GLSL too (E.g. [Bonzomatic](https://github.com/Gargaj/Bonzomatic))
 
-After writing a Shadertoy shader, usually from my boilerplate starting code, there is usually a fixed sequence of operations I perform:
+After writing a Shadertoy shader, usually from my boilerplate starting code, there is a sequence of operations I perform:
 * Delete dead/commented-out code.
 * Remove unused functions.
 * Inline some constants (Max raymarching distance, 'hit test' accuracy, ...)
@@ -529,6 +529,7 @@ E.g.
 * Change ```f + 0.0``` or ```f - 0.0``` to ```f```
 * Remove ```f * 0.0``` (when safe).
 * Change ```pow(3.0, 2.0)``` to ```9.0```
-* Change ```float a = 1.2 / 2.3 * 4.5``` to ```a = 2.3478```
+* Change ```float a = 1.2 / 2.3 * 4.5;``` to ```float a = 2.3478;```
+* Change ```vec2 f = vec2(1.1, 2.2) + 3.3 * 4.4;``` to ```vec2 f = vec2(15.62, 16.72);```
 
 ---

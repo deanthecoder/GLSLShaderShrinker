@@ -76,5 +76,16 @@ namespace Shrinker.Parser.SyntaxNodes
         public static bool IsComment(this SyntaxNode node) => node is CommentSyntaxNodeBase || node.Token is CommentTokenBase;
 
         public static bool HasNodeContent(this SyntaxNode node, string s) => node?.Token?.Content == s;
+
+        public static IEnumerable<SyntaxNode> ToCsv(this IEnumerable<SyntaxNode> values)
+        {
+            var nodes = values.ToList();
+            foreach (var node in nodes)
+            {
+                yield return node;
+                if (node != nodes.Last())
+                    yield return new GenericSyntaxNode(new CommaToken());
+            }
+        }
     }
 }

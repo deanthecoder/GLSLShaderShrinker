@@ -16,6 +16,12 @@ namespace Shrinker.Lexer
 {
     public class FloatToken : Token, INumberToken
     {
+        public static FloatToken From(double c, int maxDp)
+        {
+            var floatToken = Math.Abs(c) < 0.0001 && Math.Abs(c) > 0.0 ? new FloatToken(c.ToString($".#{new string('#', maxDp - 1)}e0")) : new FloatToken(c.ToString($"F{maxDp}"));
+            return (FloatToken)floatToken.Simplify();
+        }
+
         public FloatToken(string s)
         {
             Content = s;

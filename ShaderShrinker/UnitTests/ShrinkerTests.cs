@@ -1511,6 +1511,39 @@ namespace UnitTests
         }
 
         [Test, Sequential]
+        public void CheckArithmeticWithVectorAndScalar(
+            [Values("vec2 f = vec2(1.1, 2.2) + 3.3;",
+                    "vec3 f = vec3(1.1, 2.2, 3.3) - 4.4;",
+                    "vec4 f = vec4(1.1) * 2.2;",
+                    "vec4 f = vec4(10) / 2.0;",
+                    "vec4 f = vec4(22, 23, 24) / 7.0;",
+                    "void f(vec2 v) { } void main() { f(vec2(1.1, 2.2) + 3.3); }",
+                    "vec2 f = vec2(1.1, 2.2) + 3.3 * 4.4;",
+                    "float i = 2.0; vec2 f = vec2(1.1, 2.2) + 3.3 * i;",
+                    "vec4 f = vec4(1.1) * 2.2 + 3.3;")] string code,
+            [Values("vec2 f = vec2(4.4, 5.5);",
+                    "vec3 f = vec3(-3.3, -2.2, -1.1);",
+                    "vec4 f = vec4(2.42);",
+                    "vec4 f = vec4(5.);",
+                    "vec4 f = vec4(22, 23, 24) / 7.0;",
+                    "void f(vec2 v) { } void main() { f(vec2(4.4, 5.5)); }",
+                    "vec2 f = vec2(15.62, 16.72);",
+                    "float i = 2.0; vec2 f = vec2(1.1, 2.2) + 3.3 * i;",
+                    "vec4 f = vec4(5.72);")] string expected)
+        {
+            var lexer = new Lexer();
+            lexer.Load(code);
+
+            var options = CustomOptions.None();
+            options.PerformArithmetic = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(expected));
+        }
+
+        [Test, Sequential]
         public void CheckRemovingUnusedVariables(
             [Values("void main() { int a; }",
                     "void main() { int a = 1; }",
