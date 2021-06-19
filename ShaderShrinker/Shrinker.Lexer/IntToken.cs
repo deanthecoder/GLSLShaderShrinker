@@ -68,8 +68,12 @@ namespace Shrinker.Lexer
             Content = Content.TrimStart('-');
 
             // Trim unnecessary leading zeros.
-            while (Content.Length > 1 && Content.StartsWith("0") && char.IsNumber(Content[1]))
+            // Note: A single leading zero represents an octal number!
+            while (Content.Length > 2 && Content.StartsWith("00") && char.IsNumber(Content[2]))
                 Content = Content.Substring(1);
+
+            if (Content == "00")
+                Content = "0";
 
             if (isNegative)
                 Content = $"-{Content}";

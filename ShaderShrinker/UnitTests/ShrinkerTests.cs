@@ -416,9 +416,9 @@ namespace UnitTests
         }
 
         [Test, Sequential]
-        public void CheckSimplifyingInts(
+        public void CheckSimplifyingIntegers(
             [Values("0011", "-0011", "000", "00")] string code,
-            [Values("11", "-11", "0", "0")] string expectedOutput)
+            [Values("011", "-011", "0", "0")] string expectedOutput)
         {
             var lexer = new Lexer();
             lexer.Load(code);
