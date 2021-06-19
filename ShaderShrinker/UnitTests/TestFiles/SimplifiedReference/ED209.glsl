@@ -1,4 +1,4 @@
-// Processed by 'GLSL Shader Shrinker' (Shrunk by 946 characters)
+// Processed by 'GLSL Shader Shrinker' (Shrunk by 969 characters)
 // (https://github.com/deanthecoder/GLSLShaderShrinker)
 
 float stretch, gunsUp, gunsForward, edWalk, edTwist, edDown, edShoot, doorOpen, glow;
@@ -278,12 +278,7 @@ MarchData room(vec3 p) {
 	      doorHole = sdBox(p, frameInner + vec3(0, 0, 1)),
 	      backWall = length(p.z - 8.);
 	r.d = min(backWall, max(length(p.z), -doorHole + .1));
-	if (r.d == backWall) {
-		float ocp = min(abs(sdOctogon(xy, 2.6)), abs(sdOctogon(xy, 1.9)));
-		ocp = min(max(ocp, min(.7 - abs(xy.x + 1.2), -xy.y)), max(abs(sdOctogon(xy, 1.2)), min(xy.x, .7 - abs(xy.y))));
-		if (ocp < .3) r.mat = vec3(.39, .57, .71);
-	}
-
+	if (r.d == backWall) if (min(max(min(abs(sdOctogon(xy, 2.6)), abs(sdOctogon(xy, 1.9))), min(.7 - abs(xy.x + 1.2), -xy.y)), max(abs(sdOctogon(xy, 1.2)), min(xy.x, .7 - abs(xy.y)))) < .3) r.mat = vec3(.39, .57, .71);
 	doorFrame = max(sdBox(p, frameInner + vec3(.4, .4, .1)), -doorHole);
 	doorWidth = frameInner.x * .5;
 	p.x -= frameInner.x;
