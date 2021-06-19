@@ -66,54 +66,21 @@ namespace Shrinker.Parser.Optimizations
                             n = declParent.NextNonComment;
 
                         // If next operation isn't an assignment, ignore...
-                        var nextAssignment = n as VariableAssignmentSyntaxNode;
-                        if (nextAssignment == null)
-                            continue;
-
-                        // The next assignment must be for a different variable.
-                        if (nextAssignment.Name == assignment.Name)
-                            continue;
-
-                        // The assignment must happen in the same scope as the variable declaration.
-                        if (variableDecl.FindAncestor<BraceSyntaxNode>() != nextAssignment.FindAncestor<BraceSyntaxNode>())
-                            continue;
-
-                        // ...and must use the variable exactly once...
-                        var nextAssignmentUsesOfVar =
-                            nextAssignment
-                                .TheTree
-                                .OfType<GenericSyntaxNode>()
-                                .Where(o => o.IsVarName(assignment.Name))
-                                .ToList();
-                        if (nextAssignmentUsesOfVar.Count != 1)
-                            continue;
-
-                        var usage = nextAssignmentUsesOfVar.Single();
-
-                        // Don't join if the next assignment uses a function call.
-                        // (Just in case it modifies the variable.)
-                        var intermediateNodes = nextAssignment.TheTree.TakeWhile(o => o != usage);
-                        var hasFunctionCall = intermediateNodes.OfType<FunctionCallSyntaxNode>().Any(o => o.HasOutParam);
-                        if (hasFunctionCall)
-                            continue;
-
-                        // Inline the variable!
-                        var addBrackets = assignment.Children.Any(o => o.Token is SymbolOperatorToken);
-                        if (addBrackets)
+                        if (n is VariableAssignmentSyntaxNode nextAssignment)
                         {
-                            usage.ReplaceWith(new RoundBracketSyntaxNode(assignment.Children));
-
-                            // Try to remove the brackets if we can.
-                            var customOptions = CustomOptions.None();
-                            customOptions.SimplifyArithmetic = true;
-                            nextAssignment.Simplify(customOptions);
+                            if (!TryCombineWithNextAssignment(variableDecl, assignment, nextAssignment))
+                                continue;
+                        }
+                        else if (n is IfSyntaxNode ifNode)
+                        {
+                            if (!TryCombineWithNextIf(variableDecl, assignment, ifNode))
+                                continue;
                         }
                         else
                         {
-                            usage.ReplaceWith(assignment.Children.ToArray());
+                            // No change made.
+                            continue;
                         }
-
-                        assignment.Remove();
 
                         // If the declaration isn't declaring any variables any more, remove it.
                         if (declParent != null && !declParent.Children.Any())
@@ -129,6 +96,89 @@ namespace Shrinker.Parser.Optimizations
             }
 
             return anyChanges;
+        }
+
+        private static bool TryCombineWithNextAssignment(VariableDeclarationSyntaxNode variableDecl, VariableAssignmentSyntaxNode assignment, VariableAssignmentSyntaxNode nextAssignment)
+        {
+            // The next assignment must be for a different variable.
+            if (nextAssignment.Name == assignment.Name)
+                return false;
+
+            // The assignment must happen in the same scope as the variable declaration.
+            if (variableDecl.FindAncestor<BraceSyntaxNode>() != nextAssignment.FindAncestor<BraceSyntaxNode>())
+                return false;
+
+            // ...and must use the variable exactly once...
+            var nextAssignmentUsesOfVar =
+                nextAssignment
+                    .TheTree
+                    .OfType<GenericSyntaxNode>()
+                    .Where(o => o.IsVarName(assignment.Name))
+                    .ToList();
+            if (nextAssignmentUsesOfVar.Count != 1)
+                return false;
+
+            var usage = nextAssignmentUsesOfVar.Single();
+
+            // Don't join if the next assignment uses a function call.
+            // (Just in case it modifies the variable.)
+            var intermediateNodes = nextAssignment.TheTree.TakeWhile(o => o != usage);
+            var hasFunctionCall = intermediateNodes.OfType<FunctionCallSyntaxNode>().Any(o => o.HasOutParam);
+            if (hasFunctionCall)
+                return false;
+
+            // Inline the variable!
+            var addBrackets = assignment.Children.Any(o => o.Token is SymbolOperatorToken);
+            if (addBrackets)
+            {
+                usage.ReplaceWith(new RoundBracketSyntaxNode(assignment.Children));
+
+                // Try to remove the brackets if we can.
+                var customOptions = CustomOptions.None();
+                customOptions.SimplifyArithmetic = true;
+                nextAssignment.Simplify(customOptions);
+            }
+            else
+            {
+                usage.ReplaceWith(assignment.Children.ToArray());
+            }
+
+            assignment.Remove();
+            return true;
+        }
+
+        private static bool TryCombineWithNextIf(VariableDeclarationSyntaxNode variableDecl, VariableAssignmentSyntaxNode assignment, IfSyntaxNode ifNode)
+        {
+            var conditionTree = ifNode.Conditions.TheTree;
+
+            // The 'if' condition must use the variable exactly once.
+            var usages = conditionTree.OfType<GenericSyntaxNode>().Where(o => o.IsVarName(assignment.Name)).ToList();
+            if (usages.Count != 1)
+                return false;
+
+            // ...and cannot use it with an array index or vector field.
+            if (conditionTree.OfType<GenericSyntaxNode>().Count(o => o.StartsWithVarName(assignment.Name)) != 1)
+                return false;
+
+            // Don't join if the 'if' condition uses a function call.
+            // (Just in case it modifies the variable.)
+            var hasFunctionCall = conditionTree.OfType<FunctionCallSyntaxNode>().Any(o => o.HasOutParam);
+            if (hasFunctionCall)
+                return false;
+
+            // Inline the variable!
+            usages.Single().ReplaceWith(assignment.Children.ToArray());
+            assignment.Remove();
+
+            // Remove the declaration too?
+            var assDef = variableDecl.Definitions.FirstOrDefault(o => o.Name == assignment.Name);
+            if (assDef?.FindDeclarationScope().OfType<GenericSyntaxNode>().Any(o => o.StartsWithVarName(assignment.Name)) == false)
+                assDef.Remove();
+
+            if (!variableDecl.Children.Any())
+                variableDecl.Remove();
+
+            return true;
         }
     }
 }

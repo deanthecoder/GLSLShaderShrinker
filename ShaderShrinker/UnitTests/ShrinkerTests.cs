@@ -1088,6 +1088,39 @@ namespace UnitTests
         }
 
         [Test, Sequential]
+        public void CheckCombiningAssignmentWithSingleUseInIfStatement(
+            [Values("int main() { bool b = true; if (b) return 1; return 0; }",
+                    "int main() { bool b = false; if (b == true) return 1; return 0; }",
+                    "int main() { bool b = false; if (true != b) return 1; return 0; }",
+                    "int main() { bool b = false; if (b == !b) return 1; return 0; }",
+                    "int main() { vec2 v = vec2(1); if (v.x > 0.0) return 1; return 0; }",
+                    "int main() { int i[2] = int[2](1, 2); if (i[0] > 0.0) return 1; return 0; }",
+                    "int main() { int i = 2; if (i > 0) return 1; return 0; }",
+                    "int main() { int i = 2; if (i > 0) return i; return 0; }",
+                    "int main() { int i; i = 1 + 2; if (i >= 0) return 1; return 0; }")] string code,
+            [Values("int main() { if (true) return 1; return 0; }",
+                    "int main() { if (false == true) return 1; return 0; }",
+                    "int main() { if (true != false) return 1; return 0; }",
+                    "int main() { bool b = false; if (b == !b) return 1; return 0; }",
+                    "int main() { vec2 v = vec2(1); if (v.x > 0.0) return 1; return 0; }",
+                    "int main() { int i[2] = int[2](1, 2); if (i[0] > 0.0) return 1; return 0; }",
+                    "int main() { if (2 > 0) return 1; return 0; }",
+                    "int main() { int i = 2; if (i > 0) return i; return 0; }",
+                    "int main() { if (1 + 2 >= 0) return 1; return 0; }")] string expected)
+        {
+            var lexer = new Lexer();
+            lexer.Load(code);
+
+            var options = CustomOptions.None();
+            options.CombineAssignmentWithSingleUse = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(expected));
+        }
+
+        [Test, Sequential]
         public void CheckCombiningConsecutiveReassignments(
             [Values("int main() { int a = 1; a = a + 2; a = a - 4; return a; }",
                     "int main() { int a = 1; a = a * 2; a = a / 4; return a; }",

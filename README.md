@@ -462,7 +462,7 @@ float doMaths() {
 
 ---
 ## Combine Assignment With Single Use
-An assignment used on the next line can often be inlined.
+A variable assignment used on the next line can often be inlined, if that next line is an assignment or ```if``` condition.
 #### Before
 ```c
 float doMaths() {
@@ -479,6 +479,24 @@ float doMaths() {
     float c;
     c = pow(myFunc(), 2.0) * 2.2;
     return c;
+}
+```
+Also
+#### Before
+```c
+bool f() {
+    float a = getValue();
+    if (a > 2.)
+        return true;
+    return false;
+}
+```
+#### After
+```c
+bool f() {
+    if (getValue() > 2.)
+        return true;
+    return false;
 }
 ```
 
