@@ -1546,6 +1546,27 @@ namespace UnitTests
         }
 
         [Test, Sequential]
+        public void CheckArithmeticWitSqrtFunction(
+            [Values("float f = sqrt(4.0);",
+                    "float f = sqrt(-8.0);",
+                    "float f; f = sqrt(sqrt(4.));")] string code,
+            [Values("float f = 2.;",
+                    "float f = 2.82843;",
+                    "float f; f = 1.41421;")] string expected)
+        {
+            var lexer = new Lexer();
+            lexer.Load(code);
+
+            var options = CustomOptions.None();
+            options.PerformArithmetic = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(expected));
+        }
+
+        [Test, Sequential]
         public void CheckArithmeticWithVectorAndScalar(
             [Values("vec2 f = vec2(1.1, 2.2) + 3.3;",
                     "vec3 f = vec3(1.1, 2.2, 3.3) - 4.4;",

@@ -152,6 +152,21 @@ namespace Shrinker.Parser.Optimizations
                     }
                 }
 
+                // sqrt(-1.1) => <the result>
+                foreach (var sqrtNode in rootNode.TheTree
+                    .OfType<GlslFunctionCallSyntaxNode>()
+                    .Where(o => o.Name == "sqrt" && o.Params.IsSimpleCsv())
+                    .ToList())
+                {
+                    var x = sqrtNode.Params.Children.Where(o => o.Token is FloatToken).Select(o => ((FloatToken)o.Token).Number).ToList();
+                    if (x.Count == 1)
+                    {
+                        sqrtNode.Params.Remove();
+                        sqrtNode.ReplaceWith(new GenericSyntaxNode(FloatToken.From(Math.Sqrt(Math.Abs(x[0])), MaxDp)));
+                        didChange = true;
+                    }
+                }
+
                 // vecN(...) + <float>
                 foreach (var vectorNode in rootNode.TheTree
                     .OfType<GenericSyntaxNode>()
