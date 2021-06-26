@@ -84,6 +84,43 @@ namespace Shrinker.Parser.Optimizations
                         if (!didChange)
                             break; // Stop.
                     }
+
+                    // Remove copy constructors. (E.g. vec2 v = vec2(v_other) => vec2 v = v_other)
+                    while (true)
+                    {
+                        var didChange = false;
+
+                        foreach (var assignment in rootNode
+                            .TheTree
+                            .OfType<VariableAssignmentSyntaxNode>()
+                            .Where(o => o.HasValue &&
+                                        o.ValueNodes.First().HasNodeContent(vecType) &&
+                                        o.Children.Count == 2 &&
+                                        o.Children[1] is RoundBracketSyntaxNode brackets &&
+                                        brackets.Children.Count == 1 &&
+                                        brackets.Children[0] is GenericSyntaxNode expr &&
+                                        expr.Token is AlphaNumToken))
+                        {
+                            var rhsConstructor = assignment.ValueNodes.First();
+                            var brackets = rhsConstructor.Next;
+                            var bracketedExpr = (GenericSyntaxNode)brackets.Children.Single();
+                            if (bracketedExpr.Token.Content.IndexOfAny(new[] { '.', '[', '(' }) >= 0)
+                                continue;
+
+                            // Bracketed expression must be of the correct type.
+                            var exprDeclaration = bracketedExpr.FindVarDeclaration();
+                            if (exprDeclaration.VariableType.Content != vecType)
+                                continue;
+
+                            // Simplify it...
+                            brackets.Remove();
+                            rhsConstructor.ReplaceWith(bracketedExpr);
+                            didChange = true;
+                        }
+
+                        if (!didChange)
+                            break; // Stop.
+                    }
                 }
             }
 

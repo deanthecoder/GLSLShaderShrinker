@@ -401,12 +401,14 @@
                     vec3 a = vec3(1, 2, 3);
                     vec2 b = vec2(a.x, a.y);
                     vec3 c = vec2(a.x, a.y, a.z, a.x);
+                    vec3 d = vec3(other_vec3);
                     ```
                     #### After
                     ```c
                     vec3 a = vec3(1, 2, 3);
                     vec2 b = a.xy;
                     vec3 c = a.xyzx;
+                    vec3 d = other_vec3;
                     ```
                 </MdXaml:MarkdownScrollViewer>
             </CheckBox.ToolTip>

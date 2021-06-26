@@ -1238,16 +1238,23 @@ namespace UnitTests
         public void GivenVectorReferencingAllComponentsCheckSimplifyingToJustVariableName(
             [Values("vec4 a = vec4(1, 2, 3, 4), b = a.rgba;",
                     "vec3 a = vec3(1, 2, 3), b = a.xyz;",
-                    "vec2 a = vec2(1, 2), b = a.xy;")] string code,
+                    "vec2 a = vec2(1, 2), b = a.xy;",
+                    "vec2 a = vec2(1), b = vec2(a);",
+                    "int i = 1; vec2 a = vec2(i);",
+                    "vec2 a = vec2(1); vec2 b = vec2(a);",
+                    "vec2 a = vec2(1); vec2 b; b = vec2(a);")] string code,
             [Values("vec4 a = vec4(1, 2, 3, 4), b = a;",
                     "vec3 a = vec3(1, 2, 3), b = a;",
-                    "vec2 a = vec2(1, 2), b = a;")] string expected)
+                    "vec2 a = vec2(1, 2), b = a;",
+                    "vec2 a = vec2(1), b = a;",
+                    "int i = 1; vec2 a = vec2(i);",
+                    "vec2 a = vec2(1); vec2 b = a;",
+                    "vec2 a = vec2(1); vec2 b; b = a;")] string expected)
         {
             var lexer = new Lexer();
             lexer.Load(code);
 
             var options = CustomOptions.None();
-            options.GroupVariableDeclarations = true;
             options.SimplifyVectorReferences = true;
             var rootNode = new Parser(lexer)
                 .Parse()
