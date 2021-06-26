@@ -1,4 +1,4 @@
-// Processed by 'GLSL Shader Shrinker' (Shrunk by 13 characters)
+// Processed by 'GLSL Shader Shrinker' (Shrunk by 14 characters)
 // (https://github.com/deanthecoder/GLSLShaderShrinker)
 
 #define Z0	min(iTime, 0.)
@@ -167,7 +167,7 @@ vec3 lights(vec3 p, vec3 rd, float d, Hit h) {
 }
 
 vec4 march(inout vec3 p, vec3 rd, float s, float mx) {
-	float i, pulse,
+	float i,
 	      d = .01;
 	g = 0.;
 	Hit h;
@@ -179,7 +179,7 @@ vec4 march(inout vec3 p, vec3 rd, float s, float mx) {
 		p += h.d * rd;
 	}
 
-	pulse = mix(1., .3, (sin(T) * .5 + .5) * smoothstep(13., 15., T));
+	float pulse = mix(1., .3, (sin(T) * .5 + .5) * smoothstep(13., 15., T));
 	return vec4(pow(g, pulse) * vec3(.73, .5, .88) + lights(p, rd, d, h), h.id);
 }
 

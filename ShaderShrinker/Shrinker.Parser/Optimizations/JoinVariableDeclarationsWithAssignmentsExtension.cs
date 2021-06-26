@@ -136,7 +136,7 @@ namespace Shrinker.Parser.Optimizations
                                       if (!nearestUseNode.IsSiblingOf(declWithNoDefs))
                                       {
                                           // One of the variables is used in a sub-tree of code.
-                                          // Moving the declaration would change it's scope...
+                                          // Moving the declaration would change its scope...
                                           break;
                                       }
 
@@ -158,6 +158,55 @@ namespace Shrinker.Parser.Optimizations
                                   return true;
                               });
 
+            // Declare variables when first assigned, if it would reduce code size.
+            // (I.e. If Variable name is longer than the type name)
+            foreach (var functionNode in rootNode.FunctionDefinitions())
+            {
+                foreach (var localVariableNode in functionNode
+                    .LocalVariables()
+                    .Where(o => !o.HasValue &&
+                                o.Parent is VariableDeclarationSyntaxNode &&
+                                !o.IsWithinIfPragma() &&
+                                o.Name.Length >= ((VariableDeclarationSyntaxNode)o.Parent).VariableType.Content.Length))
+                {
+                    var originalDeclaration = (VariableDeclarationSyntaxNode)localVariableNode.Parent;
+                    var firstAssignment = originalDeclaration
+                        .NextSiblings
+                        .OfType<VariableAssignmentSyntaxNode>()
+                        .FirstOrDefault(o => o.FullName == localVariableNode.FullName);
+                    if (firstAssignment?.IsWithinIfPragma() != false)
+                        continue;
+
+                    // Can't move declaration if used somewhere before assignment.
+                    var usedInBetween =
+                        localVariableNode
+                            .FindDeclarationScope()
+                            .TakeWhile(o => o != firstAssignment)
+                            .OfType<FunctionCallSyntaxNode>()
+                            .Any(o => o.HasOutParam);
+                    if (usedInBetween)
+                        continue;
+
+                    // Move declaration to point of first assignment.
+                    localVariableNode.Remove();
+
+                    if (firstAssignment.Previous is VariableDeclarationSyntaxNode decl && decl.GetType().FullName == originalDeclaration.GetType().FullName)
+                    {
+                        // Bonus - Tack on the assignment to an existing declaration.
+                        decl.Adopt(firstAssignment);
+                    }
+                    else
+                    {
+                        var newDeclaration = firstAssignment.ReplaceWith(new VariableDeclarationSyntaxNode(new GenericSyntaxNode(new TypeToken(originalDeclaration.VariableType.Content))));
+                        newDeclaration.Adopt(firstAssignment);
+                    }
+
+                    if (!originalDeclaration.Children.Any())
+                        originalDeclaration.Remove();
+                }
+            }
+
+            // Sort multiple variables declared in a single line, so unassigned variables go first.
             foreach (var declNode in rootNode.TheTree
                 .OfType<VariableDeclarationSyntaxNode>()
                 .Where(o => o.Definitions.Any(d => d.HasValue) && o.Definitions.Any(d => !d.HasValue))

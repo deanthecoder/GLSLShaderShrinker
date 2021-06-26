@@ -1,4 +1,4 @@
-// Processed by 'GLSL Shader Shrinker' (Shrunk by 969 characters)
+// Processed by 'GLSL Shader Shrinker' (Shrunk by 986 characters)
 // (https://github.com/deanthecoder/GLSLShaderShrinker)
 
 float stretch, gunsUp, gunsForward, edWalk, edTwist, edDown, edShoot, doorOpen, glow;
@@ -220,8 +220,7 @@ MarchData waist(vec3 p) {
 MarchData legs(vec3 p) {
 	MarchData r;
 	setBodyMaterial(r);
-	float silver,
-	      legAngle = legWalkAngle(1.);
+	float legAngle = legWalkAngle(1.);
 	p.z += .27;
 	p.yz *= rot(legAngle * sign(p.x));
 	p.z -= .27;
@@ -239,7 +238,7 @@ MarchData legs(vec3 p) {
 	pp.xz = abs(pp.xz) - vec2(.12, .25);
 	p.y += .68;
 	p.xy = abs(p.xy) - .12;
-	silver = sdBox(p, vec3(.07, .05, 1.2));
+	float silver = sdBox(p, vec3(.07, .05, 1.2));
 	cp -= vec3(0, -.7, 0);
 	r.d = sdBox(cp - vec3(0, 0, 1.15), vec3(.17, .17, .07)) - .04;
 	cp.z++;
@@ -274,13 +273,13 @@ MarchData room(vec3 p) {
 	vec2 xy = p.xy - vec2(0, 2);
 	p.x = abs(p.x);
 	p.yz += vec2(.5, -3.4);
-	float doorFrame, doorWidth, door, d,
+	float door, d,
 	      doorHole = sdBox(p, frameInner + vec3(0, 0, 1)),
 	      backWall = length(p.z - 8.);
 	r.d = min(backWall, max(length(p.z), -doorHole + .1));
 	if (r.d == backWall) if (min(max(min(abs(sdOctogon(xy, 2.6)), abs(sdOctogon(xy, 1.9))), min(.7 - abs(xy.x + 1.2), -xy.y)), max(abs(sdOctogon(xy, 1.2)), min(xy.x, .7 - abs(xy.y)))) < .3) r.mat = vec3(.39, .57, .71);
-	doorFrame = max(sdBox(p, frameInner + vec3(.4, .4, .1)), -doorHole);
-	doorWidth = frameInner.x * .5;
+	float doorFrame = max(sdBox(p, frameInner + vec3(.4, .4, .1)), -doorHole),
+	      doorWidth = frameInner.x * .5;
 	p.x -= frameInner.x;
 	p.xz *= rot(doorOpen * 2.1);
 	p.x += doorWidth;

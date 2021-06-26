@@ -63,6 +63,31 @@ namespace UnitTests
             Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(expected));
         }
 
+        [Test, Sequential]
+        public void CheckDeclarationIsMovedToPointOfAssignmentIfVariableNameIsLong(
+            [Values("void f() { int longname, i = 2; if (0) break; longname = 2; }",
+                    "void f() { int longname; if (0) break; longname = 2; }",
+                    "void g(out int i) { i = 1; } void f() { int longname; g(longname); longname = 2; }",
+                    "void f() { int a, i = 2; if (0) break; a = 2; }",
+                    "void f() { int longname; longname = 2; }")] string code,
+            [Values("void f() { int i = 2; if (0) break; int longname = 2; }",
+                    "void f() { if (0) break; int longname = 2; }",
+                    "void g(out int i) { i = 1; } void f() { int longname; g(longname); longname = 2; }",
+                    "void f() { int a, i = 2; if (0) break; a = 2; }",
+                    "void f() { int longname = 2; }")] string expected)
+        {
+            var lexer = new Lexer();
+            lexer.Load(code);
+
+            var options = CustomOptions.None();
+            options.JoinVariableDeclarationsWithAssignments = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(expected));
+        }
+
         [Test]
         public void CheckJoiningConsecutiveDeclarationsWithAssignmentByFunctionDoesNotGetStuckInfinitely()
         {

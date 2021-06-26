@@ -1,4 +1,4 @@
-// Processed by 'GLSL Shader Shrinker' (Shrunk by 756 characters)
+// Processed by 'GLSL Shader Shrinker' (Shrunk by 770 characters)
 // (https://github.com/deanthecoder/GLSLShaderShrinker)
 
 #define FAST_NOISE
@@ -130,10 +130,9 @@ float calcShadow(vec3 p, vec3 lightPos, float sharpness) {
 float calcOcc(vec3 p, vec3 n, float strength) { return 1. - (.3 - map(p + n * .3).x) * strength; }
 
 float calcSpotlight(vec3 p, vec3 lightPos, vec3 lightDir, float cutOff, float edgeBlur) {
-	float spotLight,
-	      l = dot(normalize(lightPos - p), -lightDir);
+	float l = dot(normalize(lightPos - p), -lightDir);
 	edgeBlur++;
-	spotLight = smoothstep(1. - cutOff, (1. - cutOff) * edgeBlur, l) * .3;
+	float spotLight = smoothstep(1. - cutOff, (1. - cutOff) * edgeBlur, l) * .3;
 	cutOff *= .7;
 	spotLight = max(spotLight, smoothstep(1. - cutOff, (1. - cutOff) * 1.06, l)) * .5;
 	cutOff *= .7;
@@ -168,8 +167,7 @@ vec2 getTorchDir() {
 }
 
 void mainImage(out vec4 fragColor, vec2 fragCoord) {
-	vec2 walkBump,
-	     uv = (fragCoord - .5 * iResolution.xy) / iResolution.y;
+	vec2 uv = (fragCoord - .5 * iResolution.xy) / iResolution.y;
 #ifdef USE_WEBCAM
 	if (iTime > 63.5) {
 		fragColor = vec4(mix(vec3(0), texture(iChannel0, fragCoord / iResolution.xy).rgb, min(1., (iTime - 63.5) * 5.)), 1);
@@ -178,8 +176,8 @@ void mainImage(out vec4 fragColor, vec2 fragCoord) {
 
 #endif
 	vec3 ro, rd, p, col,
-	     torchDir = normalize(vec3(getTorchDir(), .8));
-	walkBump = vec2(sin(iTime * 2.5) * .05, pow(.5 + .5 * sin(iTime * 5.), 2.) * .03);
+	     torchDir = normalize(vec3(getTorchDir(), .8)),
+	     walkBump = vec2(sin(iTime * 2.5) * .05, pow(.5 + .5 * sin(iTime * 5.), 2.) * .03);
 	walkBump *= mix(1., 0., min(1., max(0., iTime - 44.) / 2.6));
 	ro = vec3(walkBump, 0);
 	rd = getRayDir(ro, torchDir + vec3(0, .1, 0), uv);
