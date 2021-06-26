@@ -31,7 +31,9 @@ namespace Shrinker.Parser.Optimizations
 
                 foreach (var defCandidate in assignmentsInScope.Where(o => decl.IsDeclared(o.Name)).ToList())
                 {
-                    var parentTree = decl.Parent.TheTree;
+                    var parentTree = decl.Parent?.TheTree;
+                    if (parentTree == null)
+                        continue;
 
                     // Is this variable assigned multiple times?
                     var assignmentsOfVar = assignmentsInScope.Where(o => o.HasValue && o.Name.StartsWithVarName(defCandidate.Name)).ToList();

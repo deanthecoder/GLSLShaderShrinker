@@ -1,4 +1,4 @@
-﻿// ED-209
+﻿// ED-209 (https://www.shadertoy.com/view/wsGczG)
 //
 // I've always loved the (original) Robocop movie, but have never
 // felt confident enough to try modelling ED-209.
