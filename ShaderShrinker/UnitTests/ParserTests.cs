@@ -616,7 +616,7 @@ namespace UnitTests
         }
         
         [Test, Sequential]
-        public void CheckDetectingMathSymbols([Values("+=", "-=", "/=", "*=", ">>=", "<<=")] string mathOp)
+        public void CheckDetectingMathSymbols([Values("+=", "-=", "/=", "*=", ">>=", "<<=", "|=")] string mathOp)
         {
             var code = $"int i = 1;\ni {mathOp} -1;";
 

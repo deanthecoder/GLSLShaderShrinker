@@ -50,6 +50,6 @@ namespace Shrinker.Lexer
         private static string SingleCharacterOperators => ":!+-*/|<>@?&^%";
 
         private static string[] MultiCharacterOperators { get; } = { "||", "&&", "<=", ">=", "<<=", ">>=", "<<", ">>" };
-        public static string[] ModifyingOperator { get; } = { "--", "++", "+=", "-=", "/=", "!=", "%=", "^=", "&=", "*=" };
+        public static string[] ModifyingOperator { get; } = { "--", "++", "+=", "-=", "/=", "!=", "%=", "^=", "&=", "*=", "|=" };
     }
 }
