@@ -190,7 +190,8 @@ namespace Shrinker.Parser.Optimizations
                     // Move declaration to point of first assignment.
                     localVariableNode.Remove();
 
-                    if (firstAssignment.Previous is VariableDeclarationSyntaxNode decl && decl.GetType().FullName == originalDeclaration.GetType().FullName)
+                    if (firstAssignment.Previous is VariableDeclarationSyntaxNode decl &&
+                        decl.IsSameType(originalDeclaration))
                     {
                         // Bonus - Tack on the assignment to an existing declaration.
                         decl.Adopt(firstAssignment);

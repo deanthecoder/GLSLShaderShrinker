@@ -48,8 +48,14 @@ namespace UnitTests
 
         [Test, Sequential]
         public void CheckJoiningSingleDeclarationAndDefinition(
-            [Values("vec2 uv; uv = vec2(1);", "int a; a = 12;", "int a; a = 0xbeef;")] string code,
-            [Values("vec2 uv = vec2(1);", "int a = 12;", "int a = 0xbeef;")] string expected)
+            [Values("vec2 uv; uv = vec2(1);",
+                    "int a; a = 12;",
+                    "int a; a = 0xbeef;",
+                    "void f() { vec2 v1, rayRefDir1; float a = 1.0, raySeedA1; v1 = vec2(1); rayRefDir1 = normalize(vec2(2)); raySeedA1 = 3.0; }")] string code,
+            [Values("vec2 uv = vec2(1);",
+                    "int a = 12;",
+                    "int a = 0xbeef;",
+                    "void f() { vec2 v1 = vec2(1); float a = 1.0; vec2 rayRefDir1 = normalize(vec2(2)); float raySeedA1 = 3.0; }")] string expected)
         {
             var lexer = new Lexer();
             lexer.Load(code);

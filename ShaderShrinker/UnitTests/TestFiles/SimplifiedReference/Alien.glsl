@@ -1,4 +1,4 @@
-// Processed by 'GLSL Shader Shrinker' (Shrunk by 770 characters)
+// Processed by 'GLSL Shader Shrinker' (Shrunk by 766 characters)
 // (https://github.com/deanthecoder/GLSLShaderShrinker)
 
 #define FAST_NOISE
@@ -176,8 +176,8 @@ void mainImage(out vec4 fragColor, vec2 fragCoord) {
 
 #endif
 	vec3 ro, rd, p, col,
-	     torchDir = normalize(vec3(getTorchDir(), .8)),
-	     walkBump = vec2(sin(iTime * 2.5) * .05, pow(.5 + .5 * sin(iTime * 5.), 2.) * .03);
+	     torchDir = normalize(vec3(getTorchDir(), .8));
+	vec2 walkBump = vec2(sin(iTime * 2.5) * .05, pow(.5 + .5 * sin(iTime * 5.), 2.) * .03);
 	walkBump *= mix(1., 0., min(1., max(0., iTime - 44.) / 2.6));
 	ro = vec3(walkBump, 0);
 	rd = getRayDir(ro, torchDir + vec3(0, .1, 0), uv);

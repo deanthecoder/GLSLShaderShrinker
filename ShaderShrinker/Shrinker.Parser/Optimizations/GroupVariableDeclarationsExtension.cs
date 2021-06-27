@@ -67,7 +67,7 @@ namespace Shrinker.Parser.Optimizations
                                               decl.NextSiblings
                                                   .OfType<VariableDeclarationSyntaxNode>()
                                                   .Where(o => !o.IsWithinIfPragma())
-                                                  .Where(o => o.VariableType.Content == decl.VariableType.Content)
+                                                  .Where(o => o.IsSameType(decl))
                                                   .ToList();
 
                                           // If the declaration is assigning a value which matches a function name, ignore it.
@@ -119,7 +119,7 @@ namespace Shrinker.Parser.Optimizations
                                   {
                                       if (n is VariableDeclarationSyntaxNode decl1 &&
                                           n.Next is VariableDeclarationSyntaxNode decl2 &&
-                                          decl1.VariableType.Content == decl2.VariableType.Content)
+                                          decl1.IsSameType(decl2))
                                       {
                                           decl1.Adopt(decl2.Definitions.Cast<SyntaxNode>().ToArray());
                                           decl2.Remove();
