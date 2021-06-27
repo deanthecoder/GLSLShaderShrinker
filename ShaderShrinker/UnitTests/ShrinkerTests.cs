@@ -1104,7 +1104,8 @@ namespace UnitTests
         public void CheckCombiningAssignmentWithUseNotPerformedIfVariableDeclaredInOuterScope(
             [Values("int main() { int a; { a = 1; return a; } }",
                     "int main() { int a = 1; { a = 2; return a; } }",
-                    "int main() { int a = 1; { int b; a = 2; b = a + 1; } }")] string code)
+                    "int main() { int a = 1; { int b; a = 2; b = a + 1; } }",
+                    "void f() { int a = 1; { a = -a; if (a > 0) break; } }")] string code)
         {
             var lexer = new Lexer();
             lexer.Load(code);

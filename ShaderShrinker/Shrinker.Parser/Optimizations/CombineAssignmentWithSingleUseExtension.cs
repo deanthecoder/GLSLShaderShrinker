@@ -166,6 +166,10 @@ namespace Shrinker.Parser.Optimizations
             if (hasFunctionCall)
                 return false;
 
+            // Don't inline if the assignment is not at the same depth.
+            if (!variableDecl.IsSiblingOf(ifNode))
+                return false;
+
             // Inline the variable!
             usages.Single().ReplaceWith(assignment.Children.ToArray());
             assignment.Remove();
