@@ -35,6 +35,10 @@ namespace Shrinker.Parser.Optimizations
                     if (parentTree == null)
                         continue;
 
+                    // Already const? (Perhaps in an earlier iteration of this loop.)
+                    if ((defCandidate.Parent as VariableDeclarationSyntaxNode)?.VariableType.IsConst == true)
+                        continue;
+
                     // Is this variable assigned multiple times?
                     var assignmentsOfVar = assignmentsInScope.Where(o => o.HasValue && o.Name.StartsWithVarName(defCandidate.Name)).ToList();
                     if (assignmentsOfVar.Count != 1)
@@ -73,9 +77,9 @@ namespace Shrinker.Parser.Optimizations
                     {
                         IsConst = true
                     };
-                    var newDecl = new VariableDeclarationSyntaxNode(new GenericSyntaxNode(newType), defCandidate.Name);
-                    newDecl.Children.Single().Adopt(defCandidate.Children.ToArray());
+                    var newDecl = new VariableDeclarationSyntaxNode(new GenericSyntaxNode(newType));
                     defCandidate.Remove();
+                    newDecl.Adopt(assignmentsOfVar.Single());
 
                     decl.Parent.InsertChild(decl.NodeIndex, newDecl);
 
