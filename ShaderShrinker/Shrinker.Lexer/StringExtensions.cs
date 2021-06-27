@@ -11,6 +11,7 @@
 
 // ReSharper disable StringIndexOfIsCultureSpecific.1
 
+using System;
 using System.Linq;
 using System.Text;
 
@@ -24,7 +25,10 @@ namespace Shrinker.Lexer
             var sb = new StringBuilder();
             foreach (var line in glsl.Split('\r', '\n'))
             {
-                var i = line.IndexOf("//");
+                var i = 0;
+                while ((i = line.IndexOf("//", i, StringComparison.Ordinal)) > 0 && line[i - 1] == '*')
+                    i++; // Ignore '*//'
+
                 sb.AppendLine((i >= 0 ? line.Substring(0, i) : line).Trim());
             }
 
@@ -34,7 +38,7 @@ namespace Shrinker.Lexer
             int startComment;
             while ((startComment = glsl.IndexOf("/*")) >= 0)
             {
-                var endComment = glsl.IndexOf("*/");
+                var endComment = glsl.IndexOf("*/", startComment, StringComparison.Ordinal);
                 if (endComment > startComment)
                     glsl = glsl.Remove(startComment, endComment - startComment + 2);
             }
@@ -44,25 +48,26 @@ namespace Shrinker.Lexer
 
         private static int GetCodeCharCountForLine(this string line)
         {
-            var commentIndex = line.IndexOf("//");
-            if (commentIndex >= 0)
-                line = line.Substring(0, commentIndex);
-            commentIndex = line.IndexOf("/*");
-            if (commentIndex >= 0)
-                line = line.Substring(0, commentIndex);
+            return line.Count(ch => !char.IsWhiteSpace(ch));
+            //var commentIndex = line.IndexOf("//");
+            //if (commentIndex >= 0)
+            //    line = line.Substring(0, commentIndex);
+            //commentIndex = line.IndexOf("/*");
+            //if (commentIndex >= 0)
+            //    line = line.Substring(0, commentIndex);
 
-            var sb = new StringBuilder(line.Trim());
-            int l;
-            do
-            {
-                l = sb.Length;
-                sb.Replace(" ", null)
-                  .Replace("\t", null)
-                  .Replace("\r", null)
-                  .Replace("\n", null);
-            } while (sb.Length != l);
+            //var sb = new StringBuilder(line.Trim());
+            //int l;
+            //do
+            //{
+            //    l = sb.Length;
+            //    sb.Replace(" ", null)
+            //      .Replace("\t", null)
+            //      .Replace("\r", null)
+            //      .Replace("\n", null);
+            //} while (sb.Length != l);
 
-            return sb.Length;
+            //return sb.Length;
         }
 
         public static bool IsNewline(this char ch) => ch == '\n' || ch == '\r';
