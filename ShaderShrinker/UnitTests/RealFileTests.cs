@@ -54,7 +54,7 @@ namespace UnitTests
             simplifiedCode = simplifiedCode.WithAppMessage(originalCount, simpleCount);
             File.WriteAllText(referenceFile, simplifiedCode);
 
-            Assert.That(simplifiedCode, Is.EqualTo(referenceCode));
+            Assert.That(simplifiedCode.ToSimple(), Is.EqualTo(referenceCode.ToSimple()));
         }
    }
 }

@@ -140,6 +140,7 @@ namespace Shrinker.Parser
                                     sb.Append(' ');
                                 break;
 
+                            case MiscCharacterToken:
                             case FloatToken:
                             case IntToken:
                             case DotToken:

@@ -49,7 +49,10 @@ namespace Shrinker.Parser.Optimizations
                             }
 
                             // Inline the definition (adding (...) if necessary).
-                            var usage = assignment.Next.TheTree.OfType<GenericSyntaxNode>().Single(o => o.HasNodeContent(assignment.FullName));
+                            var usage = assignment.Next.TheTree.OfType<GenericSyntaxNode>().FirstOrDefault(o => o.HasNodeContent(assignment.FullName));
+                            if (usage == null)
+                                continue;
+
                             var addBrackets = assignment.Children.Any(o => o.Token is SymbolOperatorToken);
                             if (addBrackets)
                                 usage.ReplaceWith(new RoundBracketSyntaxNode(assignment.Children));

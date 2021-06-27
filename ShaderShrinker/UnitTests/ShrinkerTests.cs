@@ -1156,10 +1156,12 @@ namespace UnitTests
             [Values("int main() { int a = 1; a = a + 2; a = a - 4; return a; }",
                     "int main() { int a = 1; a = a * 2; a = a / 4; return a; }",
                     "void main() { vec2 v; v = vec2(1.); v = v + v.x; }",
+                    "void main() { int i = 1; vec2 v; v = vec2(i); v = vec2(1, v.x); }",
                     "int main() { int a = 1; a = a + 2; a = -a / 4; return a; }")] string code,
             [Values("int main() { int a = 1; a = (a + 2) - 4; return a; }",
                     "int main() { int a = 1; a = a * 2 / 4; return a; }",
                     "void main() { vec2 v; v = vec2(1.); v = v + v.x; }",
+                    "void main() { int i = 1; vec2 v; v = vec2(i); v = vec2(1, v.x); }",
                     "int main() { int a = 1; a = -(a + 2) / 4; return a; }")] string expected)
         {
             var lexer = new Lexer();
