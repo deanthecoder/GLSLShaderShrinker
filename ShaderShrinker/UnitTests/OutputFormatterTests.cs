@@ -169,5 +169,18 @@ namespace UnitTests
             var newCode = parser.RootNode.ToCode();
             Assert.That(newCode, Is.EqualTo("text1 text2"));
         }
+
+        [Test]
+        public void CheckFormattingDeclarationWithIfPragma()
+        {
+            var lexer = new Lexer();
+            Assert.That(lexer.Load("void f() { int\n#if 1\na = 1;\n#else\na = 2;\n#endif\n}"), Is.True);
+
+            var parser = new Parser(lexer);
+            Assert.That(() => parser.Parse(), Throws.Nothing);
+
+            var newCode = parser.RootNode.ToCode().Replace("\t", null);
+            Assert.That(newCode, Is.EqualTo("void f() {\nint\n#if 1\na = 1;\n#else\na = 2;\n#endif\n}"));
+        }
     }
 }

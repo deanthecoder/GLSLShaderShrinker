@@ -359,6 +359,8 @@ namespace Shrinker.Parser
                     break;
 
                 case PragmaIfSyntaxNode o:
+                    if (sb.GetColumn() > 0)
+                        sb.AppendLine();
                     sb.Append(o.Name);
                     break;
 
