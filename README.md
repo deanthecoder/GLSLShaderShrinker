@@ -62,7 +62,9 @@ void mainImage(out vec4 fragColor, vec2 fragCoord) {
 ---
 ## Getting Started
 
-First, download the Windows installer from the 'Releases' section.
+First, download and run the Windows installer from the 'Releases' section.
+
+**Note:** The application requires the Microsoft .NET 5 runtimes to be installed. If they are not found the application will automatically prompt for them to be downloaded.
 
 ### Step 1 - Import GLSL Code
 You first need to import your GLSL into the tool.

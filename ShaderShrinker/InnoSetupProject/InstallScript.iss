@@ -20,9 +20,9 @@ OutputBaseFilename={#MyAppName} Installer
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "bin\Release\net5.0-windows\Shrinker*.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "bin\Release\net5.0-windows\*.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "bin\Release\net5.0-windows\*.json"; DestDir: "{app}"; Flags: ignoreversion
+Source: "bin\Release\net5.0-windows\win-x64\*.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "bin\Release\net5.0-windows\win-x64\*.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "bin\Release\net5.0-windows\win-x64\*.json"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
