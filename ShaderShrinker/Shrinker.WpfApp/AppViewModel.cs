@@ -89,6 +89,7 @@ namespace Shrinker.WpfApp
                 m_optimizedCode = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(IsOptimizedFileOpen));
+                CommandManager.InvalidateRequerySuggested();
             }
         }
 
