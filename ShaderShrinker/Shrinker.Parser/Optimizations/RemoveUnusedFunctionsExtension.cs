@@ -20,11 +20,7 @@ namespace Shrinker.Parser.Optimizations
         {
             // There must be an entry point function defined, otherwise do nothing.
             // (E.g. Prevents the 'common' code from all being removed.)
-            if (!rootNode
-                .Root()
-                .FunctionDefinitions()
-                .Select(o => o.Name)
-                .Any(o => o.StartsWith("main")))
+            if (!rootNode.HasEntryPointFunction())
                 return;
 
             while (true)
@@ -35,9 +31,7 @@ namespace Shrinker.Parser.Optimizations
                 foreach (var testFunction in localFunctions.Where(o => !o.IsMain()))
                 {
                     var otherFunctions = localFunctions.Where(o => o != testFunction).ToList();
-                    if (otherFunctions.SelectMany(o => o.Braces.TheTree)
-                        .OfType<FunctionCallSyntaxNode>()
-                        .Any(o => o.Name == testFunction.Name))
+                    if (otherFunctions.Any(o => o.DoesCall(testFunction)))
                         continue; // Function was used.
 
                     // Perhaps used by a #define?

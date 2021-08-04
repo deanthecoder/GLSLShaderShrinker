@@ -10,6 +10,8 @@
 // -----------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -41,6 +43,7 @@ namespace Shrinker.WpfApp
         private RelayCommand m_saveToFileCommand;
         private RelayCommand m_shrinkCommand;
         private RelayCommand m_customOptionsAcceptedCommand;
+        private RelayCommand m_hintsAcceptedCommand;
         private string m_optimizedCode;
         private bool m_showProgress;
         private string m_originalCode;
@@ -55,6 +58,7 @@ namespace Shrinker.WpfApp
         public ICommand OnSaveToClipboardCommand => m_saveToClipboardCommand ??= new RelayCommand(SaveGlslToClipboard, _ => IsOptimizedFileOpen);
         public ICommand OnSaveToFileCommand => m_saveToFileCommand ??= new RelayCommand(SaveGlslToFile, _ => IsOptimizedFileOpen);
         public ICommand OnCustomOptionsAcceptedCommand => m_customOptionsAcceptedCommand ??= new RelayCommand(AcceptCustomOptions);
+        public ICommand OnHintsAcceptedCommand => m_hintsAcceptedCommand ??= new RelayCommand(AcceptHints);
 
         public CustomOptions CustomOptions { get; }
 
@@ -140,6 +144,7 @@ namespace Shrinker.WpfApp
                 return $"{assemblyInfo.ProductName} v{assemblyInfo.Version}";
             }
         }
+        public ObservableCollection<CodeHint> Hints { get; } = new ObservableCollection<CodeHint>();
 
         public AppViewModel()
         {
@@ -215,6 +220,7 @@ namespace Shrinker.WpfApp
 
         private void LoadGlslFromStringAsync(string glsl)
         {
+            Hints.Clear();
             OriginalCode = glsl;
             OptimizedCode = string.Empty;
             OptimizedSize = 0;
@@ -227,6 +233,9 @@ namespace Shrinker.WpfApp
             ShrinkAsync("Custom");
         }
 
+        private static void AcceptHints(object obj) =>
+            DialogHost.CloseDialogCommand.Execute(null, null);
+
         private async void ShrinkAsync(object levelParam = null)
         {
             try
@@ -235,7 +244,7 @@ namespace Shrinker.WpfApp
 
                 using (new BusyCursor())
                 {
-                    var (optimizedSize, optimizedCode) = await Task.Run(() =>
+                    var (optimizedSize, optimizedCode, hints) = await Task.Run(() =>
                     {
                         Thread.Sleep(500);
                         return Shrink(OriginalCode, (string)levelParam);
@@ -243,6 +252,10 @@ namespace Shrinker.WpfApp
 
                     OptimizedCode = optimizedCode;
                     OptimizedSize = optimizedSize;
+
+                    Hints.Clear();
+                    foreach (var hint in hints)
+                        Hints.Add(hint);
                 }
 
                 GlslLoaded?.Invoke(this, (OriginalCode, OptimizedCode));
@@ -269,7 +282,7 @@ namespace Shrinker.WpfApp
             SaveCustomOptions();
         }
 
-        private (int optimizedSize, string optimizedCode) Shrink(string glsl, string level)
+        private (int optimizedSize, string optimizedCode, IEnumerable<CodeHint> hints) Shrink(string glsl, string level)
         {
             var lexer = new Lexer.Lexer();
             lexer.Load(glsl);
@@ -286,7 +299,7 @@ namespace Shrinker.WpfApp
             m_optimizedRoot = rootNode.Simplify(options);
 
             var optimizedCode = m_optimizedRoot.ToCode();
-            return (optimizedCode.GetCodeCharCount(), optimizedCode);
+            return (optimizedCode.GetCodeCharCount(), optimizedCode, rootNode.GetHints().ToList());
         }
 
         public void SaveCustomOptions()

@@ -87,5 +87,12 @@ namespace Shrinker.Parser.SyntaxNodes
                     yield return new GenericSyntaxNode(new CommaToken());
             }
         }
+
+        public static bool HasEntryPointFunction(this SyntaxNode rootNode) =>
+            rootNode
+                .Root()
+                .FunctionDefinitions()
+                .Select(o => o.Name)
+                .Any(o => o.StartsWith("main"));
     }
 }

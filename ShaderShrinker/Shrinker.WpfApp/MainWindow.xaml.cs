@@ -40,7 +40,19 @@ namespace Shrinker.WpfApp
             };
         }
 
-        private void OnSettingsButtonClicked(object sender, RoutedEventArgs e) => rootHost.IsOpen = true;
+        private void OnSettingsButtonClicked(object sender, RoutedEventArgs e)
+        {
+            OptionsDlg.Visibility = Visibility.Visible;
+            HintsDlg.Visibility = Visibility.Collapsed;
+            rootHost.IsOpen = true;
+        }
+
+        private void OnHintButtonClicked(object sender, RoutedEventArgs e)
+        {
+            OptionsDlg.Visibility = Visibility.Collapsed;
+            HintsDlg.Visibility = Visibility.Visible;
+            rootHost.IsOpen = true;
+        }
 
         private void OnOpenProjectPage(object sender, RequestNavigateEventArgs e) =>
             Process.Start("explorer.exe", e.Uri.AbsoluteUri);

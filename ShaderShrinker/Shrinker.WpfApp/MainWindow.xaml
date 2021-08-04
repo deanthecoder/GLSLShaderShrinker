@@ -150,9 +150,15 @@
                             <Button ToolTip="To Clipboard (CTRL+C)" Command="{Binding OnSaveToClipboardCommand}">
                                 <materialDesign:PackIcon Kind="ClipboardArrowRight"/>
                             </Button>
-                            <Button ToolTip="To File..." Command="{Binding OnSaveToFileCommand}">
+                            <Button x:Name="ToFileButton" ToolTip="To File..." Command="{Binding OnSaveToFileCommand}">
                                 <materialDesign:PackIcon Kind="FileSend"/>
                             </Button>
+
+                            <materialDesign:Badged Badge="{Binding Hints.Count}" BadgeForeground="White" BadgeBackground="Red" Margin="16,20,16,4" IsEnabled="{Binding IsEnabled, ElementName=ToFileButton}">
+                                <Button ToolTip="Hints and Tips..." Click="OnHintButtonClicked" Margin="0">
+                                    <materialDesign:PackIcon Kind="MessageBulleted"/>
+                                </Button>
+                            </materialDesign:Badged>
                         </StackPanel>
 
                         <TextBlock Grid.Column="1" Text="GLSL Export" VerticalAlignment="Center">
@@ -246,7 +252,10 @@
 
         <!-- Custom options dialog -->
         <materialDesign:DialogHost.DialogContent>
-            <local:OptionsDialog Margin="24,16"/>
+            <Grid>
+                <local:OptionsDialog x:Name="OptionsDlg" Margin="24,16"/>
+                <local:HintDialog x:Name="HintsDlg" Margin="24,16"/>
+            </Grid>
         </materialDesign:DialogHost.DialogContent>
     </materialDesign:DialogHost>
 </Window>
