@@ -59,5 +59,49 @@ namespace UnitTests
             Assert.That(hints, Has.Count.EqualTo(1));
             Assert.That(() => hints.Single().Suggestion, Does.Contain("'b'"));
         }
+
+        [Test]
+        public void CheckSingleUseResolutionDoesNotTriggerHint()
+        {
+            var lexer = new Lexer();
+            lexer.Load("float main() { return iResolution.x; }");
+
+            var rootNode = new Parser(lexer).Parse();
+
+            Assert.That(() => rootNode.GetHints(), Is.Empty);
+        }
+
+        [Test]
+        public void CheckMultiUseResolutionDoesNotTriggerHint()
+        {
+            var lexer = new Lexer();
+            lexer.Load("float main() { return iResolution.x + iResolution.y + iResolution.y; }");
+
+            var rootNode = new Parser(lexer).Parse();
+
+            Assert.That(() => rootNode.GetHints().OfType<Hinter.IntroduceDefine>().ToList(), Has.Count.EqualTo(1));
+        }
+
+        [Test]
+        public void CheckSingleUseSmoothstepDoesNotTriggerHint()
+        {
+            var lexer = new Lexer();
+            lexer.Load("float main() { return smoothstep(0.0, 1.0, 0.5); }");
+
+            var rootNode = new Parser(lexer).Parse();
+
+            Assert.That(() => rootNode.GetHints(), Is.Empty);
+        }
+
+        [Test]
+        public void CheckMultiUseSmoothstepDoesNotTriggerHint()
+        {
+            var lexer = new Lexer();
+            lexer.Load("float main() { return smoothstep(0.0, 1.0, smoothstep(0.0, 1.0, smoothstep(0.0, 1.0, 0.5))); }");
+
+            var rootNode = new Parser(lexer).Parse();
+
+            Assert.That(() => rootNode.GetHints().OfType<Hinter.IntroduceDefine>().ToList(), Has.Count.EqualTo(1));
+        }
     }
 }

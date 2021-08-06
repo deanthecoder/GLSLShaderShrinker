@@ -24,13 +24,16 @@ namespace Shrinker.Parser
         // todo - Report when single value passed to any function.
         public static IEnumerable<CodeHint> GetHints(this SyntaxNode rootNode)
         {
-            if (!rootNode.HasEntryPointFunction())
-                yield break;
+            if (rootNode.HasEntryPointFunction())
+            {
+                foreach (var codeHint in DetectFunctionsToInline(rootNode))
+                    yield return codeHint;
 
-            foreach (var codeHint in DetectFunctionsToInline(rootNode))
-                yield return codeHint;
+                foreach (var codeHint in DetectUnusedFunctionParam(rootNode))
+                    yield return codeHint;
+            }
 
-            foreach (var codeHint in DetectUnusedFunctionParam(rootNode))
+            foreach (var codeHint in DetectDefinableReferences(rootNode))
                 yield return codeHint;
         }
 
@@ -71,6 +74,25 @@ namespace Shrinker.Parser
             }
         }
 
+        private static IEnumerable<CodeHint> DetectDefinableReferences(SyntaxNode rootNode)
+        {
+            var candidates = new[] { "smoothstep", "iResolution", "normalize" };
+            var replacement = new[] { "S smoothstep", "R iResolution", "N normalize" };
+            var usages = rootNode.TheTree
+                .Select(o => o.Token?.Content ?? (o as FunctionCallSyntaxNode)?.Name)
+                .Where(o => candidates.Any(o.StartsWithVarName))
+                .ToList();
+            foreach (var candidate in candidates)
+            {
+                var usageCount = usages.Count(o => o.StartsWithVarName(candidate));
+                var oldSize = candidate.Length * usageCount;
+                var newSize = 8 + candidate.Length + usageCount + usageCount;
+
+                if (newSize < oldSize)
+                    yield return new IntroduceDefine(candidate, replacement[candidates.ToList().IndexOf(candidate)]);
+            }
+        }
+
         public class UnusedFunctionHint : CodeHint
         {
             public UnusedFunctionHint(string function) : base(function, "Function is never called.")
@@ -88,6 +110,13 @@ namespace Shrinker.Parser
         public class FunctionHasUnusedParam : CodeHint
         {
             public FunctionHasUnusedParam(string function, string param) : base(function, $"Function parameter '{param}' is unused.")
+            {
+            }
+        }
+        
+        public class IntroduceDefine : CodeHint
+        {
+            public IntroduceDefine(string originalName, string defineNameAndValue) : base(originalName, $"[GOLF] Consider adding '#define {defineNameAndValue}'")
             {
             }
         }
