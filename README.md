@@ -28,6 +28,8 @@ GLSL Shader Shrink will _not_:
 * Replace code with a 'more compressible' equivalent.
 * ...or otherwise '[GOLF](https://en.wikipedia.org/wiki/Code_golf)' anything.
 
+...although some of these items might be suggested as a 'hint'.
+
 ## Example (Shadertoy Starting Point)
 A small snippet of GLSL which shows **some** of the optimizations available.
 
@@ -97,6 +99,13 @@ This can be achieved using:
 * Export from a text file.
 
 ...and then use with Shadertoy, Bonzomatic, etc.
+
+---
+## Hints
+After shrinking your GLSL code, you might find some 'hints' are available.
+These range from 'this function isn't used' or 'this function is only used once, so you might like to inline it', all the way to some GOLFing hints.
+
+![Export](img/Hints.png?raw=true "Export")
 
 ---
 ## Limitations
