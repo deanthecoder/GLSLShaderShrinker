@@ -16,7 +16,7 @@ namespace Shrinker.Parser
         public string Item { get; }
         public string Suggestion { get; }
 
-        public CodeHint(string item, string suggestion)
+        protected CodeHint(string item, string suggestion)
         {
             Item = item;
             Suggestion = suggestion;

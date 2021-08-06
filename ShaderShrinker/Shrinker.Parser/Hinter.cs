@@ -11,6 +11,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using Shrinker.Lexer;
 using Shrinker.Parser.SyntaxNodes;
 
 namespace Shrinker.Parser
@@ -26,6 +27,15 @@ namespace Shrinker.Parser
             if (!rootNode.HasEntryPointFunction())
                 yield break;
 
+            foreach (var codeHint in DetectFunctionsToInline(rootNode))
+                yield return codeHint;
+
+            foreach (var codeHint in DetectUnusedFunctionParam(rootNode))
+                yield return codeHint;
+        }
+
+        private static IEnumerable<CodeHint> DetectFunctionsToInline(SyntaxNode rootNode)
+        {
             var localFunctions = rootNode.FunctionDefinitions().ToList();
             foreach (var function in localFunctions)
             {
@@ -38,10 +48,47 @@ namespace Shrinker.Parser
                 callSites += rootNode.TheTree.OfType<PragmaDefineSyntaxNode>().Count(o => o.ToCode().Contains(function.Name));
 
                 if (callSites == 0 && !function.IsMain())
-                    yield return new CodeHint(function.UiName, "Never used - Consider removing.");
+                    yield return new UnusedFunctionHint(function.UiName);
 
                 if (callSites == 1)
-                    yield return new CodeHint(function.UiName, "Only called once - Consider inlining.");
+                    yield return new FunctionToInlineHint(function.UiName);
+            }
+        }
+
+        private static IEnumerable<CodeHint> DetectUnusedFunctionParam(SyntaxNode rootNode)
+        {
+            var localFunctions = rootNode.FunctionDefinitions().ToList();
+            foreach (var function in localFunctions.Where(o => !o.IsMain()))
+            {
+                foreach (var paramName in function.ParamNames.Select(o => o.Token.Content))
+                {
+                    var isUsed = function.Braces.TheTree
+                        .Select(o => o.Token?.Content ?? (o as VariableAssignmentSyntaxNode)?.Name)
+                        .Any(o => o?.StartsWithVarName(paramName) == true);
+                    if (!isUsed)
+                        yield return new FunctionHasUnusedParam(function.UiName, paramName);
+                }
+            }
+        }
+
+        public class UnusedFunctionHint : CodeHint
+        {
+            public UnusedFunctionHint(string function) : base(function, "Function is never called.")
+            {
+            }
+        }
+
+        public class FunctionToInlineHint : CodeHint
+        {
+            public FunctionToInlineHint(string function) : base(function, "Function is called only once - Consider inlining.")
+            {
+            }
+        }
+        
+        public class FunctionHasUnusedParam : CodeHint
+        {
+            public FunctionHasUnusedParam(string function, string param) : base(function, $"Function parameter '{param}' is unused.")
+            {
             }
         }
     }

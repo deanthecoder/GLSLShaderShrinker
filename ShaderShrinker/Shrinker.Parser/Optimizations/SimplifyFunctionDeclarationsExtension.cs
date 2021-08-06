@@ -23,13 +23,7 @@ namespace Shrinker.Parser.Optimizations
 
             // Remove param names.
             foreach (var declaration in functionDeclarations.Where(o => o.Params.Children.Any()))
-            {
-                var paramNames = declaration.Params.Children
-                    .OfType<GenericSyntaxNode>()
-                    .Where(o => o.Token is AlphaNumToken)
-                    .ToList();
-                paramNames.ForEach(o => o.Remove());
-            }
+                declaration.ParamNames.ForEach(o => o.Remove());
 
             // Remove declaration if no matching definition.
             var functionDefinitionNames = rootNode.FunctionDefinitions().Select(o => o.Name);

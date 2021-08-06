@@ -9,6 +9,7 @@
 //  </summary>
 // -----------------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Linq;
 using Shrinker.Lexer;
 
@@ -22,6 +23,18 @@ namespace Shrinker.Parser.SyntaxNodes
         public bool HasOutParam => Params.TheTree.Select(o => o.Token as TypeToken).Any(o => o?.InOut == TypeToken.InOutType.InOut || o?.InOut == TypeToken.InOutType.Out);
 
         public bool IsVoidParam() => Params.Children.Count == 1 && Params.Children[0].HasNodeContent("void");
+
+        public List<GenericSyntaxNode> ParamNames
+        {
+            get
+            {
+                if (!Params.Children.Any())
+                    return new List<GenericSyntaxNode>();
+                var children = Params.Children.OfType<GenericSyntaxNode>().Where(o => o.Token is AlphaNumToken || o.Token is CommaToken).Append(new GenericSyntaxNode(new CommaToken())).ToList();
+                var commaIndexes = children.Where(o => o.Token is CommaToken).Select(o => children.IndexOf(o));
+                return commaIndexes.Select(i => children[i - 1]).ToList();
+            }
+        }
 
         public bool IsMain() => Name.StartsWith("main");
     }
