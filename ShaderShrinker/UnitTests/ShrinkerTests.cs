@@ -1608,6 +1608,37 @@ namespace UnitTests
         }
 
         [Test, Sequential]
+        public void CheckArithmeticWithTrigFunctions(
+            [Values("float f = sin(3.141);",
+                    "float f = cos(0.5);",
+                    "float f = tan(1.0);",
+                    "float f = asin(1.0);",
+                    "float f = acos(0.6);",
+                    "float f = atan(1.0);",
+                    "float f = radians(0.5);",
+                    "float f = degrees(90.0);")] string code,
+            [Values("float f = 59e-5;",
+                    "float f = .87758;",
+                    "float f = 1.55741;",
+                    "float f = 1.5708;",
+                    "float f = .9273;",
+                    "float f = .7854;",
+                    "float f = .00873;",
+                    "float f = 5156.6201;")] string expected)
+        {
+            var lexer = new Lexer();
+            lexer.Load(code);
+
+            var options = CustomOptions.None();
+            options.PerformArithmetic = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(expected));
+        }
+
+        [Test, Sequential]
         public void CheckArithmeticWithVectorAndScalar(
             [Values("vec2 f = vec2(1.1, 2.2) + 3.3;",
                     "vec3 f = vec3(1.1, 2.2, 3.3) - 4.4;",

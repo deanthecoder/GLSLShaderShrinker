@@ -10,6 +10,7 @@
 // -----------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Shrinker.Lexer;
 using Shrinker.Parser.SyntaxNodes;
@@ -123,8 +124,8 @@ namespace Shrinker.Parser.Optimizations
                 }
 
                 // pow(1.1, 2.2) => <the result>
-                foreach (var powNode in rootNode.TheTree
-                    .OfType<GlslFunctionCallSyntaxNode>()
+                var functionCalls = rootNode.TheTree.OfType<GlslFunctionCallSyntaxNode>().ToList();
+                foreach (var powNode in functionCalls
                     .Where(o => o.Name == "pow" && o.Params.IsSimpleCsv())
                     .ToList())
                 {
@@ -137,32 +138,31 @@ namespace Shrinker.Parser.Optimizations
                     }
                 }
 
-                // abs(-1.1) => <the result>
-                foreach (var absNode in rootNode.TheTree
-                    .OfType<GlslFunctionCallSyntaxNode>()
-                    .Where(o => o.Name == "abs" && o.Params.IsSimpleCsv())
-                    .ToList())
+                // Constant math/trig functions => <the result>
+                var mathOp = new List<Tuple<string, Func<double, double>>>
                 {
-                    var x = absNode.Params.Children.Where(o => o.Token is FloatToken).Select(o => ((FloatToken)o.Token).Number).ToList();
-                    if (x.Count == 1)
-                    {
-                        absNode.Params.Remove();
-                        absNode.ReplaceWith(new GenericSyntaxNode(FloatToken.From(Math.Abs(x[0]), MaxDp)));
-                        didChange = true;
-                    }
-                }
+                    new Tuple<string, Func<double, double>>("abs", Math.Abs),
+                    new Tuple<string, Func<double, double>>("sqrt", d => Math.Sqrt(Math.Abs(d))),
+                    new Tuple<string, Func<double, double>>("sin", Math.Sin),
+                    new Tuple<string, Func<double, double>>("cos", Math.Cos),
+                    new Tuple<string, Func<double, double>>("tan", Math.Tan),
+                    new Tuple<string, Func<double, double>>("asin", Math.Asin),
+                    new Tuple<string, Func<double, double>>("acos", Math.Acos),
+                    new Tuple<string, Func<double, double>>("atan", Math.Atan),
+                    new Tuple<string, Func<double, double>>("radians", x => x / 180.0 * Math.PI),
+                    new Tuple<string, Func<double, double>>("degrees", x => x / Math.PI * 180.0)
+                };
 
-                // sqrt(-1.1) => <the result>
-                foreach (var sqrtNode in rootNode.TheTree
-                    .OfType<GlslFunctionCallSyntaxNode>()
-                    .Where(o => o.Name == "sqrt" && o.Params.IsSimpleCsv())
+                foreach (var mathNode in functionCalls
+                    .Where(o => mathOp.Select(op => op.Item1).Contains(o.Name) && o.Params.IsSimpleCsv())
                     .ToList())
                 {
-                    var x = sqrtNode.Params.Children.Where(o => o.Token is FloatToken).Select(o => ((FloatToken)o.Token).Number).ToList();
+                    var x = mathNode.Params.Children.Where(o => o.Token is FloatToken).Select(o => ((FloatToken)o.Token).Number).ToList();
                     if (x.Count == 1)
                     {
-                        sqrtNode.Params.Remove();
-                        sqrtNode.ReplaceWith(new GenericSyntaxNode(FloatToken.From(Math.Sqrt(Math.Abs(x[0])), MaxDp)));
+                        mathNode.Params.Remove();
+                        var mathFunc = mathOp.Single(o => o.Item1 == mathNode.Name).Item2;
+                        mathNode.ReplaceWith(new GenericSyntaxNode(FloatToken.From(mathFunc(x[0]), MaxDp)));
                         didChange = true;
                     }
                 }
