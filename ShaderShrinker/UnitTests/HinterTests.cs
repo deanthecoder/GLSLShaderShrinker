@@ -72,7 +72,7 @@ namespace UnitTests
         }
 
         [Test]
-        public void CheckMultiUseResolutionDoesNotTriggerHint()
+        public void CheckMultiUseResolutionTriggersHint()
         {
             var lexer = new Lexer();
             lexer.Load("float main() { return iResolution.x + iResolution.y + iResolution.y; }");
@@ -94,10 +94,32 @@ namespace UnitTests
         }
 
         [Test]
-        public void CheckMultiUseSmoothstepDoesNotTriggerHint()
+        public void CheckMultiUseSmoothstepTriggersHint()
         {
             var lexer = new Lexer();
             lexer.Load("float main() { return smoothstep(0.0, 1.0, smoothstep(0.0, 1.0, smoothstep(0.0, 1.0, 0.5))); }");
+
+            var rootNode = new Parser(lexer).Parse();
+
+            Assert.That(() => rootNode.GetHints().OfType<Hinter.IntroduceDefine>().ToList(), Has.Count.EqualTo(1));
+        }
+
+        [Test]
+        public void CheckSingleUseMouseDoesNotTriggerHint()
+        {
+            var lexer = new Lexer();
+            lexer.Load("float main() { return iMouse.x; }");
+
+            var rootNode = new Parser(lexer).Parse();
+
+            Assert.That(() => rootNode.GetHints(), Is.Empty);
+        }
+
+        [Test]
+        public void CheckMultiUseMouseTriggersHint()
+        {
+            var lexer = new Lexer();
+            lexer.Load("float main() { return iMouse.x + iMouse.y * iMouse.z; }");
 
             var rootNode = new Parser(lexer).Parse();
 

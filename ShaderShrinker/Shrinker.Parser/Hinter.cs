@@ -76,8 +76,8 @@ namespace Shrinker.Parser
 
         private static IEnumerable<CodeHint> DetectDefinableReferences(SyntaxNode rootNode)
         {
-            var candidates = new[] { "smoothstep", "iResolution", "normalize" };
-            var replacement = new[] { "S smoothstep", "R iResolution", "N normalize" };
+            var candidates = new[] { "smoothstep", "iResolution", "normalize", "iTime", "iMouse" };
+            var replacement = new[] { "S smoothstep", "R iResolution", "N normalize", "T time", "M iMouse" };
             var usages = rootNode.TheTree
                 .Select(o => o.Token?.Content ?? (o as FunctionCallSyntaxNode)?.Name)
                 .Where(o => candidates.Any(o.StartsWithVarName))
@@ -86,7 +86,7 @@ namespace Shrinker.Parser
             {
                 var usageCount = usages.Count(o => o.StartsWithVarName(candidate));
                 var oldSize = candidate.Length * usageCount;
-                var newSize = 8 + candidate.Length + usageCount + usageCount;
+                var newSize = 8 + candidate.Length + usageCount;
 
                 if (newSize < oldSize)
                     yield return new IntroduceDefine(candidate, replacement[candidates.ToList().IndexOf(candidate)]);
