@@ -73,9 +73,9 @@ namespace Shrinker.Parser.Optimizations
 
                             // Are we assigning from a non-const global variable?
                             // Bad idea - It might be modified by a function call in the 'return'.
-                            var functionsInReturn = returnNode.TheTree.OfType<FunctionCallSyntaxNode>().ToList();
+                            var functionsInReturn = returnNode.FunctionCalls().ToList();
                             if (functionsInReturn.Any() ||
-                                assignment.TheTree.OfType<FunctionCallSyntaxNode>().Any())
+                                assignment.FunctionCalls().Any())
                             {
                                 var globals = rootNode.GlobalVariables()
                                     .Where(o => (o.Parent as VariableDeclarationSyntaxNode)?.VariableType.IsConst != true)

@@ -76,7 +76,22 @@ namespace Shrinker.Lexer
             "mat3", "mat3x2", "mat3x3", "mat3x4",
             "mat4", "mat4x2", "mat4x3", "mat4x4"
         };
-        public static IEnumerable<string> Names { get; } = new[] { "void", "bool", "int",  "uint", "float", "sampler1D", "sampler2D", "sampler3D" }.Union(MultiValueTypes);
+        public static IEnumerable<string> Names { get; } = new[] { "void", "bool", "int",  "uint", "float", "sampler1D", "sampler2D", "sampler3D", "samplerCube" }.Union(MultiValueTypes);
+
+        public static IEnumerable<string> GlslInputs { get; } = new[]
+        {
+            "iResolution",
+            "iTime",
+            "iTimeDelta",
+            "iFrame",
+            "iFrameRate",
+            "iChannelTime",
+            "iChannelResolution",
+            "iMouse",
+            "iChannel",
+            "iDate",
+            "iSampleRate"
+        };
 
         public IToken TryJoin(List<IToken> tokens, int tokenIndex, out int deletePrevious, out int deleteTotal)
         {

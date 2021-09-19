@@ -21,5 +21,7 @@ namespace Shrinker.Parser
             Item = item;
             Suggestion = suggestion;
         }
+
+        public override string ToString() => $"{Item}|{Suggestion}";
     }
 }

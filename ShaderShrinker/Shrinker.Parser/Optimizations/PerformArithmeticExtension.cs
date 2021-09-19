@@ -126,7 +126,7 @@ namespace Shrinker.Parser.Optimizations
                 // pow(1.1, 2.2) => <the result>
                 var functionCalls = rootNode.TheTree.OfType<GlslFunctionCallSyntaxNode>().ToList();
                 foreach (var powNode in functionCalls
-                    .Where(o => o.Name == "pow" && o.Params.IsSimpleCsv())
+                    .Where(o => o.Name == "pow" && o.Params.IsNumericCsv())
                     .ToList())
                 {
                     var xy = powNode.Params.Children.Where(o => o.Token is FloatToken).Select(o => ((FloatToken)o.Token).Number).ToList();
@@ -154,7 +154,7 @@ namespace Shrinker.Parser.Optimizations
                 };
 
                 foreach (var mathNode in functionCalls
-                    .Where(o => mathOp.Select(op => op.Item1).Contains(o.Name) && o.Params.IsSimpleCsv())
+                    .Where(o => mathOp.Select(op => op.Item1).Contains(o.Name) && o.Params.IsNumericCsv())
                     .ToList())
                 {
                     var x = mathNode.Params.Children.Where(o => o.Token is FloatToken).Select(o => ((FloatToken)o.Token).Number).ToList();
@@ -177,7 +177,7 @@ namespace Shrinker.Parser.Optimizations
                         continue;
 
                     // Brackets must be filled with floats.
-                    if (!brackets.IsSimpleCsv())
+                    if (!brackets.IsNumericCsv())
                         continue;
 
                     // Find the math symbol.

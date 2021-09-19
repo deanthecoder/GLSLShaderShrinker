@@ -53,16 +53,21 @@ namespace Shrinker.Parser.SyntaxNodes
                 return true;
 
             // Check any calls made by self...
-            return theTree.OfType<FunctionCallSyntaxNode>().Any(o => o.ModifiesGlobalVariables());
+            return this.FunctionCalls().Any(o => o.ModifiesGlobalVariables());
         }
 
+        /// <summary>
+        /// Whether the function uses iTime, iResolution, etc.
+        /// </summary>
+        public bool UsesGlslInputs() => TheTree.Select(o => o?.Token?.Content).Intersect(TypeToken.GlslInputs).Any();
+
         public bool DoesCall(FunctionDefinitionSyntaxNode otherFunction) =>
-            Braces.TheTree.OfType<FunctionCallSyntaxNode>().Any(o => o.Name == otherFunction.Name);
+            this.FunctionCalls().Any(o => o.Name == otherFunction.Name);
 
         /// <summary>
         /// How many times does this function call another?
         /// </summary>
         public int CallCount(FunctionDefinitionSyntaxNode otherFunction) =>
-            Braces.TheTree.OfType<FunctionCallSyntaxNode>().Count(o => o.Name == otherFunction.Name);
+            this.FunctionCalls().Count(o => o.Name == otherFunction.Name);
     }
 }

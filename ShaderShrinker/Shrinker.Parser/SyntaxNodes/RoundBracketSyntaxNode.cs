@@ -53,7 +53,26 @@ namespace Shrinker.Parser.SyntaxNodes
         /// <summary>
         /// Check if the brackets contain a simple sequence of numbers. (E.g. (1, 3, 2))
         /// </summary>
-        public bool IsSimpleCsv() =>
-            TheTree.Skip(1).All(o => o.Token is INumberToken || o.Token is CommaToken);
+        /// <param name="allowNumericVectors">If true, allow constant vector expressions (E.g. 'vec3(1,2,3)')</param>
+        public bool IsNumericCsv(bool allowNumericVectors = false)
+        {
+            foreach (var node in TheTree.Skip(1))
+            {
+                if (node.Token is INumberToken or CommaToken)
+                    continue;
+
+                // If it's a vector, we can sometimes allow that.
+                if (allowNumericVectors)
+                {
+                    if (node is RoundBracketSyntaxNode || node.Token?.Content?.IsAnyOf("vec2", "vec3", "vec4") == true)
+                        continue;
+                }
+
+                return false;
+            }
+
+            // OK, as long as there _is_ some content.
+            return TheTree.Skip(1).Any();
+        }
     }
 }

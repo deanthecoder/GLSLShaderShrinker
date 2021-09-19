@@ -73,7 +73,7 @@ namespace Shrinker.Parser.Optimizations
                     return o.ValueNodes[0].Token is TypeToken t &&
                         t.IsGlslType &&
                         o.ValueNodes[1] is RoundBracketSyntaxNode brackets &&
-                        brackets.IsSimpleCsv();
+                        brackets.IsNumericCsv();
             }
 
             // Nope - Can't inline.

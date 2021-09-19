@@ -22,6 +22,7 @@ namespace Shrinker.Parser
     public static class Hinter
     {
         // todo - Report when single value passed to any function.
+        // todo - If function called in 'if' (or 'else') blocks, suggest parameterizing.
         public static IEnumerable<CodeHint> GetHints(this SyntaxNode rootNode)
         {
             if (rootNode.HasEntryPointFunction())
@@ -34,6 +35,9 @@ namespace Shrinker.Parser
             }
 
             foreach (var codeHint in DetectDefinableReferences(rootNode))
+                yield return codeHint;
+
+            foreach (var codeHint in DetectFunctionsCalledWithConstArguments(rootNode))
                 yield return codeHint;
         }
 
@@ -93,6 +97,25 @@ namespace Shrinker.Parser
             }
         }
 
+        private static IEnumerable<CodeHint> DetectFunctionsCalledWithConstArguments(SyntaxNode rootNode)
+        {
+            foreach (var function in rootNode.FunctionDefinitions())
+            {
+                var functionCallsWithConstParams =
+                    function
+                    .FunctionCalls()
+                    .Where(o => o.Params.IsNumericCsv(true))
+                    .Where(o => !o.ModifiesGlobalVariables());
+
+                foreach (var hintableFunctionCall in functionCallsWithConstParams)
+                {
+                    var callee = hintableFunctionCall.GetCalleeDefinition();
+                    if (callee != null && callee.ReturnType != "void" && !callee.UsesGlslInputs())
+                        yield return new FunctionCalledWithConstParams(hintableFunctionCall);
+                }
+            }
+        }
+
         public class UnusedFunctionHint : CodeHint
         {
             public UnusedFunctionHint(string function) : base(function, "Function is never called.")
@@ -110,6 +133,13 @@ namespace Shrinker.Parser
         public class FunctionHasUnusedParam : CodeHint
         {
             public FunctionHasUnusedParam(string function, string param) : base(function, $"Function parameter '{param}' is unused.")
+            {
+            }
+        }
+
+        public class FunctionCalledWithConstParams : CodeHint
+        {
+            public FunctionCalledWithConstParams(SyntaxNode function) : base(function.ToCode(), "Function called with constant arguments. Consider replacing with the result.")
             {
             }
         }

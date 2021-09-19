@@ -48,7 +48,7 @@ namespace Shrinker.Parser.Optimizations
                     {
                         // If RHS of the assignment calls a function with an 'out/inout' param, it is not safe to remove.
                         // Instead, replace the assignment with the RHS component.
-                        if (assignment.TheTree.OfType<FunctionCallSyntaxNode>().Any(o => o.HasOutParam || o.ModifiesGlobalVariables()))
+                        if (assignment.FunctionCalls().Any(o => o.HasOutParam || o.ModifiesGlobalVariables()))
                         {
                             var rhs = assignment.ValueNodes.ToList();
                             rhs.Add(new GenericSyntaxNode(new SemicolonToken()));

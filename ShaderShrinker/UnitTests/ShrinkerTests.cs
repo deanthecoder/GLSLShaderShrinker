@@ -15,6 +15,8 @@ using Shrinker.Parser;
 
 namespace UnitTests
 {
+    // todo - min(min(min(a, b), c), d) -> min(min(a, b), min(c, d)) ?
+
     [TestFixture]
     public class ShrinkerTests : UnitTestBase
     {

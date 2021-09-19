@@ -17,7 +17,7 @@ using NUnit.Framework;
 namespace UnitTests
 {
     [TestFixture]
-    public class ReadmeBuInstallerVersionUpdater
+    public class InstallerVersionUpdater
     {
         [Test]
         public void UpdateInstallerVersion()

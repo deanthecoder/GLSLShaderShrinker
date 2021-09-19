@@ -63,6 +63,9 @@ namespace Shrinker.Parser.SyntaxNodes
         public static IEnumerable<FunctionDeclarationSyntaxNode> FunctionDeclarations(this SyntaxNode node) =>
             node.Children.OfType<FunctionDeclarationSyntaxNode>();
 
+        public static IEnumerable<FunctionCallSyntaxNode> FunctionCalls(this SyntaxNode node) =>
+            node.TheTree.OfType<FunctionCallSyntaxNode>();
+
         public static SyntaxNode Root(this SyntaxNode node)
         {
             while (node.Parent != null)
