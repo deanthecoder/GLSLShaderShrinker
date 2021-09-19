@@ -2186,5 +2186,40 @@ namespace UnitTests
 
             Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(Code));
         }
+
+        [Test, Sequential]
+        public void CheckInliningFunctionsCalledWithConstNumericParams(
+            [Values(
+                       "int f(int a) { return a + 1; }\nint main() { return f(1); }",
+                       "int f(int a) { return a + 1; }\nint main() { return f(-23); }",
+                       "int f(int a) { int b = a + 1; return b; }\nint main() { return f(1); }",
+                       "float f(float a) { return a + 1.1; }\nfloat main() { return f(2.2); }",
+                       "float f(float a) { return a + 1.1; }\nfloat main() { return f(-.2); }",
+                       "float f(float a) { return a + 1.1; }\nfloat main() { float v = 2.2; return f(v); }",
+                       "float f(float a) { return a + 1.1; }\nfloat main() { return f(iTime) + f(2.2); }",
+                       "mat2 rot(float a) { float c = cos(a), s = sin(a); return mat2(c, s, -s, c); }\nmat2 main() { return rot(0.707); }",
+                       "mat2 rot(float a) { float c = cos(a), s = sin(a); return mat2(c, s, -s, c); }\nmat2 main() { return rot(-.55); }",
+                       "int f(int a, int b) { return a * b; }\nint main() { return f(2, 6); }")] string code,
+            [Values(
+                       "int main() { return 2; }",
+                       "int main() { return -22; }",
+                       "int main() { return 2; }",
+                       "float main() { return 3.3; }",
+                       "float main() { return .9; }",
+                       "float main() { return 3.3; }",
+                       "float f(float a) { return a + 1.1; }\n\nfloat main() { return f(iTime) + 3.3; }",
+                       "mat2 main() { return mat2(.76031, .64956, -.64956, .76031); }",
+                       "mat2 main() { return mat2(.85252, .52269, .52269, .85252); }",
+                       "int main() { return 12; }")] string expected)
+        {
+            var lexer = new Lexer();
+            lexer.Load(code);
+
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(CustomOptions.All());
+
+            Assert.That(rootNode.ToCode(), Is.EqualTo(expected));
+        }
     }
 }

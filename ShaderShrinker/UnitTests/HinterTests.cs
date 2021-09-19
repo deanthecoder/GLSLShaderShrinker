@@ -55,7 +55,7 @@ namespace UnitTests
 
             var rootNode = new Parser(lexer).Parse();
 
-            var hints = rootNode.GetHints().OfType<Hinter.FunctionHasUnusedParam>().ToList();
+            var hints = rootNode.GetHints().OfType<Hinter.FunctionHasUnusedParamHint>().ToList();
             Assert.That(hints, Has.Count.EqualTo(1));
             Assert.That(() => hints.Single().Suggestion, Does.Contain("'b'"));
         }
@@ -79,7 +79,7 @@ namespace UnitTests
 
             var rootNode = new Parser(lexer).Parse();
 
-            Assert.That(() => rootNode.GetHints().OfType<Hinter.IntroduceDefine>().ToList(), Has.Count.EqualTo(1));
+            Assert.That(() => rootNode.GetHints().OfType<Hinter.IntroduceDefineHint>().ToList(), Has.Count.EqualTo(1));
         }
 
         [Test]
@@ -101,7 +101,7 @@ namespace UnitTests
 
             var rootNode = new Parser(lexer).Parse();
 
-            Assert.That(() => rootNode.GetHints().OfType<Hinter.IntroduceDefine>().ToList(), Has.Count.EqualTo(1));
+            Assert.That(() => rootNode.GetHints().OfType<Hinter.IntroduceDefineHint>().ToList(), Has.Count.EqualTo(1));
         }
 
         [Test]
@@ -123,7 +123,7 @@ namespace UnitTests
 
             var rootNode = new Parser(lexer).Parse();
 
-            Assert.That(() => rootNode.GetHints().OfType<Hinter.IntroduceDefine>().ToList(), Has.Count.EqualTo(1));
+            Assert.That(() => rootNode.GetHints().OfType<Hinter.IntroduceDefineHint>().ToList(), Has.Count.EqualTo(1));
         }
 
         [Test, Sequential]
@@ -140,7 +140,7 @@ namespace UnitTests
 
             var rootNode = new Parser(lexer).Parse();
 
-            Assert.That(() => rootNode.GetHints().OfType<Hinter.FunctionCalledWithConstParams>(), Is.Empty);
+            Assert.That(() => rootNode.GetHints().OfType<Hinter.FunctionCalledWithConstParamsHint>(), Is.Empty);
         }
 
         [Test]
@@ -151,7 +151,7 @@ namespace UnitTests
 
             var rootNode = new Parser(lexer).Parse();
 
-            Assert.That(() => rootNode.GetHints().OfType<Hinter.FunctionCalledWithConstParams>(), Is.Empty);
+            Assert.That(() => rootNode.GetHints().OfType<Hinter.FunctionCalledWithConstParamsHint>(), Is.Empty);
         }
 
         [Test]
@@ -162,7 +162,7 @@ namespace UnitTests
 
             var rootNode = new Parser(lexer).Parse();
 
-            Assert.That(() => rootNode.GetHints().OfType<Hinter.FunctionCalledWithConstParams>(), Is.Empty);
+            Assert.That(() => rootNode.GetHints().OfType<Hinter.FunctionCalledWithConstParamsHint>(), Is.Empty);
         }
         
         [Test]
@@ -173,7 +173,7 @@ namespace UnitTests
 
             var rootNode = new Parser(lexer).Parse();
 
-            Assert.That(() => rootNode.GetHints().OfType<Hinter.FunctionCalledWithConstParams>(), Is.Empty);
+            Assert.That(() => rootNode.GetHints().OfType<Hinter.FunctionCalledWithConstParamsHint>(), Is.Empty);
         }
 
         [Test]
@@ -190,7 +190,7 @@ namespace UnitTests
 
             var rootNode = new Parser(lexer).Parse();
 
-            Assert.That(() => rootNode.GetHints().OfType<Hinter.FunctionCalledWithConstParams>().ToList(), Has.Count.EqualTo(1));
+            Assert.That(() => rootNode.GetHints().OfType<Hinter.FunctionCalledWithConstParamsHint>().ToList(), Has.Count.EqualTo(1));
         }
     }
 }

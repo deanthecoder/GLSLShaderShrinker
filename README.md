@@ -141,6 +141,7 @@ In most cases they can be worked-around using a set of 'custom' settings which d
 * [Introduce +=, -=, /=, *=](#introduce-+=,--=,-/=,-*=)
 * [Simplify Mathematical Expressions](#simplify-mathematical-expressions)
 * [Perform Simple Arithmetic](#perform-simple-arithmetic)
+* [Replace Functions Calls With Result](#replace-functions-calls-with-result)
 ## Remove Comments
 Remove all C/C++ -style comments from the code.
 #### Before
@@ -562,5 +563,25 @@ E.g.
 * Change ```pow(3.0, 2.0)``` to ```9.0```
 * Change ```float a = 1.2 / 2.3 * 4.5;``` to ```float a = 2.3478;```
 * Change ```vec2 f = vec2(1.1, 2.2) + 3.3 * 4.4;``` to ```vec2 f = vec2(15.62, 16.72);```
+
+---
+## Replace Functions Calls With Result
+If the result of a function call can be calculated, replace the call with the result.
+#### Before
+```c
+float doMaths(float a, float b, float c) {
+    return a * b + a + sin(c);
+}
+
+float f() {
+    float result = doMaths(1.0, 2.0, 3.14159);
+}
+```
+#### After
+```c
+float f() {
+    float result = 3.0;
+}
+```
 
 ---

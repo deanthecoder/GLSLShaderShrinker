@@ -1,4 +1,4 @@
-// Processed by 'GLSL Shader Shrinker' (Shrunk by 671 characters)
+// Processed by 'GLSL Shader Shrinker' (Shrunk by 508 characters)
 // (https://github.com/deanthecoder/GLSLShaderShrinker)
 
 #define time	(iTime + 37.)
@@ -44,7 +44,7 @@ float sdChest(vec3 p) {
 	float d,
 	      box = sdBox(pp, vec3(1, .6, 1.5));
 	box = max(box, -sdBox(pp - vec3(0, .9, 0), vec3(1, .6, 1.5)));
-	p.xy *= rot(.2);
+	p.xy *= mat2(.98007, .19867, -.19867, .98007);
 	p.y -= .2;
 	d = min(max(max(-p.y, length(p.xy) - 1.), abs(p.z) - 1.5), box) - texture(iChannel0, (p.xz + p.y) * .11).r * .1;
 	d -= abs(abs(p.z) - .75) < .15 ? .07 : 0.;
@@ -52,8 +52,8 @@ float sdChest(vec3 p) {
 }
 
 float sdFloor(vec3 p) {
-	float bh = textureLod(iChannel0, p.xz * rot(1.1) * .01, 2.5).r * 6.5;
-	bh += textureLod(iChannel0, (p.xz + vec2(12.3, 23.4)) * rot(.5) * .02, 0.).r * 1.2;
+	float bh = textureLod(iChannel0, p.xz * mat2(.4536, .89121, -.89121, .4536) * .01, 2.5).r * 6.5;
+	bh += textureLod(iChannel0, (p.xz + vec2(12.3, 23.4)) * mat2(.87758, .47943, -.47943, .87758) * .02, 0.).r * 1.2;
 	bh /= 2.5;
 	return p.y + 6. - bh;
 }
@@ -76,14 +76,14 @@ float sdPlants(vec3 p) {
 		d = min(d, min(sdPlant(p, 1.2), min(sdPlant(p + dd.xyx, .5), sdPlant(p + dd, .8))));
 		p.x--;
 		p.z--;
-		p.xz *= rot(.6);
+		p.xz *= mat2(.82534, .56464, -.56464, .82534);
 	}
 
 	return d;
 }
 
 float sdManta(vec3 p) {
-	p.xz *= rot(3.141);
+	p.xz *= mat2(-1, 59e-5, -59e-5, -1);
 	p.y += 3.5;
 	p.z += 22.;
 	float d,
@@ -95,7 +95,7 @@ float sdManta(vec3 p) {
 	p.y -= sin(-time * 1.5) * .2;
 	p.y -= (abs(p.x) + .1) * sin(abs(p.x) + time * 1.5) * .4;
 	vec3 pp = p;
-	pp.xz *= rot(.78525);
+	pp.xz *= mat2(.70721, .707, -.707, .70721);
 	d = smin(sdBox(pp, vec3(1, .015, 1)), length(p.xz * vec2(.5, 1)) - 1.18, -.05);
 	pp = p;
 	if (p.y > 0.) {
@@ -118,7 +118,7 @@ float godLight(vec3 p, vec3 lightPos) {
 
 vec2 map(vec3 p) {
 	vec3 pp = p;
-	pp.xz *= rot(-.5);
+	pp.xz *= mat2(.87758, .47943, .47943, .87758);
 	float surface = -p.y - sdSurface(p.xz),
 	      t = time * .6;
 	surface += (.5 + .5 * (sin(p.z * .2 + t) + sin((p.z + p.x) * .1 + t * 2.))) * .4;

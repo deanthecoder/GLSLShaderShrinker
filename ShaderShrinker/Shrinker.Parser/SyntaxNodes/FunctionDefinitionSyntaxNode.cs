@@ -64,6 +64,9 @@ namespace Shrinker.Parser.SyntaxNodes
         public bool DoesCall(FunctionDefinitionSyntaxNode otherFunction) =>
             this.FunctionCalls().Any(o => o.Name == otherFunction.Name);
 
+        public bool CallsLocalFunctions() =>
+            this.FunctionCalls().Any(o => o.GetCalleeDefinition() != null);
+
         /// <summary>
         /// How many times does this function call another?
         /// </summary>

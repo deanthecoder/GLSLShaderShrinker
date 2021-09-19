@@ -45,6 +45,7 @@ namespace Shrinker.Parser
         public bool SimplifyArithmetic { get; set; }
         public bool PerformArithmetic { get; set; }
         public bool SimplifyBranching { get; set; }
+        public bool ReplaceFunctionCallsWithResult { get; set; }
 
         private CustomOptions()
         {

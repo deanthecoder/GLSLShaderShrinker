@@ -1,4 +1,4 @@
-// Processed by 'GLSL Shader Shrinker' (Shrunk by 1,302 characters)
+// Processed by 'GLSL Shader Shrinker' (Shrunk by 1,280 characters)
 // (https://github.com/deanthecoder/GLSLShaderShrinker)
 
 #define MY_GPU_CAN_TAKE_IT
@@ -151,12 +151,12 @@ vec2 map(vec3 p, bool useGlow) {
 	}
 
 	pp = p;
-	pp.xz *= rot(-.78538);
+	pp.xz *= mat2(.70712, .70709, .70709, .70712);
 	d = min(d, sdBox(pp - vec3(0, 6, -20), vec3(10, 1, 20. + stepToStep * 12.)) - texture(iChannel0, p.xz * .8).r * .01);
 	vec2 d2 = sdCorridorSection(p);
 	p.yz -= stepToStep * 12.;
 	p.z -= 9.;
-	p.xz *= rot(-.7854);
+	p.xz *= mat2(.70711);
 	p.x -= 9.08;
 	return min2(vec2(d, 1.5), min2(d2, sdCorridorSection(p)));
 }

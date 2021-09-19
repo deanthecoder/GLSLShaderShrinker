@@ -306,8 +306,7 @@ namespace Shrinker.Parser.SyntaxNodes
                                  continue;
 
                              if (node.Previous == null ||
-                                 node.Previous?.Token is SymbolOperatorToken ||
-                                 node.Previous?.Token is CommaToken)
+                                 node.Previous.Token is SymbolOperatorToken or CommaToken or AssignmentOperatorToken)
                              {
                                  node.Remove();
                                  numberToken.MakeNegative();

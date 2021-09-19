@@ -12,6 +12,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Shrinker.Lexer;
+using Shrinker.Parser.Optimizations;
 using Shrinker.Parser.SyntaxNodes;
 
 namespace Shrinker.Parser
@@ -73,7 +74,7 @@ namespace Shrinker.Parser
                         .Select(o => o.Token?.Content ?? (o as VariableAssignmentSyntaxNode)?.Name)
                         .Any(o => o?.StartsWithVarName(paramName) == true);
                     if (!isUsed)
-                        yield return new FunctionHasUnusedParam(function.UiName, paramName);
+                        yield return new FunctionHasUnusedParamHint(function.UiName, paramName);
                 }
             }
         }
@@ -93,28 +94,15 @@ namespace Shrinker.Parser
                 var newSize = 8 + candidate.Length + usageCount;
 
                 if (newSize < oldSize)
-                    yield return new IntroduceDefine(candidate, replacement[candidates.ToList().IndexOf(candidate)]);
+                    yield return new IntroduceDefineHint(candidate, replacement[candidates.ToList().IndexOf(candidate)]);
             }
         }
 
-        private static IEnumerable<CodeHint> DetectFunctionsCalledWithConstArguments(SyntaxNode rootNode)
-        {
-            foreach (var function in rootNode.FunctionDefinitions())
-            {
-                var functionCallsWithConstParams =
-                    function
-                    .FunctionCalls()
-                    .Where(o => o.Params.IsNumericCsv(true))
-                    .Where(o => !o.ModifiesGlobalVariables());
-
-                foreach (var hintableFunctionCall in functionCallsWithConstParams)
-                {
-                    var callee = hintableFunctionCall.GetCalleeDefinition();
-                    if (callee != null && callee.ReturnType != "void" && !callee.UsesGlslInputs())
-                        yield return new FunctionCalledWithConstParams(hintableFunctionCall);
-                }
-            }
-        }
+        private static IEnumerable<CodeHint> DetectFunctionsCalledWithConstArguments(SyntaxNode rootNode) =>
+            rootNode
+                .FunctionDefinitions()
+                .SelectMany(o => o.FunctionCalls().FunctionCallsMadeWithConstParams())
+                .Select(function => new FunctionCalledWithConstParamsHint(function));
 
         public class UnusedFunctionHint : CodeHint
         {
@@ -130,23 +118,23 @@ namespace Shrinker.Parser
             }
         }
         
-        public class FunctionHasUnusedParam : CodeHint
+        public class FunctionHasUnusedParamHint : CodeHint
         {
-            public FunctionHasUnusedParam(string function, string param) : base(function, $"Function parameter '{param}' is unused.")
+            public FunctionHasUnusedParamHint(string function, string param) : base(function, $"Function parameter '{param}' is unused.")
             {
             }
         }
 
-        public class FunctionCalledWithConstParams : CodeHint
+        public class FunctionCalledWithConstParamsHint : CodeHint
         {
-            public FunctionCalledWithConstParams(SyntaxNode function) : base(function.ToCode(), "Function called with constant arguments. Consider replacing with the result.")
+            public FunctionCalledWithConstParamsHint(SyntaxNode function) : base(function.ToCode(), "Function called with constant arguments. Consider replacing with the result.")
             {
             }
         }
         
-        public class IntroduceDefine : CodeHint
+        public class IntroduceDefineHint : CodeHint
         {
-            public IntroduceDefine(string originalName, string defineNameAndValue) : base(originalName, $"[GOLF] Consider adding '#define {defineNameAndValue}'")
+            public IntroduceDefineHint(string originalName, string defineNameAndValue) : base(originalName, $"[GOLF] Consider adding '#define {defineNameAndValue}'")
             {
             }
         }

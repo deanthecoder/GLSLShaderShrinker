@@ -1,4 +1,4 @@
-// Processed by 'GLSL Shader Shrinker' (Shrunk by 986 characters)
+// Processed by 'GLSL Shader Shrinker' (Shrunk by 839 characters)
 // (https://github.com/deanthecoder/GLSLShaderShrinker)
 
 float stretch, gunsUp, gunsForward, edWalk, edTwist, edDown, edShoot, doorOpen, glow;
@@ -23,7 +23,7 @@ float sdBox(vec3 p, vec3 b) {
 
 float sdChamferedCube(vec3 p, vec3 r, float c) {
 	float cube = sdBox(p, r);
-	p.xz *= rot(.78525);
+	p.xz *= mat2(.70721, .707, -.707, .70721);
 	r.xz *= -c / 1.41 + 1.41;
 	return max(cube, sdBox(p, r));
 }
@@ -130,7 +130,7 @@ MarchData gunPod(vec3 p) {
 	r.d = min(r.d, sdTriPrism(pp, vec2(.1, .5)));
 	pp = p;
 	pp.x = abs(p.x);
-	pp.xy *= rot(.78525);
+	pp.xy *= mat2(.70721, .707, -.707, .70721);
 	float fs,
 	      bump = sign(sin(pp.z * 33.3)) * .003,
 	      d = sdBox(pp, vec3(.1 - bump, .38 - bump, .34)) - .02;
@@ -176,9 +176,9 @@ float toe(vec3 p) {
 
 float foot(vec3 p) {
 	p.z += .8;
-	p.yz *= rot(.86);
+	p.yz *= mat2(.65244, .75784, -.75784, .65244);
 	float d = toe(p);
-	p.xz *= rot(1.57);
+	p.xz *= mat2(8e-4, 1, -1., 8e-4);
 	p.x -= .43;
 	p.z = .25 - abs(p.z);
 	return min(d, toe(p));
@@ -188,7 +188,7 @@ MarchData waist(vec3 p) {
 	MarchData r;
 	setBodyMaterial(r);
 	p.y += .65;
-	p.yz *= rot(-.2);
+	p.yz *= mat2(.98007, .19867, .19867, .98007);
 	float bump, d,
 	      legAngle = legWalkAngle(1.);
 	p.xy *= rot(legAngle * .3);
@@ -225,13 +225,13 @@ MarchData legs(vec3 p) {
 	p.yz *= rot(legAngle * sign(p.x));
 	p.z -= .27;
 	p.y += .65;
-	p.yz *= rot(-.2);
+	p.yz *= mat2(.98007, .19867, .19867, .98007);
 	p.xy *= rot(legAngle * .3);
 	vec3 cp,
 	     pp = p;
 	pp.x = abs(pp.x);
 	pp.y += .48;
-	pp.yz *= rot(-.58525);
+	pp.yz *= mat2(.83357, .55241, .55241, .83357);
 	pp.x -= .98;
 	cp = pp;
 	p = pp;

@@ -38,8 +38,7 @@ namespace Shrinker.Parser.SyntaxNodes
 
         public virtual bool HasOutParam => this.Root().Children.OfType<FunctionSyntaxNodeBase>().Any(o => o.Name == Name && o.HasOutParam);
 
-        public bool ModifiesGlobalVariables() =>
-            this.Root().FunctionDefinitions().FirstOrDefault(o => o.Name == Name)?.ModifiesGlobalVariables() == true;
+        public bool ModifiesGlobalVariables() => GetCalleeDefinition()?.ModifiesGlobalVariables() == true;
 
         /// <summary>
         /// Find the definition of the function being called (which may be null for functions defined in other buffers, or GLSL function calls).

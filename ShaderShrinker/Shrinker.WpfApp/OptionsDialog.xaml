@@ -570,6 +570,31 @@
                 </MdXaml:MarkdownScrollViewer>
             </CheckBox.ToolTip>
         </CheckBox>
+
+        <CheckBox Content="Replace functions calls with result" IsChecked="{Binding CustomOptions.ReplaceFunctionCallsWithResult}">
+            <CheckBox.ToolTip>
+                <MdXaml:MarkdownScrollViewer xml:space="preserve">
+                    ### Replace Functions Calls With Result
+                    If the result of a function call can be calculated, replace the call with the result. 
+                    #### Before
+                    ```c
+                    float doMaths(float a, float b, float c) {
+                        return a * b + a + sin(c);
+                    }
+
+                    float f() {
+                        float result = doMaths(1.0, 2.0, 3.14159);
+                    }
+                    ```
+                    #### After
+                    ```c
+                    float f() {
+                        float result = 3.0;
+                    }
+                    ```
+                </MdXaml:MarkdownScrollViewer>
+            </CheckBox.ToolTip>
+        </CheckBox>
     </StackPanel>
 
     <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" Margin="0,16,0,0" VerticalAlignment="Center">

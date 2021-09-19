@@ -99,6 +99,9 @@ namespace Shrinker.Parser
 
                 if (options.PerformArithmetic)
                     repeatSimplifications |= rootNode.PerformArithmetic();
+
+                if (options.ReplaceFunctionCallsWithResult)
+                    repeatSimplifications |= rootNode.ReplaceFunctionCallsWithResult();
             }
 
             return rootNode;

@@ -579,16 +579,16 @@ namespace UnitTests
             Assert.That(parser.RootNode.Children.Single().Token, Is.TypeOf<FloatToken>());
         }
 
-        [Test]
-        public void CheckDetectingNegativeFloat()
+        [Test, Sequential]
+        public void CheckDetectingNegativeFloat([Values("-0.41", "-.41")] string code)
         {
             var lexer = new Lexer();
-            lexer.Load("-4.1");
+            lexer.Load(code);
 
             var rootNode = new Parser(lexer).Parse();
 
             Assert.That(rootNode.Children.Single().Token, Is.TypeOf<FloatToken>());
-            Assert.That(((FloatToken)rootNode.Children.Single().Token).Content, Is.EqualTo("-4.1"));
+            Assert.That(((FloatToken)rootNode.Children.Single().Token).Content, Is.EqualTo(code));
         }
 
         [Test]
@@ -613,6 +613,18 @@ namespace UnitTests
 
             var numberToken = rootNode.TheTree.Single(o => o.Token is FloatToken).Token;
             Assert.That(((FloatToken)numberToken).Content, Is.EqualTo("-4.3"));
+        }
+
+        [Test, Sequential]
+        public void CheckDetectingNegativeFloatInAssignment()
+        {
+            var lexer = new Lexer();
+            lexer.Load("a = -.55;");
+
+            var rootNode = new Parser(lexer).Parse();
+
+            var numberToken = rootNode.TheTree.Single(o => o.Token is FloatToken).Token;
+            Assert.That(((FloatToken)numberToken).Content, Is.EqualTo("-.55"));
         }
         
         [Test, Sequential]
