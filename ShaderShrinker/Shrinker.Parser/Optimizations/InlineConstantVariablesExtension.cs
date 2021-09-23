@@ -31,7 +31,7 @@ namespace Shrinker.Parser.Optimizations
                     .Where(o => o.Token is AlphaNumToken)
                     .ToList();
 
-                foreach (var definition in constDeclNode.Definitions.Where(o => o.IsSimpleAssignment()).ToList())
+                foreach (var definition in constDeclNode.Definitions.Where(o => o.IsSimpleAssignment() && !o.IsArray).ToList())
                 {
                     var usages = potentialUsage
                         .Where(o => o.Token.Content.StartsWithVarName(definition.Name) &&

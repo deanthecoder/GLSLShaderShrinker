@@ -2031,6 +2031,23 @@ namespace UnitTests
         }
 
         [Test]
+        public void CheckConstArraysAreNotInlined()
+        {
+            const string Code = "float f(float[7]a, int n) { return a[n]; } float main() { const float arr[2] = float[](0., 10.); return f(arr, 1); }";
+
+            var lexer = new Lexer();
+            lexer.Load(Code);
+
+            var options = CustomOptions.None();
+            options.InlineConstantVariables = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(Code));
+        }
+
+        [Test]
         public void CheckNonConstArrayAssignmentsCanBeMadeConst()
         {
             var lexer = new Lexer();
