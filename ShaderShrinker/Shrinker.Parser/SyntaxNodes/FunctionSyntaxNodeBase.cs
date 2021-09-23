@@ -30,9 +30,9 @@ namespace Shrinker.Parser.SyntaxNodes
             {
                 if (!Params.Children.Any())
                     return new List<GenericSyntaxNode>();
-                var children = Params.Children.OfType<GenericSyntaxNode>().Where(o => o.Token is AlphaNumToken || o.Token is CommaToken).Append(new GenericSyntaxNode(new CommaToken())).ToList();
+                var children = Params.Children.OfType<GenericSyntaxNode>().Where(o => o.Token is AlphaNumToken or CommaToken).Append(new GenericSyntaxNode(new CommaToken())).ToList();
                 var commaIndexes = children.Where(o => o.Token is CommaToken).Select(o => children.IndexOf(o));
-                return commaIndexes.Select(i => children[i - 1]).ToList();
+                return commaIndexes.Where(i => i > 0 && children[i - 1].Token is not CommaToken).Select(i => children[i - 1]).ToList();
             }
         }
 

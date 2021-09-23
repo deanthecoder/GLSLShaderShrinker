@@ -621,11 +621,13 @@ namespace UnitTests
             Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo("void main() { }"));
         }
 
-        [Test]
-        public void CheckFunctionDeclarationParamNamesAreRemoved()
+        [Test, Sequential]
+        public void CheckFunctionDeclarationParamNamesAreRemoved(
+            [Values("void foo(int a, int b); void main() { foo(1, 2); } void foo(int a, int b) { }",
+                    "void foo(int, int); void main() { foo(1, 2); } void foo(int a, int b) { }")] string code)
         {
             var lexer = new Lexer();
-            lexer.Load("void foo(int a, int b); void main() { foo(1, 2); } void foo(int a, int b) { }");
+            lexer.Load(code);
 
             var options = CustomOptions.None();
             options.SimplifyFunctionDeclarations = true;
