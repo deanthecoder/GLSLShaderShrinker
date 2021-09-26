@@ -44,5 +44,7 @@ namespace Shrinker.Lexer
             deleteTotal = count + 1;
             return tokens[tokenIndex + count];
         }
+
+        public override IToken Clone() => new ConstToken { Content = Content };
     }
 }

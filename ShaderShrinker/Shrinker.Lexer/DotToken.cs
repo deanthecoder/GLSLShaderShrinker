@@ -48,5 +48,7 @@ namespace Shrinker.Lexer
 
             return deleteTotal <= 1 ? null : new FloatToken(newContent.ToString());
         }
+
+        public override IToken Clone() => new DotToken { Content = "." };
     }
 }

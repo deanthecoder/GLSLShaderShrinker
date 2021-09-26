@@ -47,6 +47,8 @@ namespace Shrinker.Lexer
             return null;
         }
 
+        public override IToken Clone() => new SymbolOperatorToken { Content = Content };
+
         private static string SingleCharacterOperators => ":!+-*/|<>@?&^%";
 
         private static string[] MultiCharacterOperators { get; } = { "||", "&&", "<=", ">=", "<<=", ">>=", "<<", ">>" };

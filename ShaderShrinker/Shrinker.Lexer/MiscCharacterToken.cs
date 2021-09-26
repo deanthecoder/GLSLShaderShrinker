@@ -15,5 +15,7 @@ namespace Shrinker.Lexer
     {
         public override IToken TryMatch(string code, ref int offset) =>
             offset < code.Length ? new MiscCharacterToken { Content = Read(code, ref offset) } : null;
+
+        public override IToken Clone() => new MiscCharacterToken { Content = Content };
     }
 }

@@ -28,6 +28,8 @@ namespace Shrinker.Lexer
             return null;
         }
 
+        public IToken Clone() => new KeywordToken(Content);
+
         public KeywordToken(string content)
         {
             Content = content ?? throw new ArgumentNullException(nameof(content));

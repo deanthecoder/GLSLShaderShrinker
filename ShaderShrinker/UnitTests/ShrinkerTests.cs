@@ -9,9 +9,12 @@
 //  </summary>
 // -----------------------------------------------------------------------
 
+using System.Linq;
 using NUnit.Framework;
 using Shrinker.Lexer;
 using Shrinker.Parser;
+using Shrinker.Parser.SyntaxNodes;
+using UnitTests.Extensions;
 
 namespace UnitTests
 {
@@ -743,6 +746,9 @@ namespace UnitTests
                 .Simplify(options);
 
             Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo("int main() { return 1 + 1; }"));
+            var returnNode = rootNode.TheTree.OfType<ReturnSyntaxNode>().Single();
+            Assert.That(returnNode.Children, Is.Unique);
+            Assert.That(returnNode.NonNullChildTokens(), Is.Unique);
         }
 
         [Test]
@@ -803,6 +809,9 @@ namespace UnitTests
                 .Simplify(options);
 
             Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo("float main() { return 2.3 + 1.0; }"));
+            var returnNode = rootNode.TheTree.OfType<ReturnSyntaxNode>().Single();
+            Assert.That(returnNode.Children, Is.Unique);
+            Assert.That(returnNode.NonNullChildTokens(), Is.Unique);
         }
 
         [Test]
@@ -854,6 +863,22 @@ namespace UnitTests
                 .Simplify(options);
 
             Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo("int main() { return 1 + 1; }"));
+            var returnNode = rootNode.TheTree.OfType<ReturnSyntaxNode>().Single();
+            Assert.That(returnNode.Children, Is.Unique);
+            Assert.That(returnNode.NonNullChildTokens(), Is.Unique);
+        }
+
+        [Test]
+        public void CheckInliningConstantVariableWithNegativeUsage()
+        {
+            var lexer = new Lexer();
+            lexer.Load("{ const float c = .85252, s = -.52269; return mat2(c, s, -s, c); }");
+
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify();
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo("{ return mat2(.85252, -.52269, .52269, .85252); }"));
         }
 
         [Test, Sequential]
@@ -2228,7 +2253,7 @@ namespace UnitTests
                        "float main() { return 3.3; }",
                        "float f(float a) { return a + 1.1; }\n\nfloat main() { return f(iTime) + 3.3; }",
                        "mat2 main() { return mat2(.76031, .64956, -.64956, .76031); }",
-                       "mat2 main() { return mat2(.85252, .52269, .52269, .85252); }",
+                       "mat2 main() { return mat2(.85252, -.52269, .52269, .85252); }",
                        "int main() { return 12; }")] string expected)
         {
             var lexer = new Lexer();
@@ -2239,6 +2264,16 @@ namespace UnitTests
                 .Simplify(CustomOptions.All());
 
             Assert.That(rootNode.ToCode(), Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void CheckCloningNodeClonesNodeToken()
+        {
+            var intToken = new IntToken(2);
+            Assert.That(new GenericSyntaxNode(intToken).Clone().Token, Is.Not.SameAs(intToken));
+
+            var floatToken = new FloatToken("2.2");
+            Assert.That(new GenericSyntaxNode(floatToken).Clone().Token, Is.Not.SameAs(floatToken));
         }
     }
 }

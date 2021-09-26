@@ -51,5 +51,7 @@ namespace Shrinker.Lexer
 
             return s.RemoveAllWhitespace().IsAnyOf("#ifdef", "#ifndef", "#if", "#else", "#endif", "#elif", "#undef") ? new PreprocessorToken { Content = Read(code, ref offset, s.Length) } : null;
         }
+
+        public override IToken Clone() => new PreprocessorToken { Content = Content };
     }
 }

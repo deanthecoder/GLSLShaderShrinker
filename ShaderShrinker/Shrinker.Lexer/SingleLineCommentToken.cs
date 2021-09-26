@@ -52,5 +52,7 @@ namespace Shrinker.Lexer
 
             return deleteTotal > 1 ? new SingleLineCommentToken { Content = newContent.ToString(), IsAppendedToLine = IsAppendedToLine } : null;
         }
+
+        public override IToken Clone() => new SingleLineCommentToken { Content = Content };
     }
 }

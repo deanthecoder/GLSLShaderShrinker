@@ -45,5 +45,7 @@ namespace Shrinker.Lexer
 
             return new AlphaNumToken(Read(code, ref offset, s.Length));
         }
+
+        public override IToken Clone() => new AlphaNumToken(Content);
     }
 }

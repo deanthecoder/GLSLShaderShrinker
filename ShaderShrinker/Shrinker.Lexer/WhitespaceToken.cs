@@ -17,5 +17,7 @@
 
             return count == 0 ? null : new WhitespaceToken { Content = Read(code, ref offset, count) };
         }
+
+        public override IToken Clone() => new WhitespaceToken { Content = Content };
     }
 }

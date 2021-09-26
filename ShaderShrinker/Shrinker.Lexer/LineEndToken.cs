@@ -14,5 +14,7 @@ namespace Shrinker.Lexer
 
             return "\r\n".Contains(s[0]) ? new LineEndToken { Content = Read(code, ref offset) } : null;
         }
+
+        public override IToken Clone() => new LineEndToken { Content = Content };
     }
 }

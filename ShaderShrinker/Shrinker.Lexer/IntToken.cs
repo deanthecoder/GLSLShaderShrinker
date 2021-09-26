@@ -56,6 +56,8 @@ namespace Shrinker.Lexer
             return new IntToken { Content = Read(code, ref offset, count) };
         }
 
+        public override IToken Clone() => new IntToken { Content = Content };
+
         public void MakeNegative() => Content = $"-{Content.TrimStart('-')}";
         public void MakePositive() => Content = $"{Content.TrimStart('-')}";
 

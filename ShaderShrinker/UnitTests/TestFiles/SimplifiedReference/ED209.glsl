@@ -1,4 +1,4 @@
-// Processed by 'GLSL Shader Shrinker' (Shrunk by 839 characters)
+// Processed by 'GLSL Shader Shrinker' (Shrunk by 836 characters)
 // (https://github.com/deanthecoder/GLSLShaderShrinker)
 
 float stretch, gunsUp, gunsForward, edWalk, edTwist, edDown, edShoot, doorOpen, glow;
@@ -188,7 +188,7 @@ MarchData waist(vec3 p) {
 	MarchData r;
 	setBodyMaterial(r);
 	p.y += .65;
-	p.yz *= mat2(.98007, .19867, .19867, .98007);
+	p.yz *= mat2(.98007, -.19867, .19867, .98007);
 	float bump, d,
 	      legAngle = legWalkAngle(1.);
 	p.xy *= rot(legAngle * .3);
@@ -225,13 +225,13 @@ MarchData legs(vec3 p) {
 	p.yz *= rot(legAngle * sign(p.x));
 	p.z -= .27;
 	p.y += .65;
-	p.yz *= mat2(.98007, .19867, .19867, .98007);
+	p.yz *= mat2(.98007, -.19867, .19867, .98007);
 	p.xy *= rot(legAngle * .3);
 	vec3 cp,
 	     pp = p;
 	pp.x = abs(pp.x);
 	pp.y += .48;
-	pp.yz *= mat2(.83357, .55241, .55241, .83357);
+	pp.yz *= mat2(.83357, -.55241, .55241, .83357);
 	pp.x -= .98;
 	cp = pp;
 	p = pp;

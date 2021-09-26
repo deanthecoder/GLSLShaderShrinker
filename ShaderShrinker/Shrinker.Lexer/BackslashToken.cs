@@ -20,5 +20,7 @@ namespace Shrinker.Lexer
 
         public override IToken TryMatch(string code, ref int offset) =>
             Peek(code, offset) == '\\' ? new BackslashToken { Content = Read(code, ref offset) } : null;
+
+        public override IToken Clone() => new BackslashToken();
     }
 }

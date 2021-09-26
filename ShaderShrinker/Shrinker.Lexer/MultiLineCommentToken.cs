@@ -27,5 +27,7 @@ namespace Shrinker.Lexer
 
             return new MultiLineCommentToken { Content = Read(code, ref offset, count + 2) };
         }
+
+        public override IToken Clone() => new MultiLineCommentToken { Content = Content };
     }
 }

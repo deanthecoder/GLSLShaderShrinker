@@ -35,5 +35,7 @@ namespace Shrinker.Lexer
 
             return deleteTotal > 1 ? new VerbatimToken(newContent.ToString()) : null;
         }
+
+        public override IToken Clone() => new PrecisionToken { Content = Content };
     }
 }

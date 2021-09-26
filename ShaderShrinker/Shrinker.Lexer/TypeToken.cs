@@ -112,6 +112,8 @@ namespace Shrinker.Lexer
             return this;
         }
 
+        public IToken Clone() => new TypeToken(Content);
+
         public TypeToken(string content)
         {
             m_content = content ?? throw new ArgumentNullException(nameof(content));

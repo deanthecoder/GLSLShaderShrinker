@@ -32,6 +32,8 @@ namespace Shrinker.Lexer
         public override IToken TryMatch(string code, ref int offset) =>
             throw new InvalidOperationException("Should be created by DotToken.");
 
+        public override IToken Clone() => new FloatToken(Content);
+
         public IToken Simplify()
         {
             const int MaxSigFigs = 9;

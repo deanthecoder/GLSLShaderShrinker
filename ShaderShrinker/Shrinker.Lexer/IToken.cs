@@ -26,5 +26,7 @@ namespace Shrinker.Lexer
         /// Post-process the complete token list, allowing a token to merge with its neighbors. (E.g. '//' merging with following text until newline.
         /// </summary>
         IToken TryJoin(List<IToken> tokens, int tokenIndex, out int deletePrevious, out int deleteTotal);
+
+        IToken Clone();
     }
 }

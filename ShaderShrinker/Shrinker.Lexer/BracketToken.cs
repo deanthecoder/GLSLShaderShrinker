@@ -4,5 +4,7 @@
     {
         public override IToken TryMatch(string code, ref int offset) =>
             "(){}[]".Contains(Peek(code, offset, 1)) ? new BracketToken { Content = Read(code, ref offset) } : null;
+
+        public override IToken Clone() => new BracketToken { Content = Content };
     }
 }

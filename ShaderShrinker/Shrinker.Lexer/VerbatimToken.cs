@@ -21,5 +21,7 @@ namespace Shrinker.Lexer
         }
 
         public override IToken TryMatch(string code, ref int offset) => throw new NotImplementedException("Created by PreprocessorToken.");
+
+        public override IToken Clone() => new VerbatimToken(Content);
     }
 }

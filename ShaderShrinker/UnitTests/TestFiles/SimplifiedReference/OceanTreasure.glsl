@@ -1,4 +1,4 @@
-// Processed by 'GLSL Shader Shrinker' (Shrunk by 508 characters)
+// Processed by 'GLSL Shader Shrinker' (Shrunk by 507 characters)
 // (https://github.com/deanthecoder/GLSLShaderShrinker)
 
 #define time	(iTime + 37.)
@@ -118,7 +118,7 @@ float godLight(vec3 p, vec3 lightPos) {
 
 vec2 map(vec3 p) {
 	vec3 pp = p;
-	pp.xz *= mat2(.87758, .47943, .47943, .87758);
+	pp.xz *= mat2(.87758, -.47943, .47943, .87758);
 	float surface = -p.y - sdSurface(p.xz),
 	      t = time * .6;
 	surface += (.5 + .5 * (sin(p.z * .2 + t) + sin((p.z + p.x) * .1 + t * 2.))) * .4;

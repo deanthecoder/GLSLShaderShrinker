@@ -53,5 +53,7 @@ namespace Shrinker.Lexer
             deleteTotal = 0;
             return null;
         }
+
+        public abstract IToken Clone();
     }
 }
