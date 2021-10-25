@@ -19,6 +19,7 @@ using UnitTests.Extensions;
 namespace UnitTests
 {
     // todo - min(min(min(a, b), c), d) -> min(min(a, b), min(c, d)) ?
+    // todo - same vector/matrix used multiple time in a function => make variable.
 
     [TestFixture]
     public class ShrinkerTests : UnitTestBase
@@ -1581,6 +1582,27 @@ namespace UnitTests
                     "float f; f = 16.;",
                     "float f = pow(-1.5, 2.0);",
                     "float f = pow(1.5, -2.0);")] string expected)
+        {
+            var lexer = new Lexer();
+            lexer.Load(code);
+
+            var options = CustomOptions.None();
+            options.PerformArithmetic = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(expected));
+        }
+
+        [Test, Sequential]
+        public void CheckArithmeticWithSignFunction(
+            [Values("float f = sign(2.0);",
+                    "float f = sign(.0);",
+                    "float f = sign(-12.34);")] string code,
+            [Values("float f = 1.;",
+                    "float f = 0.;",
+                    "float f = -1.;")] string expected)
         {
             var lexer = new Lexer();
             lexer.Load(code);

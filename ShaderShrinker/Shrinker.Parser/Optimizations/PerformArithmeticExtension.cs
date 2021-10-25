@@ -150,7 +150,8 @@ namespace Shrinker.Parser.Optimizations
                     new Tuple<string, Func<double, double>>("acos", Math.Acos),
                     new Tuple<string, Func<double, double>>("atan", Math.Atan),
                     new Tuple<string, Func<double, double>>("radians", x => x / 180.0 * Math.PI),
-                    new Tuple<string, Func<double, double>>("degrees", x => x / Math.PI * 180.0)
+                    new Tuple<string, Func<double, double>>("degrees", x => x / Math.PI * 180.0),
+                    new Tuple<string, Func<double, double>>("sign", x => Math.Sign(x))
                 };
 
                 foreach (var mathNode in functionCalls
