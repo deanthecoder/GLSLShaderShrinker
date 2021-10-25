@@ -38,12 +38,12 @@ namespace Shrinker.Parser.SyntaxNodes
 
         public virtual bool HasOutParam => this.Root().Children.OfType<FunctionSyntaxNodeBase>().Any(o => o.Name == Name && o.HasOutParam);
 
-        public bool ModifiesGlobalVariables() => GetCalleeDefinition()?.ModifiesGlobalVariables() == true;
+        public bool ModifiesGlobalVariables() => GetCallee()?.ModifiesGlobalVariables() == true;
 
         /// <summary>
         /// Find the definition of the function being called (which may be null for functions defined in other buffers, or GLSL function calls).
         /// </summary>
-        public FunctionDefinitionSyntaxNode GetCalleeDefinition() =>
+        public FunctionDefinitionSyntaxNode GetCallee() =>
             this.Root().FunctionDefinitions().FirstOrDefault(o => o.Name == Name && Params.GetCsv().Count() == o.Params.GetCsv().Count());
     }
 }

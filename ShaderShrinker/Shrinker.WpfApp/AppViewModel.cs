@@ -255,7 +255,7 @@ namespace Shrinker.WpfApp
                     OptimizedSize = optimizedSize;
 
                     Hints.Clear();
-                    foreach (var hint in hints)
+                    foreach (var hint in hints.OrderBy(o => o.Item))
                         Hints.Add(hint);
                 }
 

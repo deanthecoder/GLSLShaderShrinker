@@ -32,7 +32,7 @@ namespace Shrinker.Parser.Optimizations
                 foreach (var functionCall in rootNode.FunctionCalls().Where(o => o.IsFunctionCallWithConstParams()).ToList())
                 {
                     // Clone the callee function, so we can attempt to simplify it.
-                    var callee = (FunctionDefinitionSyntaxNode)functionCall.GetCalleeDefinition().Clone();
+                    var callee = (FunctionDefinitionSyntaxNode)functionCall.GetCallee().Clone();
 
                     var callerParams = functionCall.Params.Children.Select(o => o.Clone()).ToList();
 
@@ -102,7 +102,7 @@ namespace Shrinker.Parser.Optimizations
                 functionCall.HasOutParam)
                 return false;
 
-            var callee = functionCall.GetCalleeDefinition();
+            var callee = functionCall.GetCallee();
             return callee != null && callee.ReturnType != "void" && !callee.UsesGlslInputs() && !callee.CallsLocalFunctions();
         }
     }

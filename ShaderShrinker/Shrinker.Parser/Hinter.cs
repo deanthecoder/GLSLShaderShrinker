@@ -12,6 +12,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Shrinker.Lexer;
+using Shrinker.Parser.Hints;
 using Shrinker.Parser.Optimizations;
 using Shrinker.Parser.SyntaxNodes;
 
@@ -20,9 +21,8 @@ namespace Shrinker.Parser
     /// <summary>
     /// Takes a syntax tree produced by the Parser class, and creates a collection of helpful hints.
     /// </summary>
-    public static class Hinter
+    public static partial class Hinter
     {
-        // todo - Report when single value passed to any function.
         // todo - If function called in 'if' (or 'else') blocks, suggest parameterizing.
         public static IEnumerable<CodeHint> GetHints(this SyntaxNode rootNode)
         {
@@ -33,12 +33,15 @@ namespace Shrinker.Parser
 
                 foreach (var codeHint in DetectUnusedFunctionParam(rootNode))
                     yield return codeHint;
+
+                foreach (var codeHint in DetectSameConstantParamPassedToFunction(rootNode))
+                    yield return codeHint;
             }
 
             foreach (var codeHint in DetectDefinableReferences(rootNode))
                 yield return codeHint;
 
-            foreach (var codeHint in DetectFunctionsCalledWithConstArguments(rootNode))
+            foreach (var codeHint in DetectFunctionsCalledWithAllConstArguments(rootNode))
                 yield return codeHint;
         }
 
@@ -98,45 +101,47 @@ namespace Shrinker.Parser
             }
         }
 
-        private static IEnumerable<CodeHint> DetectFunctionsCalledWithConstArguments(SyntaxNode rootNode) =>
+        /// <summary>
+        /// If a function is called with all-constant params, the result might be inlined directly.
+        /// </summary>
+        private static IEnumerable<CodeHint> DetectFunctionsCalledWithAllConstArguments(SyntaxNode rootNode) =>
             rootNode
                 .FunctionDefinitions()
                 .SelectMany(o => o.FunctionCalls().FunctionCallsMadeWithConstParams())
-                .Select(function => new FunctionCalledWithConstParamsHint(function));
+                .Select(function => new FunctionCalledWithAllConstParamsHint(function));
 
-        public class UnusedFunctionHint : CodeHint
+        /// <summary>
+        /// If all calls to a function have the same constant parameter, that parameter could be inlined.
+        /// </summary>
+        private static IEnumerable<CodeHint> DetectSameConstantParamPassedToFunction(SyntaxNode rootNode)
         {
-            public UnusedFunctionHint(string function) : base(function, "Function is never called.")
-            {
-            }
-        }
+            var localFunctions = rootNode.FunctionDefinitions().ToList();
+            var functionCalls = localFunctions.SelectMany(o => o.FunctionCalls()).Where(o => o.GetCallee() != null).ToList();
 
-        public class FunctionToInlineHint : CodeHint
-        {
-            public FunctionToInlineHint(string function) : base(function, "Function is called only once - Consider inlining.")
+            var hints = new List<CodeHint>();
+            foreach (var functionCall in functionCalls.Where(o => o.Params.Children.Any()))
             {
-            }
-        }
-        
-        public class FunctionHasUnusedParamHint : CodeHint
-        {
-            public FunctionHasUnusedParamHint(string function, string param) : base(function, $"Function parameter '{param}' is unused.")
-            {
-            }
-        }
+                var callee = functionCall.GetCallee();
+                var allCallsToThatFunction = functionCalls.Where(o => callee == o.GetCallee()).ToList();
 
-        public class FunctionCalledWithConstParamsHint : CodeHint
-        {
-            public FunctionCalledWithConstParamsHint(SyntaxNode function) : base(function.ToCode(), "Function called with constant arguments. Consider replacing with the result.")
-            {
+                var paramCount = callee.ParamNames.Count;
+                for (var paramIndex = 0; paramIndex < paramCount; paramIndex++)
+                {
+                    // Each nth param must be the same.
+                    var paramStrings = allCallsToThatFunction.Select(o => o.Params.GetCsv().ToList()[paramIndex].Select(p => p.ToCode()).Aggregate((a, b) => $"{a} {b}"));
+                    if (paramStrings.Distinct().Count() != 1)
+                        continue;
+
+                    // Each nth param must be a constant.
+                    if (!allCallsToThatFunction.All(call => call.Params.IsNumericParam(paramIndex, true)))
+                        continue;
+
+                    // All match!
+                    hints.Add(new AllCallsToFunctionMadeWithSameParamHint(callee, callee.ParamNames[paramIndex].UiName));
+                }
             }
-        }
-        
-        public class IntroduceDefineHint : CodeHint
-        {
-            public IntroduceDefineHint(string originalName, string defineNameAndValue) : base(originalName, $"[GOLF] Consider adding '#define {defineNameAndValue}'")
-            {
-            }
+
+            return hints.Distinct();
         }
     }
 }

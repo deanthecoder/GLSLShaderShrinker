@@ -23,5 +23,25 @@ namespace Shrinker.Parser
         }
 
         public override string ToString() => $"{Item}|{Suggestion}";
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj))
+                return false;
+            if (ReferenceEquals(this, obj))
+                return true;
+            if (obj.GetType() != this.GetType())
+                return false;
+            var other = (CodeHint)obj;
+            return Item == other.Item && Suggestion == other.Suggestion;
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return ((Item != null ? Item.GetHashCode() : 0) * 397) ^ (Suggestion != null ? Suggestion.GetHashCode() : 0);
+            }
+        }
     }
 }
