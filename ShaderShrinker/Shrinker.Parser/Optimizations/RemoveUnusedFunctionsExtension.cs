@@ -39,8 +39,8 @@ namespace Shrinker.Parser.Optimizations
                         continue; // Yup - Used.
 
                     // Function not used - Remove it (and any matching declaration).
+                    testFunction.GetDeclaration()?.Remove();
                     testFunction.Remove();
-                    rootNode.FunctionDeclarations().FirstOrDefault(o => o.Name == testFunction.Name)?.Remove();
                     functionRemoved = true;
                 }
 

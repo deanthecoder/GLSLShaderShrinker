@@ -1,4 +1,4 @@
-// Processed by 'GLSL Shader Shrinker' (Shrunk by 1,629 characters)
+// Processed by 'GLSL Shader Shrinker' (Shrunk by 1,667 characters)
 // (https://github.com/deanthecoder/GLSLShaderShrinker)
 
 #define Z0	min(iTime, 0.)
@@ -24,20 +24,20 @@ mat2 rot(float a) {
 	return mat2(c, s, -s, c);
 }
 
-float sdBox(vec3 p, vec3 b) {
-	vec3 q = abs(p) - b;
+float sdBox(vec3 p) {
+	vec3 q = abs(p) - vec3(1);
 	return length(max(q, 0.)) + min(max(q.x, max(q.y, q.z)), 0.);
 }
 
-vec3 rayDir(vec3 ro, vec3 lookAt, vec2 uv) {
-	vec3 f = normalize(lookAt - ro),
+vec3 rayDir(vec3 ro, vec2 uv) {
+	vec3 f = normalize(vec3(0, 2, 0) - ro),
 	     r = normalize(cross(vec3(0, 1, 0), f));
 	return normalize(f + r * uv.x + cross(f, r) * uv.y);
 }
 
 Hit map(vec3 p) {
 	Hit h = Hit(length(p - vec3(0, 2.5, 0)) - 1., 1, p);
-	minH(Hit(sdBox(p - vec3(0, 1, 0), vec3(1)), 2, p));
+	minH(Hit(sdBox(p - vec3(0, 1, 0)), 2, p));
 	minH(Hit(abs(p.y), 3, p));
 	return h;
 }
@@ -138,12 +138,12 @@ void mainImage(out vec4 fragColor, vec2 fc) {
 	ro.yz *= rot(m.y - .5);
 	ro.xz *= rot((m.x - .5) * 3.141);
 	vec2 uv = (fc - .5 * iResolution.xy) / iResolution.y;
-	col = scene(ro, rayDir(ro, vec3(0, 2, 0), uv));
+	col = scene(ro, rayDir(ro, uv));
 #ifdef AA
 	if (fwidth(col.r) > .01) {
 		for (float dx = Z0; dx <= 1.; dx++) {
 			for (float dy = Z0; dy <= 1.; dy++)
-				col += scene(ro, rayDir(ro, vec3(0, 2, 0), uv + (vec2(dx, dy) - .5) / iResolution.xy));
+				col += scene(ro, rayDir(ro, uv + (vec2(dx, dy) - .5) / iResolution.xy));
 		}
 
 		col /= 5.;

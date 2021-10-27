@@ -1,4 +1,4 @@
-// Processed by 'GLSL Shader Shrinker' (Shrunk by 25 characters)
+// Processed by 'GLSL Shader Shrinker' (Shrunk by 90 characters)
 // (https://github.com/deanthecoder/GLSLShaderShrinker)
 
 float n31(vec3 p) {
@@ -12,9 +12,9 @@ float n31(vec3 p) {
 	return mix(h.x, h.y, p.z);
 }
 
-float smin(float a, float b, float k) {
-	float h = clamp(.5 + .5 * (b - a) / k, 0., 1.);
-	return mix(b, a, h) - k * h * (1. - h);
+float smin(float a, float b) {
+	float h = clamp(.5 + .5 * (b - a) / -.8, 0., 1.);
+	return mix(b, a, h) + .8 * h * (1. - h);
 }
 
 mat2 rot(float a) {
@@ -30,18 +30,16 @@ float sdBox(vec3 p, vec3 b) {
 	return length(max(q, 0.)) + min(max(q.x, max(q.y, q.z)), 0.);
 }
 
-float sdUnevenCapsule(vec2 p, float r1, float r2, float h) {
+float sdUnevenCapsule(vec2 p) {
 	p.x = abs(p.x);
-	float b = (r1 - r2) / h,
-	      a = sqrt(1. - b * b),
-	      k = dot(p, vec2(-b, a));
-	if (k < 0.) return length(p) - r1;
-	if (k > a * h) return length(p - vec2(0, h)) - r2;
-	return dot(p, vec2(a, b)) - r1;
+	float k = dot(p, vec2(.12, .99277));
+	if (k < 0.) return length(p) - 1.2;
+	if (k > 2.48192) return length(p - vec2(0, 2.5)) - 1.5;
+	return dot(p, vec2(.99277, -.12)) - 1.2;
 }
 
-vec3 getRayDir(vec3 ro, vec3 lookAt, vec2 uv) {
-	vec3 f = normalize(lookAt - ro),
+vec3 getRayDir(vec3 ro, vec2 uv) {
+	vec3 f = normalize(vec3(0, 0, .8) - ro),
 	     r = normalize(cross(vec3(0, 1, 0), f));
 	return normalize(f + r * uv.x + cross(f, r) * uv.y);
 }
@@ -57,12 +55,12 @@ float sdBoot(vec3 p) {
 	tp.z -= 1.1;
 	t = min(t, sdBox(tp, vec3(.53 - .12 * tp.z, .16, 1.6)));
 	p.z /= cos(p.z * .1);
-	return max(max(sdUnevenCapsule(p.xz, 1.2, 1.5, 2.5), p.y), -t);
+	return max(max(sdUnevenCapsule(p.xz), p.y), -t);
 }
 
 float map(vec3 p) {
 	float bmp = fbm(p) * (.5 + 2. * exp(-pow(length(p.xz - vec2(.5, 2.2)), 2.) * .26));
-	return smin(p.y - .27 - bmp, -sdBoot(p) + (bmp * bmp * .5 - .5) * .12, -.8);
+	return smin(p.y - .27 - bmp, -sdBoot(p) + (bmp * bmp * .5 - .5) * .12);
 }
 
 vec3 calcN(vec3 p, float t) {
@@ -128,5 +126,5 @@ void mainImage(out vec4 fragColor, vec2 fc) {
 	vec3 ro = vec3(0, .2, -4);
 	ro.yz *= rot(-sin(t * .3) * .1 - .6);
 	ro.xz *= rot(1.1 + cos(t) * .2);
-	fragColor = vec4(vignette(pow(march(ro, getRayDir(ro, vec3(0, 0, .8), (fc - .5 * iResolution.xy) / iResolution.y)), vec3(.45)), fc), mix(1.2, 0., (d + 1.) / 8.));
+	fragColor = vec4(vignette(pow(march(ro, getRayDir(ro, (fc - .5 * iResolution.xy) / iResolution.y)), vec3(.45)), fc), mix(1.2, 0., (d + 1.) / 8.));
 }

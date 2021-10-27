@@ -1,4 +1,4 @@
-// Processed by 'GLSL Shader Shrinker' (Shrunk by 14 characters)
+// Processed by 'GLSL Shader Shrinker' (Shrunk by 61 characters)
 // (https://github.com/deanthecoder/GLSLShaderShrinker)
 
 #define Z0	min(iTime, 0.)
@@ -28,8 +28,8 @@ vec2 polar(vec2 p, float n) {
 	return length(p) * vec2(cos(a), sin(a));
 }
 
-float bx(vec3 p, vec3 b) {
-	vec3 q = abs(p) - b;
+float bx(vec3 p) {
+	vec3 q = abs(p) - vec3(.15, .08, .025);
 	return length(max(q, 0.)) + min(max(q.x, max(q.y, q.z)), 0.);
 }
 
@@ -38,9 +38,9 @@ float cap(vec3 p, float h, float r) {
 	return length(p) - r;
 }
 
-float sdOcta(vec3 p, float s) {
+float sdOcta(vec3 p) {
 	p = abs(p);
-	return (p.x + p.y + p.z - s) * .577;
+	return (p.x + p.y + p.z - .3) * .577;
 }
 
 float claws(vec3 p) {
@@ -55,8 +55,8 @@ float claws(vec3 p) {
 	return min(d, max(cap(p, .9, .1 * (1.1 - S(p.x - .2))), abs(p.z) - .04));
 }
 
-vec3 rayDir(vec3 ro, vec3 lookAt, vec2 uv) {
-	vec3 f = normalize(lookAt - ro),
+vec3 rayDir(vec3 ro, vec2 uv) {
+	vec3 f = normalize(vec3(0, 2, 0) - ro),
 	     r = normalize(cross(vec3(0, 1, 0), f));
 	return normalize(f + r * uv.x + cross(f, r) * uv.y);
 }
@@ -85,7 +85,7 @@ Hit map(vec3 p) {
 	d2 = max(abs(length(p) - .65) - .05, gaps.y + .01 + .13 * step(i, temp) * min(temp - i, 1.));
 	p.yz = polar(p.yz, 20.);
 	p.y -= .64;
-	d = min(d, max(d2, -bx(p, vec3(.15, .08, .025))));
+	d = min(d, max(d2, -bx(p)));
 	p = op;
 	p.yz *= rot(t * .1);
 	mat2 r = rot(2.5);
@@ -94,7 +94,7 @@ Hit map(vec3 p) {
 		p -= .02;
 		p.xy *= rot(3.7 + i);
 		p.yz *= r;
-		d2 = min(d2, sdOcta(p, .3) - .005);
+		d2 = min(d2, sdOcta(p) - .005);
 	}
 
 	g += 8e-5 / (.001 + d2 * d2);
@@ -201,12 +201,12 @@ void mainImage(out vec4 fragColor, vec2 fc) {
 	vec3 col,
 	     ro = mix(vec3(1, 2, -4), vec3(0, 3.5, -3), S(T / 4.));
 	vec2 uv = (fc - .5 * iResolution.xy) / iResolution.y;
-	col = scene(ro, rayDir(ro, vec3(0, 2, 0), uv));
+	col = scene(ro, rayDir(ro, uv));
 #ifdef AA
 	if (fwidth(col.r) > .03) {
 		for (float dx = Z0; dx <= 1.; dx++) {
 			for (float dy = Z0; dy <= 1.; dy++)
-				col += scene(ro, rayDir(ro, vec3(0, 2, 0), uv + (vec2(dx, dy) - .5) / iResolution.xy));
+				col += scene(ro, rayDir(ro, uv + (vec2(dx, dy) - .5) / iResolution.xy));
 		}
 
 		col /= 5.;

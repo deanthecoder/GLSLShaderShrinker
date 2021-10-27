@@ -18,7 +18,7 @@ public static partial class Hinter
 {
     public class AllCallsToFunctionMadeWithSameParamHint : CodeHint
     {
-        public AllCallsToFunctionMadeWithSameParamHint(FunctionDefinitionSyntaxNode function, string paramName) : base($"{function.ReturnType} {function.Name}({string.Join(", ", function.ParamNames.Select(o => o.UiName))})", $"All callers pass the same value for parameter '{paramName}'.\nConsider hard-coding the caller's value into the target function.")
+        public AllCallsToFunctionMadeWithSameParamHint(FunctionDefinitionSyntaxNode callee, int paramIndex) : base($"{callee.ReturnType} {callee.Name}({string.Join(", ", callee.ParamNames.Select(o => o.UiName))})", $"All callers pass the same value for parameter '{callee.ParamNames[paramIndex].UiName}'.\nConsider hard-coding the caller's value into the target function.")
         {
         }
     }

@@ -34,7 +34,7 @@ namespace Shrinker.Parser
                 foreach (var codeHint in DetectUnusedFunctionParam(rootNode))
                     yield return codeHint;
 
-                foreach (var codeHint in DetectSameConstantParamPassedToFunction(rootNode))
+                foreach (var codeHint in CreateSameConstantParamPassedToFunctionHints(rootNode))
                     yield return codeHint;
             }
 
@@ -113,33 +113,12 @@ namespace Shrinker.Parser
         /// <summary>
         /// If all calls to a function have the same constant parameter, that parameter could be inlined.
         /// </summary>
-        private static IEnumerable<CodeHint> DetectSameConstantParamPassedToFunction(SyntaxNode rootNode)
+        private static IEnumerable<CodeHint> CreateSameConstantParamPassedToFunctionHints(SyntaxNode rootNode)
         {
-            var localFunctions = rootNode.FunctionDefinitions().ToList();
-            var functionCalls = localFunctions.SelectMany(o => o.FunctionCalls()).Where(o => o.GetCallee() != null).ToList();
-
             var hints = new List<CodeHint>();
-            foreach (var functionCall in functionCalls.Where(o => o.Params.Children.Any()))
-            {
-                var callee = functionCall.GetCallee();
-                var allCallsToThatFunction = functionCalls.Where(o => callee == o.GetCallee()).ToList();
-
-                var paramCount = callee.ParamNames.Count;
-                for (var paramIndex = 0; paramIndex < paramCount; paramIndex++)
-                {
-                    // Each nth param must be the same.
-                    var paramStrings = allCallsToThatFunction.Select(o => o.Params.GetCsv().ToList()[paramIndex].Select(p => p.ToCode()).Aggregate((a, b) => $"{a} {b}"));
-                    if (paramStrings.Distinct().Count() != 1)
-                        continue;
-
-                    // Each nth param must be a constant.
-                    if (!allCallsToThatFunction.All(call => call.Params.IsNumericParam(paramIndex, true)))
-                        continue;
-
-                    // All match!
-                    hints.Add(new AllCallsToFunctionMadeWithSameParamHint(callee, callee.ParamNames[paramIndex].UiName));
-                }
-            }
+            MoveConstantParametersIntoCalledFunctionsExtension.DetectIssues(
+                                                                            rootNode,
+                                                                            (callers, paramIndex) => hints.Add(new AllCallsToFunctionMadeWithSameParamHint(callers[0].GetCallee(), paramIndex)));
 
             return hints.Distinct();
         }

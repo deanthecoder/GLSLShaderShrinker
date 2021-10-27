@@ -1,4 +1,4 @@
-// Processed by 'GLSL Shader Shrinker' (Shrunk by 836 characters)
+// Processed by 'GLSL Shader Shrinker' (Shrunk by 896 characters)
 // (https://github.com/deanthecoder/GLSLShaderShrinker)
 
 float stretch, gunsUp, gunsForward, edWalk, edTwist, edDown, edShoot, doorOpen, glow;
@@ -21,25 +21,28 @@ float sdBox(vec3 p, vec3 b) {
 	return length(max(q, 0.)) + min(max(q.x, max(q.y, q.z)), 0.);
 }
 
-float sdChamferedCube(vec3 p, vec3 r, float c) {
+float sdChamferedCube(vec3 p, vec3 r) {
 	float cube = sdBox(p, r);
 	p.xz *= mat2(.70721, .707, -.707, .70721);
-	r.xz *= -c / 1.41 + 1.41;
+	r.xz *= + 1.28234;
 	return max(cube, sdBox(p, r));
 }
 
-float sdTriPrism(vec3 p, vec2 h) {
+float sdTriPrism(vec3 p) {
+	const vec2 h = vec2(.1, .5);
 	vec3 q = abs(p);
 	return max(q.z - h.y, max(q.x * .866025 + p.y * .5, -p.y) - h.x * .5);
 }
 
-float sdCappedCone(vec3 p, vec3 a, vec3 b, float ra, float rb) {
-	float rba = rb - ra,
+float sdCappedCone(vec3 p, float ra) {
+	const vec3 a = vec3(0),
+	           b = vec3(0, 0, -.1);
+	float rba = .35 - ra,
 	      baba = dot(b - a, b - a),
 	      papa = dot(p - a, p - a),
 	      paba = dot(p - a, b - a) / baba,
 	      x = sqrt(papa - paba * paba * baba),
-	      cax = max(0., x - ((paba < .5) ? ra : rb)),
+	      cax = max(0., x - ((paba < .5) ? ra : .35)),
 	      cay = abs(paba - .5) - .5,
 	      f = clamp((rba * (x - ra) + paba * baba) / (rba * rba + baba), 0., 1.),
 	      cbx = x - ra - f * rba,
@@ -52,10 +55,10 @@ float sdCappedCylinder(vec3 p, float h, float r) {
 	return min(max(d.x, d.y), 0.) + length(max(d, 0.));
 }
 
-float sdCapsule(vec3 p, vec3 a, vec3 b, float r) {
+float sdCapsule(vec3 p, vec3 a, vec3 b) {
 	vec3 pa = p - a,
 	     ba = b - a;
-	return length(pa - ba * clamp(dot(pa, ba) / dot(ba, ba), 0., 1.)) - r;
+	return length(pa - ba * clamp(dot(pa, ba) / dot(ba, ba), 0., 1.)) - .2;
 }
 
 float sdOctogon(vec2 p, float r) {
@@ -125,9 +128,9 @@ MarchData gunPod(vec3 p) {
 	p.yz += vec2(.1, .45);
 	vec3 pp = p;
 	pp.z = abs(pp.z) - .5;
-	r.d = min(sdCappedCone(pp, vec3(0), vec3(0, 0, -.1), .35 - .1, .35), sdCappedCylinder(p, .35, .4));
+	r.d = min(sdCappedCone(pp, .35 - .1), sdCappedCylinder(p, .35, .4));
 	pp = vec3(p.x, .28 - p.y, p.z);
-	r.d = min(r.d, sdTriPrism(pp, vec2(.1, .5)));
+	r.d = min(r.d, sdTriPrism(pp));
 	pp = p;
 	pp.x = abs(p.x);
 	pp.xy *= mat2(.70721, .707, -.707, .70721);
@@ -163,7 +166,7 @@ MarchData arms(vec3 p) {
 	p.x = abs(p.x);
 	p.yz += vec2(.24, 0);
 	p.xy *= rot(.15 * (gunsUp - 1.));
-	r.d = min(sdCapsule(p, vec3(0), vec3(1.5, 0, 0), .2), sdCapsule(p, vec3(1.5, 0, 0), wrist, .2));
+	r.d = min(sdCapsule(p, vec3(0), vec3(1.5, 0, 0)), sdCapsule(p, vec3(1.5, 0, 0), wrist));
 	p -= wrist;
 	p.z -= gunsForward * .15;
 	return minResult(r, gunPod(p));
@@ -242,7 +245,7 @@ MarchData legs(vec3 p) {
 	cp -= vec3(0, -.7, 0);
 	r.d = sdBox(cp - vec3(0, 0, 1.15), vec3(.17, .17, .07)) - .04;
 	cp.z++;
-	r.d = min(min(r.d, sdChamferedCube(cp.xzy, vec2(.28 - sign(abs(cp.z) - .3) * .01, .5).xyx, .18)), foot(cp));
+	r.d = min(min(r.d, sdChamferedCube(cp.xzy, vec2(.28 - sign(abs(cp.z) - .3) * .01, .5).xyx)), foot(cp));
 	if (silver < r.d) {
 		r.d = silver;
 		r.mat = vec3(.8);
@@ -306,8 +309,8 @@ MarchData map(vec3 p) {
 	return r;
 }
 
-float calcShadow(vec3 p, vec3 lightPos) {
-	vec3 rd = normalize(lightPos - p);
+float calcShadow(vec3 p) {
+	vec3 rd = normalize(vec3(10, 10, -10) - p);
 	float res = 1.,
 	      t = .1;
 	for (float i = 0.; i < 30.; i++) {
@@ -326,7 +329,7 @@ vec3 calcNormal(vec3 p, float t) {
 	return normalize(e.xyy * map(p + e.xyy).d + e.yyx * map(p + e.yyx).d + e.yxy * map(p + e.yxy).d + e.xxx * map(p + e.xxx).d);
 }
 
-float ao(vec3 p, vec3 n, float h) { return map(p + h * n).d / h; }
+float ao(vec3 p, vec3 n) { return map(p + .33 * n).d / .33; }
 
 vec3 vignette(vec3 col, vec2 fragCoord) {
 	vec2 q = fragCoord.xy / iResolution.xy;
@@ -342,8 +345,8 @@ vec3 applyLighting(vec3 p, vec3 rd, float d, MarchData data) {
 	      spe = pow(max(0., dot(rd, reflect(sunDir, n))), data.specPower) * 2.,
 	      fre = smoothstep(.7, 1., 1. + dot(rd, n)),
 	      fog = exp(-length(p) * .05);
-	primary *= mix(.2, 1., calcShadow(p, vec3(10, 10, -10)));
-	return mix(data.mat * ((primary + bounce) * ao(p, n, .33) + spe) * vec3(2, 1.6, 1.7), vec3(.01), fre) * fog;
+	primary *= mix(.2, 1., calcShadow(p));
+	return mix(data.mat * ((primary + bounce) * ao(p, n) + spe) * vec3(2, 1.6, 1.7), vec3(.01), fre) * fog;
 }
 
 vec3 getSceneColor(vec3 ro, vec3 rd) {

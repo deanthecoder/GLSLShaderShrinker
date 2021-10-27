@@ -2297,5 +2297,78 @@ namespace UnitTests
             var floatToken = new FloatToken("2.2");
             Assert.That(new GenericSyntaxNode(floatToken).Clone().Token, Is.Not.SameAs(floatToken));
         }
+
+        [Test]
+        public void CheckCallingFunctionMultipleTimesWithCommonFirstConstFloatMovesConstantIntoFunction()
+        {
+            var lexer = new Lexer();
+            lexer.Load("float f(float a, float b) { return a + clamp(b, 1.0, 2.0); } float main() { return f(1.0, 2.0) + f(1.0, 3.0); }");
+
+            var options = CustomOptions.None();
+            options.MoveConstantParametersIntoCalledFunctions = true;
+
+            var rootNode = new Parser(lexer).Parse().Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo("float f(float b) { float a = 1.0; return a + clamp(b, 1.0, 2.0); } float main() { return f(2.0) + f(3.0); }"));
+        }
+
+        [Test]
+        public void CheckCallingFunctionMultipleTimesWithCommonSecondConstFloatMovesConstantIntoFunction()
+        {
+            var lexer = new Lexer();
+            lexer.Load("float f(float a, float b) { return a + clamp(b, 1.0, 2.0); } float main() { return f(1.0, 2.0) + f(3.0, 2.0); }");
+
+            var options = CustomOptions.None();
+            options.MoveConstantParametersIntoCalledFunctions = true;
+
+            var rootNode = new Parser(lexer).Parse().Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo("float f(float a) { float b = 2.0; return a + clamp(b, 1.0, 2.0); } float main() { return f(1.0) + f(3.0); }"));
+        }
+        
+        [Test]
+        public void CheckCallingFunctionOnceWithConstFloatMovesConstantIntoFunction()
+        {
+            var lexer = new Lexer();
+            lexer.Load("float f(float a, float b) { return a + clamp(b, 1.0, 2.0); } float main() { return f(1.0, 2.0); }");
+
+            var options = CustomOptions.None();
+            options.MoveConstantParametersIntoCalledFunctions = true;
+
+            var rootNode = new Parser(lexer).Parse().Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo("float f() { float a = 1.0; float b = 2.0; return a + clamp(b, 1.0, 2.0); } float main() { return f(); }"));
+        }
+        
+        [Test, Combinatorial]
+        public void CheckCallingFunctionWithInParamWithConstFloatMovesConstantIntoFunction([Values] bool p1In, [Values] bool p2In)
+        {
+            var lexer = new Lexer();
+            lexer.Load($"float f({(p1In ? "in " : string.Empty)}float a, {(p2In ? "in " : string.Empty)}float b) {{ return a + clamp(b, 1.0, 2.0); }} float main() {{ return f(1.0, 2.0); }}");
+
+            var options = CustomOptions.None();
+            options.MoveConstantParametersIntoCalledFunctions = true;
+
+            var rootNode = new Parser(lexer).Parse().Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo("float f() { float a = 1.0; float b = 2.0; return a + clamp(b, 1.0, 2.0); } float main() { return f(); }"));
+        }
+
+        [Test, Sequential]
+        public void CheckCallingFunctionWithDeclarationWithConstFloatRemovesParamFromDeclaration([Values] bool addDeclParamNames)
+        {
+            var lexer = new Lexer();
+            lexer.Load($"float f(float{(addDeclParamNames ? " a" : string.Empty)}, float{(addDeclParamNames ? " b" : string.Empty)}); float main() {{ return f(1.0, 2.0); }} float f(float a, float b) {{ return a + clamp(b, 1.0, 2.0); }}");
+
+            var options = CustomOptions.None();
+            options.MoveConstantParametersIntoCalledFunctions = true;
+
+            var rootNode = new Parser(lexer).Parse().Simplify(options);
+
+            var simple = rootNode.ToCode().ToSimple();
+            Assert.That(simple, Is.EqualTo("float f(); float main() { return f(); } float f() { float a = 1.0; float b = 2.0; return a + clamp(b, 1.0, 2.0); }"));
+        }
+
+        // todo - https://www.shadertoy.com/view/NdKGDz n31 incorrect hint.
     }
 }

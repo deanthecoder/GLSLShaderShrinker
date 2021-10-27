@@ -142,6 +142,7 @@ In most cases they can be worked-around using a set of 'custom' settings which d
 * [Simplify Mathematical Expressions](#simplify-mathematical-expressions)
 * [Perform Simple Arithmetic](#perform-simple-arithmetic)
 * [Replace Functions Calls With Result](#replace-functions-calls-with-result)
+* [Move constant parameters to within called functions](#move-constant-parameters-to-within-called-functions)
 ## Remove Comments
 Remove all C/C++ -style comments from the code.
 #### Before
@@ -581,6 +582,31 @@ float f() {
 ```c
 float f() {
     float result = 3.0;
+}
+```
+
+---
+## Move constant parameters to within called functions
+If all calls to a function use the same constant parameter, attempt to remove the parameter from the call site and inline it into the called function.
+#### Before
+```c
+float doMaths(float a, float b) {
+    return a * b;
+}
+
+float f() {
+    // All calls pass '2.0' for parameter 'a'.
+    float result = doMaths(2.0, 3.0) + doMaths(2.0, 5.0);
+}
+```
+#### After
+```c
+float doMaths(float b) {
+    return 2.0 * b;
+}
+
+float f() {
+    float result = doMaths(3.0) + doMaths(5.0);
 }
 ```
 

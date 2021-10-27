@@ -1,4 +1,4 @@
-// Processed by 'GLSL Shader Shrinker' (Shrunk by 1,257 characters)
+// Processed by 'GLSL Shader Shrinker' (Shrunk by 1,270 characters)
 // (https://github.com/deanthecoder/GLSLShaderShrinker)
 
 #define MY_GPU_CAN_TAKE_IT
@@ -46,8 +46,8 @@ vec2 min2(vec2 a, vec2 b) { return a.x < b.x ? a : b; }
 
 vec2 cappedMod(vec2 p, float c, vec2 l1, vec2 l2) { return p - c * clamp(round(p / c), -l1, l2); }
 
-vec3 mirrorX(vec3 p, float d) {
-	p.x = abs(p.x) - d;
+vec3 mirrorX(vec3 p) {
+	p.x = abs(p.x) - 2.8;
 	return p;
 }
 
@@ -98,8 +98,8 @@ vec2 sdWalls(vec3 p) {
 	     op = p;
 	p.yz = mod(p.yz, vec2(.16, .22));
 	float d2,
-	      d = sdBox(mirrorX(p, 2.8), vec3(.02, .16 - .015, .22 - .015)) - .015;
-	pp = mirrorX(op, 2.8);
+	      d = sdBox(mirrorX(p), vec3(.02, .16 - .015, .22 - .015)) - .015;
+	pp = mirrorX(op);
 	pp.xy -= vec2(-.3, 1.3);
 	d2 = 1e10;
 	if (pp.y < 3.) {

@@ -1,4 +1,4 @@
-// Processed by 'GLSL Shader Shrinker' (Shrunk by 507 characters)
+// Processed by 'GLSL Shader Shrinker' (Shrunk by 575 characters)
 // (https://github.com/deanthecoder/GLSLShaderShrinker)
 
 #define time	(iTime + 37.)
@@ -14,8 +14,8 @@ mat2 rot(float a) {
 	return mat2(c, s, -s, c);
 }
 
-vec3 getRayDir(vec3 ro, vec3 lookAt, vec2 uv) {
-	vec3 forward = normalize(lookAt - ro),
+vec3 getRayDir(vec3 ro, vec2 uv) {
+	vec3 forward = normalize(vec3(0, -3, 0) - ro),
 	     right = normalize(cross(vec3(0, 1, 0), forward));
 	return normalize(forward + right * uv.x + cross(forward, right) * uv.y);
 }
@@ -108,8 +108,8 @@ float sdManta(vec3 p) {
 	return (smin(d, sdBox(p, vec3(.005, .005, 2)), .3) - .02) * .7;
 }
 
-float godLight(vec3 p, vec3 lightPos) {
-	vec3 lightDir = normalize(lightPos - p),
+float godLight(vec3 p) {
+	vec3 lightDir = normalize(vec3(1, 4, 3) - p),
 	     sp = p + lightDir * -p.y;
 	float f = 1. - clamp(sdSurface(sp.xz) * 10., 0., 1.);
 	f *= 1. - length(lightDir.xz);
@@ -138,12 +138,12 @@ vec3 vignette(vec3 col, vec2 fragCoord) {
 	return col;
 }
 
-float marchGodRay(vec3 ro, vec3 rd, vec3 light, float hitDist) {
+float marchGodRay(vec3 ro, vec3 rd, float hitDist) {
 	vec3 p = ro,
 	     st = rd * hitDist / 96.;
 	float god = 0.;
 	for (int i = 0; i < 96; i++) {
-		god += godLight(p, light);
+		god += godLight(p);
 		p += st;
 	}
 
@@ -157,7 +157,7 @@ void mainImage(out vec4 fragColor, vec2 fragCoord) {
 	     ro = vec3(-.4, -2, -4);
 	ro.xz *= rot(.03 * sin(time * .3));
 	ro.y += sin(time * .2) * .3;
-	rd = getRayDir(ro, vec3(0, -3, 0), uv);
+	rd = getRayDir(ro, uv);
 	int hit = 0;
 	float d = .01,
 	      outside = 1.;
@@ -189,7 +189,7 @@ void mainImage(out vec4 fragColor, vec2 fragCoord) {
 			else if (hit == 3) mat += vec3(.1, .1, 0);
 			else if (hit == 5) mat += vec3(0, .2, 0);
 			else if (hit == 6) mat += vec3(.5);
-			mat *= .4 + .6 * godLight(p, vec3(1, 4, 3));
+			mat *= .4 + .6 * godLight(p);
 			mat *= calcOcc(p, n);
 			vec3 lightDir = normalize(vec3(1, 4, 3) - p);
 			float sha1 = max(0., map(p + lightDir * .25).x / .25),
@@ -200,5 +200,5 @@ void mainImage(out vec4 fragColor, vec2 fragCoord) {
 		col = (.1 + max(0., dot(normalize(vec3(1, 4, 3) - p), n))) * mat;
 	}
 
-	fragColor = vec4(vignette(pow(mix(mix(col, vec3(.002, .008, .02), clamp(pow(d / 25., 1.5), 0., 1.)), vec3(1.8, 3, 3.6), marchGodRay(ro, rd, vec3(1, 4, 3), d)), vec3(.4545)), fragCoord), 1);
+	fragColor = vec4(vignette(pow(mix(mix(col, vec3(.002, .008, .02), clamp(pow(d / 25., 1.5), 0., 1.)), vec3(1.8, 3, 3.6), marchGodRay(ro, rd, d)), vec3(.4545)), fragCoord), 1);
 }

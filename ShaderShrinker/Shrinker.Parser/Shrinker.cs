@@ -102,6 +102,9 @@ namespace Shrinker.Parser
 
                 if (options.ReplaceFunctionCallsWithResult)
                     repeatSimplifications |= rootNode.ReplaceFunctionCallsWithResult();
+
+                if (options.MoveConstantParametersIntoCalledFunctions)
+                    repeatSimplifications |= rootNode.MoveConstantParametersIntoCalledFunctions();
             }
 
             return rootNode;

@@ -1,4 +1,4 @@
-// Processed by 'GLSL Shader Shrinker' (Shrunk by 766 characters)
+// Processed by 'GLSL Shader Shrinker' (Shrunk by 868 characters)
 // (https://github.com/deanthecoder/GLSLShaderShrinker)
 
 #define FAST_NOISE
@@ -112,8 +112,8 @@ vec3 calcNormal(vec3 p) {
 	return normalize(e.xyy * map(p + e.xyy).x + e.yyx * map(p + e.yyx).x + e.yxy * map(p + e.yxy).x + e.xxx * map(p + e.xxx).x);
 }
 
-float calcShadow(vec3 p, vec3 lightPos, float sharpness) {
-	vec3 rd = normalize(lightPos - p);
+float calcShadow(vec3 p) {
+	vec3 rd = normalize(vec3(0, -.75, 0) - p);
 	float h,
 	      minH = 1.,
 	      d = .01;
@@ -124,13 +124,15 @@ float calcShadow(vec3 p, vec3 lightPos, float sharpness) {
 		d += h;
 	}
 
-	return minH * sharpness;
+	return minH * 5.;
 }
 
-float calcOcc(vec3 p, vec3 n, float strength) { return 1. - (.3 - map(p + n * .3).x) * strength; }
+float calcOcc(vec3 p, vec3 n) { return 1. - (.3 - map(p + n * .3).x) * 4.; }
 
-float calcSpotlight(vec3 p, vec3 lightPos, vec3 lightDir, float cutOff, float edgeBlur) {
-	float l = dot(normalize(lightPos - p), -lightDir);
+float calcSpotlight(vec3 p, vec3 lightDir) {
+	float cutOff = .1,
+	      edgeBlur = .02,
+	      l = dot(normalize(vec3(0, -.75, 0) - p), -lightDir);
 	edgeBlur++;
 	float spotLight = smoothstep(1. - cutOff, (1. - cutOff) * edgeBlur, l) * .3;
 	cutOff *= .7;
@@ -198,10 +200,10 @@ void mainImage(out vec4 fragColor, vec2 fragCoord) {
 		vec3 mat,
 		     n = calcNormal(p),
 		     lightToPoint = normalize(vec3(0, -.75, 0) - p);
-		float sha = calcShadow(p, vec3(0, -.75, 0), 5.),
-		      occ = calcOcc(p, n, 4.),
+		float sha = calcShadow(p),
+		      occ = calcOcc(p, n),
 		      spe = pow(max(0., dot(rd, reflect(lightToPoint, n))), 3.),
-		      torch = calcSpotlight(p, vec3(0, -.75, 0), torchDir, .1, .02),
+		      torch = calcSpotlight(p, torchDir),
 		      backLight = clamp(dot(n, -rd), .01, 1.) * .05,
 		      fog = 1. - exp(-d * .006);
 		if (hit == 1) mat = vec3(.05, .06, .05);

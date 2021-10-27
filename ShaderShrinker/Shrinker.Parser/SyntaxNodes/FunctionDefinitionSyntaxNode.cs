@@ -72,5 +72,10 @@ namespace Shrinker.Parser.SyntaxNodes
         /// </summary>
         public int CallCount(FunctionDefinitionSyntaxNode otherFunction) =>
             this.FunctionCalls().Count(o => o.Name == otherFunction.Name);
+
+        /// <summary>
+        /// Return the corresponding function definition (if it has been explicitly added to the code).
+        /// </summary>
+        public FunctionDeclarationSyntaxNode GetDeclaration() => this.Root().FunctionDeclarations().FirstOrDefault(o => o.Name == Name && o.Params.GetCsv().Count() == Params.GetCsv().Count());
     }
 }

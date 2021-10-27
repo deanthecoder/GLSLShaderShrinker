@@ -48,6 +48,30 @@ namespace Shrinker.Parser.SyntaxNodes
                 yield return group;
         }
 
+        public void RemoveCsvEntry(int index)
+        {
+            var nodesToRemove = GetCsv().ToList()[index];
+            var prevNode = nodesToRemove.FirstOrDefault()?.Previous as GenericSyntaxNode;
+            var nextNode = nodesToRemove.LastOrDefault()?.Next as GenericSyntaxNode;
+
+            nodesToRemove.ToList().ForEach(o => o.Remove());
+
+            if (prevNode?.Token is CommaToken && nextNode?.Token is CommaToken)
+            {
+                prevNode.Remove();
+                return;
+            }
+
+            if (prevNode == null && nextNode?.Token is CommaToken)
+            {
+                nextNode.Remove();
+                return;
+            }
+
+            if (nextNode == null && prevNode?.Token is CommaToken)
+                prevNode.Remove();
+        }
+
         protected override SyntaxNode CreateSelf() => new RoundBracketSyntaxNode();
 
         /// <summary>

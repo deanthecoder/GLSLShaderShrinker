@@ -595,6 +595,36 @@
                 </MdXaml:MarkdownScrollViewer>
             </CheckBox.ToolTip>
         </CheckBox>
+
+        <CheckBox Content="Move constant parameters to within called functions." IsChecked="{Binding CustomOptions.MoveConstantParametersIntoCalledFunctions}">
+            <CheckBox.ToolTip>
+                <MdXaml:MarkdownScrollViewer xml:space="preserve">
+                    ### Move constant parameters to within called functions
+                    If all calls to a function use the same constant parameter, attempt to remove the parameter from the call site and inline it into the called function.
+                    #### Before
+                    ```c
+                    float doMaths(float a, float b) {
+                        return a * b;
+                    }
+
+                    float f() {
+                        // All calls pass '2.0' for parameter 'a'.
+                        float result = doMaths(2.0, 3.0) + doMaths(2.0, 5.0);
+                    }
+                    ```
+                    #### After
+                    ```c
+                    float doMaths(float b) {
+                        return 2.0 * b;
+                    }
+
+                    float f() {
+                        float result = doMaths(3.0) + doMaths(5.0);
+                    }
+                    ```
+                </MdXaml:MarkdownScrollViewer>
+            </CheckBox.ToolTip>
+        </CheckBox>
     </StackPanel>
 
     <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" Margin="0,16,0,0" VerticalAlignment="Center">

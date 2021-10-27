@@ -1,4 +1,4 @@
-// Processed by 'GLSL Shader Shrinker' (Shrunk by 377 characters)
+// Processed by 'GLSL Shader Shrinker' (Shrunk by 396 characters)
 // (https://github.com/deanthecoder/GLSLShaderShrinker)
 
 #define SKYCOL	vec3(.6, .8, .9)
@@ -30,7 +30,7 @@ float fbm(vec2 p) {
 	return s;
 }
 
-vec2 repeat(vec2 p, vec2 gap) { return mod(p, gap) - gap / 2.; }
+vec2 repeat(vec2 p) { return mod(p, vec2(2)) - vec2(1); }
 
 float sdCube(vec3 p, vec3 r) {
 	p = abs(p) - r;
@@ -62,7 +62,7 @@ float sdTempleColumn(vec3 p) {
 float sdTemple(vec3 p) {
 	float d = 1E10;
 	vec3 q = p;
-	q.xz = repeat(q.xz, vec2(2));
+	q.xz = repeat(q.xz);
 	{ d = max(max(sdTempleColumn(q), -sdCube(p, vec3(4, 50, 6))), sdCube(p, vec3(6, 4, 8))); }
 	{
 		q.y += 4.;
@@ -71,7 +71,7 @@ float sdTemple(vec3 p) {
 	{
 		vec3 qq = p;
 		qq.xz -= vec2(1);
-		qq.xz = repeat(qq.xz, vec2(2));
+		qq.xz = repeat(qq.xz);
 		qq.y += 5.3;
 		d = max(min(d, sdCube(qq, vec3(.9, 1, .9)) - .05), sdCube(p, vec3(9, 6, 9)));
 		{
