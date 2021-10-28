@@ -18,8 +18,8 @@ using UnitTests.Extensions;
 
 namespace UnitTests
 {
-    // todo - min(min(min(a, b), c), d) -> min(min(a, b), min(c, d)) ?
     // todo - same vector/matrix used multiple time in a function => make variable.
+    // todo - min(min(min(a, b), c), d) -> min(min(a, b), min(c, d)) ?
 
     [TestFixture]
     public class ShrinkerTests : UnitTestBase
@@ -2367,6 +2367,22 @@ namespace UnitTests
 
             var simple = rootNode.ToCode().ToSimple();
             Assert.That(simple, Is.EqualTo("float f(); float main() { return f(); } float f() { float a = 1.0; float b = 2.0; return a + clamp(b, 1.0, 2.0); }"));
+        }
+
+        [Test]
+        public void CheckCallingFunctionMultipleTimesWithCommonNonConstParamsDoesNotMoveParamIntoFunction()
+        {
+            const string Code = "float f(vec2 a) { return a.x + a.y; } float main() { return f(vec2(iTime)); }";
+
+            var lexer = new Lexer();
+            lexer.Load(Code);
+
+            var options = CustomOptions.None();
+            options.MoveConstantParametersIntoCalledFunctions = true;
+
+            var rootNode = new Parser(lexer).Parse().Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(Code));
         }
 
         // todo - https://www.shadertoy.com/view/NdKGDz n31 incorrect hint.

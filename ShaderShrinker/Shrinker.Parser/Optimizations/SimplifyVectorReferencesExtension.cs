@@ -109,7 +109,7 @@ namespace Shrinker.Parser.Optimizations
 
                             // Bracketed expression must be of the correct type.
                             var exprDeclaration = bracketedExpr.FindVarDeclaration();
-                            if (exprDeclaration.VariableType.Content != vecType)
+                            if (exprDeclaration?.VariableType.Content != vecType)
                                 continue;
 
                             // Simplify it...

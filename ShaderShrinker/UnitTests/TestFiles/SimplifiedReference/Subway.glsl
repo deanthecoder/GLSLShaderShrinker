@@ -1,4 +1,4 @@
-// Processed by 'GLSL Shader Shrinker' (Shrunk by 1,270 characters)
+// Processed by 'GLSL Shader Shrinker' (Shrunk by 1,318 characters)
 // (https://github.com/deanthecoder/GLSLShaderShrinker)
 
 #define MY_GPU_CAN_TAKE_IT
@@ -58,7 +58,7 @@ vec3 repeatXZ(vec3 p, float c, vec2 l1, vec2 l2) {
 
 float sdTactileSlab(vec3 p) {
 	p.z -= .4;
-	float d = sdBox(p, vec3(.385, .05, .4 - .015));
+	float d = sdBox(p, vec3(.385, .05, .385));
 	p.y -= .01;
 	p.xz = cappedMod(p.xz + vec2(.06666), .13332, vec2(2), vec2(3));
 	return min(d, sdCylinder(p, .0225, .05));
@@ -69,9 +69,9 @@ float sdTactileSlabStrip(vec3 p) {
 	return sdTactileSlab(p);
 }
 
-float sdPavingSlab(vec3 p) { return sdBox(p, vec3(.485, .05, .5 - .015)); }
+float sdPavingSlab(vec3 p) { return sdBox(p, vec3(.485, .05, .485)); }
 
-float sdThinPavingSlab(vec3 p) { return sdBox(p - vec3(0, 0, .2), vec3(.485, .05, .2 - .015)); }
+float sdThinPavingSlab(vec3 p) { return sdBox(p - vec3(0, 0, .2), vec3(.485, .05, .185)); }
 
 float glow = 0.,
       flicker = 1.;
@@ -80,10 +80,10 @@ vec2 sdStep(vec3 p) {
 	      d1 = sdBox(p, vec3(1.4, .02, .02));
 	if (d1 > 1.) return vec2(d1, 3.5);
 	p.y += .16 + .02;
-	d2 = sdBox(p, vec3(1.385, .16 - .015, .02));
+	d2 = sdBox(p, vec3(1.385, .145, .02));
 	d1 = min(d1, sdBox(p - vec3(0, 0, .015), vec3(1.4, .16, .02)));
 	p.yz += vec2(.18, .32);
-	return min2(vec2(min(d1, sdBox(p + vec3(0, .015, 0), vec3(1.4, .02, .32 - .015))), 3.5), vec2(min(d2, sdBox(p, vec3(1.385, .02, .32 - .015))), 4.5));
+	return min2(vec2(min(d1, sdBox(p + vec3(0, .015, 0), vec3(1.4, .02, .305))), 3.5), vec2(min(d2, sdBox(p, vec3(1.385, .02, .305))), 4.5));
 }
 
 vec2 sdSteps(vec3 p) { return sdStep(p + max(0., floor(-p.z / stepToStep.y)) * vec3(0, stepToStep)); }
@@ -98,7 +98,7 @@ vec2 sdWalls(vec3 p) {
 	     op = p;
 	p.yz = mod(p.yz, vec2(.16, .22));
 	float d2,
-	      d = sdBox(mirrorX(p), vec3(.02, .16 - .015, .22 - .015)) - .015;
+	      d = sdBox(mirrorX(p), vec3(.02, .145, .205)) - .015;
 	pp = mirrorX(op);
 	pp.xy -= vec2(-.3, 1.3);
 	d2 = 1e10;
@@ -130,17 +130,17 @@ vec2 sdCorridorSection(vec3 p) {
 	p.z -= .4;
 	d3 = sdTactileSlabStrip(p);
 	d3 -= .006 * mix(.8, 1., texture(iChannel0, p.xz * 1.7).r);
-	return min2(vec2(min(d, sdPavingSlab(repeatXZ(p - vec3(0, 0, .8 + .5), 1., vec2(3, 0), vec2(3, 5)))), 6.5), min2(d1, min2(d2, vec2(d3, 5.5))));
+	return min2(vec2(min(d, sdPavingSlab(repeatXZ(p - vec3(0, 0, 1.3), 1., vec2(3, 0), vec2(3, 5)))), 6.5), min2(d1, min2(d2, vec2(d3, 5.5))));
 }
 
 vec2 map(vec3 p, bool useGlow) {
-	const vec3 v = vec3(1.8, 6. - 1.5, 0);
+	const vec3 v = vec3(1.8, 4.5, 0);
 	float d = sdBox(p - vec3(2.7, 0, 1.8), vec3(.07, 10, .07)) - .01;
-	d = min(min(min(d, sdBox(p - vec3(0, 6. - 1., 1.8), vec3(2.8, 1, .07)) - .01), sdCapsule(p, v + vec3(0, 0, 2.9), v - vec3(0, 0, 1e2), .18)), sdCapsule(p, v + vec3(0, 0, 2), v + vec3(0, 0, 1.6), .22));
+	d = min(min(min(d, sdBox(p - vec3(0, 5, 1.8), vec3(2.8, 1, .07)) - .01), sdCapsule(p, v + vec3(0, 0, 2.9), v - vec3(0, 0, 1e2), .18)), sdCapsule(p, v + vec3(0, 0, 2), v + vec3(0, 0, 1.6), .22));
 	vec3 pp = p;
 	pp.z = abs(p.z - 1.8);
-	d = min(min(d, sdLink(pp - vec3(1.8, 6. - 1.3, .9), .2, .2, .015)), sdLink(p - vec3(1.8, 6. - 1.3, -2), .2, .2, .015));
-	pp -= vec3(0, 6. - 1., 2.5);
+	d = min(min(d, sdLink(pp - vec3(1.8, 4.7, .9), .2, .2, .015)), sdLink(p - vec3(1.8, 4.7, -2), .2, .2, .015));
+	pp -= vec3(0, 5, 2.5);
 	d = min(d, max(sdBox(pp, vec3(1, .25, .06)), -sdBox(pp + vec3(0, .3, 0), vec3(.95, .2, .1))));
 	if (useGlow) {
 		float gd,

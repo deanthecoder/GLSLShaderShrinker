@@ -9,8 +9,11 @@
 //  </summary>
 // -----------------------------------------------------------------------
 
+using System.Linq;
 using NUnit.Framework;
 using Shrinker.Lexer;
+using Shrinker.Parser;
+using Shrinker.Parser.Optimizations;
 using Shrinker.Parser.SyntaxNodes;
 
 namespace UnitTests
@@ -63,6 +66,26 @@ namespace UnitTests
             };
 
             Assert.That(new RoundBracketSyntaxNode(nodes).IsNumericCsv(allowNumericVectors), Is.EqualTo(allowNumericVectors));
+        }
+
+        [Test, Combinatorial]
+        public void CheckNonNumericCases([Values("(vec2(iTime))", "(vec3(a, b, c))", "(iTime)", "(a)", "(1 + 2)", "(vec2(1 + 2))", "()", "(())")] string code, [Values] bool allowNumericVectors)
+        {
+            var lexer = new Lexer();
+            lexer.Load(code);
+
+            var brackets = (RoundBracketSyntaxNode)new Parser(lexer).Parse().Root().Children.Single();
+            Assert.That(brackets.IsNumericCsv(allowNumericVectors), Is.False);
+        }
+
+        [Test, Combinatorial]
+        public void CheckNumericCasesWithVectorSupport([Values("(vec2(1))", "(vec3(1, 2, 3))", "(vec3(vec2(1, 2), 3))", "(1)", "(1.2)", "(1e1)", "(-1)", "(-1.2)", "(vec2(1e1))", "(vec3(-1))", "(vec4(-1.2))")] string code)
+        {
+            var lexer = new Lexer();
+            lexer.Load(code);
+
+            var brackets = (RoundBracketSyntaxNode)new Parser(lexer).Parse().Root().Children.Single();
+            Assert.That(brackets.IsNumericCsv(true), Is.True);
         }
     }
 }

@@ -97,10 +97,22 @@ namespace Shrinker.Parser.SyntaxNodes
         {
             var csv = GetCsv().ToList();
 
-            if (!allowNumericVectors)
-                return csv[paramIndex].All(o => o.Token is INumberToken);
+            var toCheck = csv[paramIndex];
+            var subBrackets = toCheck.OfType<RoundBracketSyntaxNode>().ToList();
+            if (allowNumericVectors)
+            {
+                if (subBrackets.Any(o => !o.IsNumericCsv(true)))
+                    return false;
 
-            return csv[paramIndex].Where(o => o is not RoundBracketSyntaxNode && o.Token?.Content?.IsAnyOf("vec2", "vec3", "vec4") != true).All(o => o.Token is INumberToken);
+                toCheck = toCheck.Where(o => o is not RoundBracketSyntaxNode && o.Token?.Content?.IsAnyOf("vec2", "vec3", "vec4") != true).ToList();
+            }
+            else
+            {
+                if (!toCheck.Any())
+                    return false;
+            }
+
+            return toCheck.All(o => o.Token is INumberToken);
         }
     }
 }

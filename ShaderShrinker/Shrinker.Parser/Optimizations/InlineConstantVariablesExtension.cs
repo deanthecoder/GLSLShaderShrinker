@@ -78,8 +78,23 @@ namespace Shrinker.Parser.Optimizations
                         continue; // Inlining would increase code size.
 
                     // Inline.
-                    usages.ForEach(o => o.ReplaceWith(definition.Clone().Children.ToList()));
-                    definition.Remove();
+                    foreach (var usage in usages)
+                    {
+                        var previousNode = usage.Previous;
+                        usage.ReplaceWith(definition.Clone().Children.ToList());
+
+                        if (previousNode?.Token is SymbolOperatorToken sym && sym.Content == "-" &&
+                            (previousNode.Previous == null || previousNode.Previous?.Token is CommaToken) &&
+                            previousNode.Next.Token is INumberToken numToken)
+                        {
+                            // We've inlined a positive constant, but the preceding node is a '-'.
+                            // Combine to make a negative number.
+                            previousNode.Remove();
+                            numToken.Negate();
+                        }
+
+                        definition.Remove();
+                    }
                 }
 
                 if (!constDeclNode.Definitions.Any())

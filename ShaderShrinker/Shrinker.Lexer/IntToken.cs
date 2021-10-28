@@ -9,6 +9,8 @@
 //  </summary>
 // -----------------------------------------------------------------------
 
+using System;
+
 namespace Shrinker.Lexer
 {
     public class IntToken : Token, INumberToken
@@ -61,8 +63,18 @@ namespace Shrinker.Lexer
         public void MakeNegative() => Content = $"-{Content.TrimStart('-')}";
         public void MakePositive() => Content = $"{Content.TrimStart('-')}";
 
-        public bool IsOne() => long.Parse(Content) == 1;
-        public bool IsZero() => long.Parse(Content) == 0;
+        public void Negate()
+        {
+            if (Math.Sign(Number) > 0.0)
+                MakeNegative();
+            else if (Math.Sign(Number) < 0.0)
+                MakePositive();
+        }
+
+        private long Number => long.Parse(Content);
+
+        public bool IsOne() => Number == 1;
+        public bool IsZero() => Number == 0;
 
         public IToken Simplify()
         {

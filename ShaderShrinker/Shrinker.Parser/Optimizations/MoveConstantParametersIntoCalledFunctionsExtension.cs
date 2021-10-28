@@ -41,7 +41,7 @@ public static class MoveConstantParametersIntoCalledFunctionsExtension
                 break;
 
             // Issue found - Get the constant from the call site.
-            var constParamNodes = callers[0].Params.GetCsv().ToList()[paramIndex].Select(o => o.Clone()).ToList();
+            var constParamNodes = callers[0].Params.GetCsv().ElementAt(paramIndex).Select(o => o.Clone()).ToList();
 
             // Attempt to inline the parameter.
             var callee = callers[0].GetCallee();

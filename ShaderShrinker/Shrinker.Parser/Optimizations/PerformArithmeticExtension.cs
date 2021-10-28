@@ -240,6 +240,7 @@ namespace Shrinker.Parser.Optimizations
 
                     if (symbolType != TokenExtensions.MathSymbolType.MultiplyDivide &&
                         numNodeA.Previous != null &&
+                        numNodeA.Previous.Token is not CommaToken &&
                         numNodeA.Previous.Token?.GetMathSymbolType() != symbolType)
                     {
                         continue;

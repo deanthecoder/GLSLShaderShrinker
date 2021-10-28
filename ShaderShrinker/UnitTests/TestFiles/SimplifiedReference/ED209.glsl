@@ -1,4 +1,4 @@
-// Processed by 'GLSL Shader Shrinker' (Shrunk by 896 characters)
+// Processed by 'GLSL Shader Shrinker' (Shrunk by 926 characters)
 // (https://github.com/deanthecoder/GLSLShaderShrinker)
 
 float stretch, gunsUp, gunsForward, edWalk, edTwist, edDown, edShoot, doorOpen, glow;
@@ -34,18 +34,17 @@ float sdTriPrism(vec3 p) {
 	return max(q.z - h.y, max(q.x * .866025 + p.y * .5, -p.y) - h.x * .5);
 }
 
-float sdCappedCone(vec3 p, float ra) {
+float sdCappedCone(vec3 p) {
 	const vec3 a = vec3(0),
 	           b = vec3(0, 0, -.1);
-	float rba = .35 - ra,
-	      baba = dot(b - a, b - a),
+	float baba = dot(b - a, b - a),
 	      papa = dot(p - a, p - a),
 	      paba = dot(p - a, b - a) / baba,
 	      x = sqrt(papa - paba * paba * baba),
-	      cax = max(0., x - ((paba < .5) ? ra : .35)),
+	      cax = max(0., x - ((paba < .5) ? .25 : .35)),
 	      cay = abs(paba - .5) - .5,
-	      f = clamp((rba * (x - ra) + paba * baba) / (rba * rba + baba), 0., 1.),
-	      cbx = x - ra - f * rba,
+	      f = clamp((.1 * (x - .25) + paba * baba) / (.01 + baba), 0., 1.),
+	      cbx = x - .25 - f * .1,
 	      cby = paba - f;
 	return ((cbx < 0. && cay < 0.) ? -1. : 1.) * sqrt(min(cax * cax + cay * cay * baba, cbx * cbx + cby * cby * baba));
 }
@@ -128,7 +127,7 @@ MarchData gunPod(vec3 p) {
 	p.yz += vec2(.1, .45);
 	vec3 pp = p;
 	pp.z = abs(pp.z) - .5;
-	r.d = min(sdCappedCone(pp, .35 - .1), sdCappedCylinder(p, .35, .4));
+	r.d = min(sdCappedCone(pp), sdCappedCylinder(p, .35, .4));
 	pp = vec3(p.x, .28 - p.y, p.z);
 	r.d = min(r.d, sdTriPrism(pp));
 	pp = p;
@@ -181,7 +180,7 @@ float foot(vec3 p) {
 	p.z += .8;
 	p.yz *= mat2(.65244, .75784, -.75784, .65244);
 	float d = toe(p);
-	p.xz *= mat2(8e-4, 1, -1., 8e-4);
+	p.xz *= mat2(8e-4, 1, -1, 8e-4);
 	p.x -= .43;
 	p.z = .25 - abs(p.z);
 	return min(d, toe(p));
