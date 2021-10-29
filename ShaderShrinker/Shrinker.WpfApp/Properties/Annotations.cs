@@ -633,7 +633,7 @@ namespace Shrinker.WpfApp.Properties
   /// Use the <see cref="MacroAttribute"/> attribute to specify macros for parameters.
   /// </remarks>
   /// <example>
-  /// In this example, the 'forEach' method is a source template available over all values
+  /// In this code, the 'forEach' method is a source template available over all values
   /// of enumerable types, producing ordinary C# 'foreach' statement and placing caret inside block:
   /// <code>
   /// [SourceTemplate]

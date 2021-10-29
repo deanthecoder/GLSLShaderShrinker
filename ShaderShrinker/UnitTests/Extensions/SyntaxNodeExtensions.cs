@@ -1,11 +1,11 @@
 ﻿// -----------------------------------------------------------------------
-//  <copyright file="SyntaxNodeExtensions.cs" company="Global Graphics Software Ltd">
-//      Copyright (c) 2021 Global Graphics Software Ltd. All rights reserved.
+//  <copyright file="SyntaxNodeExtensions.cs">
+//      Copyright (c) 2021 Dean Edis. All rights reserved.
 //  </copyright>
 //  <summary>
-//  This example is provided on an "as is" basis and without warranty of any kind.
-//  Global Graphics Software Ltd. does not warrant or make any representations regarding the use or
-//  results of use of this example.
+//  This code is provided on an "as is" basis and without warranty of any kind.
+//  We do not warrant or make any representations regarding the use or
+//  results of use of this code.
 //  </summary>
 // -----------------------------------------------------------------------
 
