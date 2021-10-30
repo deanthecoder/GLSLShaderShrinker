@@ -136,5 +136,6 @@ namespace Shrinker.Lexer
 
         public bool IsOne() => Math.Abs(Number - 1.0) < 0.000001;
         public bool IsZero() => Math.Abs(Number) < 0.000001;
+        public bool IsNegative() => Number < 0.0;
     }
 }

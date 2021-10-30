@@ -137,5 +137,7 @@ namespace Shrinker.Lexer
                     return false;
             }
         }
+
+        public bool IsVector() => m_content.StartsWith("vec") && MultiValueTypes.Contains(m_content);
     }
 }

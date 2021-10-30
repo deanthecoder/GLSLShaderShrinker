@@ -75,6 +75,7 @@ namespace Shrinker.Lexer
 
         public bool IsOne() => Number == 1;
         public bool IsZero() => Number == 0;
+        public bool IsNegative() => Number < 0;
 
         public IToken Simplify()
         {
@@ -94,5 +95,7 @@ namespace Shrinker.Lexer
 
             return this;
         }
+
+        public INumberToken AsFloatToken() => FloatToken.From(double.Parse(Content), 1);
     }
 }

@@ -118,6 +118,68 @@ namespace Shrinker.Parser.Optimizations
                     }
                 }
 
+                // Simplify single-element vector to float if used in further vector arithmetic.
+                foreach (var functionNodes in rootNode.FunctionDefinitions().Select(o => o.Braces))
+                {
+                    // Find vectors.
+                    var vectorNodes = functionNodes.TheTree.OfType<GenericSyntaxNode>().Where(o => (o.Token as TypeToken)?.IsVector() == true).ToList();
+                    foreach (var vectorNode in vectorNodes)
+                    {
+                        // Limit to vectors containing a single float. (E.g. vec3(1))
+                        var brackets = vectorNode.Next as RoundBracketSyntaxNode;
+                        if (brackets?.IsNumericCsv() != true || brackets.GetCsv().Count() != 1)
+                            continue;
+
+                        // Next node must be a math operator.
+                        var mathOpNode = brackets.Next;
+                        var isPartOfMathOp = mathOpNode != null && mathOpNode.Token?.GetMathSymbolType() != TokenExtensions.MathSymbolType.Unknown;
+                        if (isPartOfMathOp)
+                        {
+                            // ...and then another vector.
+                            var isNextNodeVector = (mathOpNode.Next?.Token as TypeToken)?.IsVector() == true;
+                            if (isNextNodeVector)
+                            {
+                                // Replace lhs vector with a float.
+                                var numToken = brackets.Children.Single().Token as INumberToken;
+                                if (numToken is IntToken intToken)
+                                    numToken = intToken.AsFloatToken();
+
+                                HandleDoubleNegative(vectorNode, numToken);
+
+                                brackets.Remove();
+                                vectorNode.ReplaceWith(new GenericSyntaxNode((FloatToken)numToken));
+
+                                didChange = true;
+                                continue;
+                            }
+                        }
+
+                        // ...or previous node must be a math operator.
+                        mathOpNode = vectorNode.Previous;
+                        isPartOfMathOp = mathOpNode != null && mathOpNode.Token?.GetMathSymbolType() != TokenExtensions.MathSymbolType.Unknown;
+                        if (isPartOfMathOp)
+                        {
+                            // ...preceded by another vector.
+                            var isPreviousNodeVector = mathOpNode.Previous is RoundBracketSyntaxNode &&
+                                                       (mathOpNode.Previous.Previous?.Token as TypeToken)?.IsVector() == true;
+                            if (isPreviousNodeVector)
+                            {
+                                // Replace rhs vector with a float.
+                                var numToken = brackets.Children.Single().Token as INumberToken;
+                                if (numToken is IntToken intToken)
+                                    numToken = intToken.AsFloatToken();
+
+                                HandleDoubleNegative(vectorNode, numToken);
+
+                                brackets.Remove();
+                                vectorNode.ReplaceWith(new GenericSyntaxNode((FloatToken)numToken));
+
+                                didChange = true;
+                            }
+                        }
+                    }
+                }
+
                 if (!didChange)
                     break;
 
@@ -138,6 +200,21 @@ namespace Shrinker.Parser.Optimizations
             }
 
             return repeatSimplifications;
+        }
+
+        private static void HandleDoubleNegative(GenericSyntaxNode vectorNode, INumberToken numToken)
+        {
+            if (vectorNode.Previous?.Token is SymbolOperatorToken { Content: "-" }
+                && numToken.IsNegative())
+            {
+                // Invert a double-negative.
+                numToken.Negate();
+
+                if (vectorNode.Previous.Previous == null)
+                    vectorNode.Previous.Remove();
+                else
+                    vectorNode.Previous.ReplaceWith(new GenericSyntaxNode(new SymbolOperatorToken("+")));
+            }
         }
     }
 }
