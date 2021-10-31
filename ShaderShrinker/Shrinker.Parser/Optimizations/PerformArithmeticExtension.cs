@@ -181,47 +181,79 @@ namespace Shrinker.Parser.Optimizations
                     if (!brackets.IsNumericCsv())
                         continue;
 
-                    // Find the math symbol.
-                    var symbolNode = brackets.Next;
-                    if (symbolNode?.Token is not SymbolOperatorToken symbol)
-                        continue;
-                    switch (symbol.GetMathSymbolType())
+                    // vector then float.
                     {
-                        case TokenExtensions.MathSymbolType.AddSubtract:
-                        case TokenExtensions.MathSymbolType.MultiplyDivide:
-                            break; // Supported.
+                        // Find the math symbol.
+                        var symbolNode = brackets.Next;
+                        if (symbolNode?.Token is SymbolOperatorToken symbol && symbol.GetMathSymbolType() != TokenExtensions.MathSymbolType.Unknown)
+                        {
+                            // Find the float number.
+                            var numberNode = symbolNode.Next;
+                            if (numberNode?.Token is FloatToken)
+                            {
+                                // Number must not be used in a following math operation.
+                                if (numberNode.Next?.Token is not SymbolOperatorToken nextMath || nextMath.GetMathSymbolType() != TokenExtensions.MathSymbolType.MultiplyDivide)
+                                {
+                                    // Perform math on each bracketed value.
+                                    var newCsv =
+                                        brackets
+                                            .GetCsv()
+                                            .Select(o => DoNodeMath(o.Single(), symbolNode, numberNode))
+                                            .Select(o => new GenericSyntaxNode(FloatToken.From(o, MaxDp).AsIntIfPossible()));
 
-                        default:
-                            continue; // Not supported - Continue search.
+                                    // Replace bracket content and sum (if it shrinks the code).
+                                    var newBrackets = new RoundBracketSyntaxNode(newCsv.ToCsv());
+                                    var oldSize = brackets.ToCode().Length + 1 + numberNode.ToCode().Length;
+                                    var newSize = newBrackets.ToCode().Length;
+                                    if (newSize <= oldSize)
+                                    {
+                                        brackets.ReplaceWith(newBrackets);
+                                        symbolNode.Remove();
+                                        numberNode.Remove();
+
+                                        didChange = true;
+                                        continue;
+                                    }
+                                }
+                            }
+                        }
                     }
 
-                    // Find the float number.
-                    var numberNode = symbolNode.Next;
-                    if (numberNode?.Token is not FloatToken)
-                        continue;
-
-                    // Number must not be used in a following math operation.
-                    if (numberNode.Next?.Token is SymbolOperatorToken nextMath && nextMath.GetMathSymbolType() == TokenExtensions.MathSymbolType.MultiplyDivide)
-                        continue;
-
-                    // Perform math on each bracketed value.
-                    var newCsv =
-                        brackets
-                            .GetCsv()
-                            .Select(o => DoNodeMath(o.Single(), symbolNode, numberNode))
-                            .Select(o => new GenericSyntaxNode(FloatToken.From(o, MaxDp)));
-
-                    // Replace bracket content and sum (if it shrinks the code).
-                    var newBrackets = new RoundBracketSyntaxNode(newCsv.ToCsv());
-                    var oldSize = brackets.ToCode().Length + 1 + numberNode.ToCode().Length;
-                    var newSize = newBrackets.ToCode().Length;
-                    if (newSize <= oldSize)
+                    // float then vector.
                     {
-                        brackets.ReplaceWith(newBrackets);
-                        symbolNode.Remove();
-                        numberNode.Remove();
+                        // Find the math symbol.
+                        var symbolNode = vectorNode.Previous;
+                        if (symbolNode?.Token is SymbolOperatorToken symbol && symbol.GetMathSymbolType() != TokenExtensions.MathSymbolType.Unknown)
+                        {
+                            // Find the float number.
+                            var numberNode = symbolNode.Previous;
+                            if (numberNode?.Token is FloatToken)
+                            {
+                                // Number must not be used in a preceding math operation.
+                                if (numberNode.Previous?.Token is not SymbolOperatorToken nextMath || nextMath.GetMathSymbolType() != TokenExtensions.MathSymbolType.MultiplyDivide)
+                                {
+                                    // Perform math on each bracketed value.
+                                    var newCsv =
+                                        brackets
+                                            .GetCsv()
+                                            .Select(o => DoNodeMath(numberNode, symbolNode, o.Single()))
+                                            .Select(o => new GenericSyntaxNode(FloatToken.From(o, MaxDp).AsIntIfPossible()));
 
-                        didChange = true;
+                                    // Replace bracket content and sum (if it shrinks the code).
+                                    var newBrackets = new RoundBracketSyntaxNode(newCsv.ToCsv());
+                                    var oldSize = brackets.ToCode().Length + 1 + numberNode.ToCode().Length;
+                                    var newSize = newBrackets.ToCode().Length;
+                                    if (newSize <= oldSize)
+                                    {
+                                        brackets.ReplaceWith(newBrackets);
+                                        symbolNode.Remove();
+                                        numberNode.Remove();
+
+                                        didChange = true;
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -259,11 +291,7 @@ namespace Shrinker.Parser.Optimizations
                     numNodeB.Remove();
                     symbolNode.Remove();
 
-                    SyntaxNode newNode;
-                    if (isFloatResult)
-                        newNode = numNodeA.ReplaceWith(new GenericSyntaxNode(FloatToken.From(c, MaxDp)));
-                    else
-                        newNode = numNodeA.ReplaceWith(new GenericSyntaxNode(new IntToken((int)c)));
+                    var newNode = numNodeA.ReplaceWith(new GenericSyntaxNode(isFloatResult ? FloatToken.From(c, MaxDp) : new IntToken((int)c)));
 
                     // If new node is the sole child of a group, promote it.
                     if (newNode.IsOnlyChild() && newNode.Parent.GetType() == typeof(GroupSyntaxNode))

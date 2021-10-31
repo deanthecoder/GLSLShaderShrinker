@@ -11,7 +11,7 @@
 
 namespace Shrinker.Lexer
 {
-    public interface INumberToken
+    public interface INumberToken : IToken
     {
         void MakeNegative();
         void MakePositive();

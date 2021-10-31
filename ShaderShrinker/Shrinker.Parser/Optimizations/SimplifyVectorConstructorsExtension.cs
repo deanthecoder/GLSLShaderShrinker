@@ -9,7 +9,6 @@
 //  </summary>
 // -----------------------------------------------------------------------
 
-using System;
 using System.Linq;
 using Shrinker.Lexer;
 using Shrinker.Parser.SyntaxNodes;
@@ -38,16 +37,10 @@ namespace Shrinker.Parser.Optimizations
                         hasCommaPrefix && child.Next == null ||
                         child.Previous == null && child.Next == null)
                     {
-                        if (!double.TryParse(child.Token.Content, out var asDouble))
-                            continue;
-
                         // vec3 (etc) can be constructed with integer params.
-                        if (Math.Abs((int)asDouble - asDouble) < 0.0000001)
-                        {
-                            var asInt = new GenericSyntaxNode(new IntToken((int)asDouble));
-                            if (asInt.ToCode().Length < child.ToCode().Length)
-                                child.ReplaceWith(asInt);
-                        }
+                        var asInt = new GenericSyntaxNode(((FloatToken)child.Token).AsIntIfPossible());
+                        if (asInt.ToCode().Length < child.ToCode().Length)
+                            child.ReplaceWith(asInt);
                     }
                 }
 
