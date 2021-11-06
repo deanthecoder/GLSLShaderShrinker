@@ -9,11 +9,12 @@
 //  </summary>
 // -----------------------------------------------------------------------
 
-namespace Shrinker.Parser.Hints;
-
-public class UnusedFunctionHint : CodeHint
+namespace Shrinker.Parser.Hints
 {
-    public UnusedFunctionHint(string function) : base(function, "Function is never called.")
+    public class UnusedFunctionHint : CodeHint
     {
+        public UnusedFunctionHint(string function) : base(function, "Function is never called.")
+        {
+        }
     }
 }

@@ -9,11 +9,12 @@
 //  </summary>
 // -----------------------------------------------------------------------
 
-namespace Shrinker.Parser.Hints;
-
-public class FunctionHasUnusedParamHint : CodeHint
+namespace Shrinker.Parser.Hints
 {
-    public FunctionHasUnusedParamHint(string function, string param) : base(function, $"Function parameter '{param}' is unused.")
+    public class FunctionHasUnusedParamHint : CodeHint
     {
+        public FunctionHasUnusedParamHint(string function, string param) : base(function, $"Function parameter '{param}' is unused.")
+        {
+        }
     }
 }

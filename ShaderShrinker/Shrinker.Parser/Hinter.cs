@@ -21,7 +21,7 @@ namespace Shrinker.Parser
     /// <summary>
     /// Takes a syntax tree produced by the Parser class, and creates a collection of helpful hints.
     /// </summary>
-    public static partial class Hinter
+    public static class Hinter
     {
         // todo - If function called in 'if' (or 'else') blocks, suggest parameterizing.
         public static IEnumerable<CodeHint> GetHints(this SyntaxNode rootNode)

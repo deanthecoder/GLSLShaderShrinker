@@ -9,11 +9,12 @@
 //  </summary>
 // -----------------------------------------------------------------------
 
-namespace Shrinker.Parser.Hints;
-
-public class IntroduceDefineHint : CodeHint
+namespace Shrinker.Parser.Hints
 {
-    public IntroduceDefineHint(string originalName, string defineNameAndValue) : base(originalName, $"[GOLF] Consider adding '#define {defineNameAndValue}'")
+    public class IntroduceDefineHint : CodeHint
     {
+        public IntroduceDefineHint(string originalName, string defineNameAndValue) : base(originalName, $"[GOLF] Consider adding '#define {defineNameAndValue}'")
+        {
+        }
     }
 }

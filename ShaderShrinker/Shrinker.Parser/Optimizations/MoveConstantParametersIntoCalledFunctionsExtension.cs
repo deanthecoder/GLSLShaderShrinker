@@ -15,84 +15,85 @@ using System.Linq;
 using Shrinker.Lexer;
 using Shrinker.Parser.SyntaxNodes;
 
-namespace Shrinker.Parser.Optimizations;
-
-public static class MoveConstantParametersIntoCalledFunctionsExtension
+namespace Shrinker.Parser.Optimizations
 {
-    /// <summary>
-    /// Returns true if all optimizations should be re-run.
-    /// </summary>
-    public static bool MoveConstantParametersIntoCalledFunctions(this SyntaxNode rootNode)
+    public static class MoveConstantParametersIntoCalledFunctionsExtension
     {
-        var repeatSimplifications = false;
-
-        while (true)
+        /// <summary>
+        /// Returns true if all optimizations should be re-run.
+        /// </summary>
+        public static bool MoveConstantParametersIntoCalledFunctions(this SyntaxNode rootNode)
         {
-            List<FunctionCallSyntaxNode> callers = null;
-            var paramIndex = -1;
-            DetectIssues(rootNode,
-                         (issueCallers, issueParamIndex) =>
-                         {
-                             callers = issueCallers;
-                             paramIndex = issueParamIndex;
-                         });
+            var repeatSimplifications = false;
 
-            if (callers == null)
-                break;
+            while (true)
+            {
+                List<FunctionCallSyntaxNode> callers = null;
+                var paramIndex = -1;
+                DetectIssues(rootNode,
+                             (issueCallers, issueParamIndex) =>
+                             {
+                                 callers = issueCallers;
+                                 paramIndex = issueParamIndex;
+                             });
 
-            // Issue found - Get the constant from the call site.
-            var constParamNodes = callers[0].Params.GetCsv().ElementAt(paramIndex).Select(o => o.Clone()).ToList();
+                if (callers == null)
+                    break;
 
-            // Attempt to inline the parameter.
-            var callee = callers[0].GetCallee();
+                // Issue found - Get the constant from the call site.
+                var constParamNodes = callers[0].Params.GetCsv().ElementAt(paramIndex).Select(o => o.Clone()).ToList();
 
-            var paramNodesToMove = callee.Params.GetCsv().ToList()[paramIndex];
-            paramNodesToMove.Select(o => o.Token).OfType<TypeToken>().ToList().ForEach(o => o.SetInOut());
-            var typeNode = (GenericSyntaxNode)paramNodesToMove[0].Clone();
-            var nameNode = (GenericSyntaxNode)paramNodesToMove[1].Clone();
+                // Attempt to inline the parameter.
+                var callee = callers[0].GetCallee();
 
-            // Remove parameter from function definition.
-            callee.GetDeclaration()?.Params.RemoveCsvEntry(paramIndex);
-            callee.Params.RemoveCsvEntry(paramIndex);
+                var paramNodesToMove = callee.Params.GetCsv().ToList()[paramIndex];
+                paramNodesToMove.Select(o => o.Token).OfType<TypeToken>().ToList().ForEach(o => o.SetInOut());
+                var typeNode = (GenericSyntaxNode)paramNodesToMove[0].Clone();
+                var nameNode = (GenericSyntaxNode)paramNodesToMove[1].Clone();
 
-            // Add assignment to head of function body.
-            var declNode = new VariableDeclarationSyntaxNode(typeNode);
-            declNode.Adopt(new VariableAssignmentSyntaxNode(nameNode, constParamNodes.ToList()));
-            callee.Braces.InsertChild(0, declNode);
+                // Remove parameter from function definition.
+                callee.GetDeclaration()?.Params.RemoveCsvEntry(paramIndex);
+                callee.Params.RemoveCsvEntry(paramIndex);
 
-            // Remove param from all call sites.
-            foreach (var caller in callers)
-                caller.Params.RemoveCsvEntry(paramIndex);
+                // Add assignment to head of function body.
+                var declNode = new VariableDeclarationSyntaxNode(typeNode);
+                declNode.Adopt(new VariableAssignmentSyntaxNode(nameNode, constParamNodes.ToList()));
+                callee.Braces.InsertChild(0, declNode);
 
-            repeatSimplifications = true;
+                // Remove param from all call sites.
+                foreach (var caller in callers)
+                    caller.Params.RemoveCsvEntry(paramIndex);
+
+                repeatSimplifications = true;
+            }
+
+            return repeatSimplifications;
         }
 
-        return repeatSimplifications;
-    }
-
-    internal static void DetectIssues(SyntaxNode rootNode, Action<List<FunctionCallSyntaxNode>, int> onItemFound)
-    {
-        var localFunctions = rootNode.FunctionDefinitions().ToList();
-        var functionCalls = localFunctions.SelectMany(o => o.FunctionCalls()).Where(o => o.GetCallee() != null).ToList();
-        foreach (var functionCall in functionCalls.Where(o => o.Params.Children.Any()))
+        internal static void DetectIssues(SyntaxNode rootNode, Action<List<FunctionCallSyntaxNode>, int> onItemFound)
         {
-            var callee = functionCall.GetCallee();
-            var allCallsToThatFunction = functionCalls.Where(o => callee == o.GetCallee()).ToList();
-
-            var paramCount = callee.ParamNames.Count;
-            for (var paramIndex = 0; paramIndex < paramCount; paramIndex++)
+            var localFunctions = rootNode.FunctionDefinitions().ToList();
+            var functionCalls = localFunctions.SelectMany(o => o.FunctionCalls()).Where(o => o.GetCallee() != null).ToList();
+            foreach (var functionCall in functionCalls.Where(o => o.Params.Children.Any()))
             {
-                // Each nth param must be the same.
-                var paramStrings = allCallsToThatFunction.Select(o => o.Params.GetCsv().ToList()[paramIndex].Select(p => p.ToCode()).Aggregate((a, b) => $"{a} {b}"));
-                if (paramStrings.Distinct().Count() != 1)
-                    continue;
+                var callee = functionCall.GetCallee();
+                var allCallsToThatFunction = functionCalls.Where(o => callee == o.GetCallee()).ToList();
 
-                // Each nth param must be a constant.
-                if (!allCallsToThatFunction.All(call => call.Params.IsNumericParam(paramIndex, true)))
-                    continue;
+                var paramCount = callee.ParamNames.Count;
+                for (var paramIndex = 0; paramIndex < paramCount; paramIndex++)
+                {
+                    // Each nth param must be the same.
+                    var paramStrings = allCallsToThatFunction.Select(o => o.Params.GetCsv().ToList()[paramIndex].Select(p => p.ToCode()).Aggregate((a, b) => $"{a} {b}"));
+                    if (paramStrings.Distinct().Count() != 1)
+                        continue;
 
-                // All match!
-                onItemFound(allCallsToThatFunction, paramIndex);
+                    // Each nth param must be a constant.
+                    if (!allCallsToThatFunction.All(call => call.Params.IsNumericParam(paramIndex, true)))
+                        continue;
+
+                    // All match!
+                    onItemFound(allCallsToThatFunction, paramIndex);
+                }
             }
         }
     }

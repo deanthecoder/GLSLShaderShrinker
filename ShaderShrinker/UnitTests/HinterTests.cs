@@ -202,7 +202,7 @@ namespace UnitTests
 
             var rootNode = new Parser(lexer).Parse();
 
-            Assert.That(rootNode.GetHints().OfType<Hinter.AllCallsToFunctionMadeWithSameParamHint>().ToList(), Has.Count.EqualTo(1));
+            Assert.That(rootNode.GetHints().OfType<AllCallsToFunctionMadeWithSameParamHint>().ToList(), Has.Count.EqualTo(1));
         }
 
         [Test]
@@ -213,7 +213,7 @@ namespace UnitTests
 
             var rootNode = new Parser(lexer).Parse();
 
-            Assert.That(rootNode.GetHints().OfType<Hinter.AllCallsToFunctionMadeWithSameParamHint>().ToList(), Has.Count.EqualTo(1));
+            Assert.That(rootNode.GetHints().OfType<AllCallsToFunctionMadeWithSameParamHint>().ToList(), Has.Count.EqualTo(1));
         }
 
         [Test]
@@ -224,7 +224,7 @@ namespace UnitTests
 
             var rootNode = new Parser(lexer).Parse();
 
-            Assert.That(rootNode.GetHints().OfType<Hinter.AllCallsToFunctionMadeWithSameParamHint>().ToList(), Has.Count.EqualTo(1));
+            Assert.That(rootNode.GetHints().OfType<AllCallsToFunctionMadeWithSameParamHint>().ToList(), Has.Count.EqualTo(1));
         }
 
         [Test]
@@ -235,7 +235,7 @@ namespace UnitTests
 
             var rootNode = new Parser(lexer).Parse();
 
-            Assert.That(rootNode.GetHints().OfType<Hinter.AllCallsToFunctionMadeWithSameParamHint>(), Is.Empty);
+            Assert.That(rootNode.GetHints().OfType<AllCallsToFunctionMadeWithSameParamHint>(), Is.Empty);
         }
 
         [Test]
@@ -246,7 +246,7 @@ namespace UnitTests
 
             var rootNode = new Parser(lexer).Parse();
 
-            Assert.That(rootNode.GetHints().OfType<Hinter.AllCallsToFunctionMadeWithSameParamHint>(), Is.Empty);
+            Assert.That(rootNode.GetHints().OfType<AllCallsToFunctionMadeWithSameParamHint>(), Is.Empty);
         }
 
         [Test]
@@ -257,7 +257,7 @@ namespace UnitTests
 
             var rootNode = new Parser(lexer).Parse();
 
-            Assert.That(rootNode.GetHints().OfType<Hinter.AllCallsToFunctionMadeWithSameParamHint>().ToList(), Has.Count.EqualTo(2));
+            Assert.That(rootNode.GetHints().OfType<AllCallsToFunctionMadeWithSameParamHint>().ToList(), Has.Count.EqualTo(2));
         }
     }
 }
