@@ -191,8 +191,10 @@ namespace Shrinker.Parser.Optimizations
                             var numberNode = symbolNode.Next;
                             if (numberNode?.Token is FloatToken)
                             {
-                                // Number must not be used in a following math operation.
-                                if (numberNode.Next?.Token is not SymbolOperatorToken nextMath || nextMath.GetMathSymbolType() != TokenExtensions.MathSymbolType.MultiplyDivide)
+                                // Number must not be used in a following math operation of a different category.
+                                if (numberNode.Next?.Token is not SymbolOperatorToken nextMath ||
+                                    nextMath.GetMathSymbolType() == symbol.GetMathSymbolType() ||
+                                    nextMath.GetMathSymbolType() == TokenExtensions.MathSymbolType.AddSubtract)
                                 {
                                     // Perform math on each bracketed value.
                                     var newCsv =
