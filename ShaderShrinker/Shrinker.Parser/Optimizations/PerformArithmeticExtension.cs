@@ -168,10 +168,10 @@ namespace Shrinker.Parser.Optimizations
                     }
                 }
 
-                // vecN(...) + <float>
+                // 'vecN(...) + ...' or '... + vecN(...)'
                 foreach (var vectorNode in rootNode.TheTree
                     .OfType<GenericSyntaxNode>()
-                    .Where(o => o.Token is TypeToken t && t.Content?.StartsWith("vec") == true))
+                    .Where(o => o.Token is TypeToken t && t.IsVector()))
                 {
                     // Find the brackets.
                     if (vectorNode.Next is not RoundBracketSyntaxNode brackets)
@@ -252,7 +252,51 @@ namespace Shrinker.Parser.Optimizations
                                         numberNode.Remove();
 
                                         didChange = true;
+                                        continue;
                                     }
+                                }
+                            }
+                        }
+                    }
+
+                    // vector then vector.
+                    {
+                        // Find the math symbol.
+                        var symbolNode = brackets.Next;
+                        if (symbolNode?.Token is SymbolOperatorToken symbol && symbol.GetMathSymbolType() != TokenExtensions.MathSymbolType.Unknown)
+                        {
+                            // Find the second vector.
+                            var rhsVectorNode = symbolNode.Next;
+                            if (rhsVectorNode?.Token is TypeToken t && t.IsVector())
+                            {
+                                var rhsVectorBrackets = rhsVectorNode.Next as RoundBracketSyntaxNode;
+
+                                // RHS vector must not be used in a following math operation of a different category.
+                                if (rhsVectorBrackets?.Next?.Token is not SymbolOperatorToken nextMath ||
+                                    nextMath.GetMathSymbolType() == symbol.GetMathSymbolType() ||
+                                    nextMath.GetMathSymbolType() == TokenExtensions.MathSymbolType.AddSubtract)
+                                {
+                                    // Ensure both brackets have the same number of elements.
+                                    var lhsCsv = brackets.GetCsv().ToList();
+                                    var rhsCsv = rhsVectorBrackets.GetCsv().ToList();
+                                    while (lhsCsv.Count < rhsCsv.Count)
+                                        lhsCsv.Add(new[] { lhsCsv.First().Single().Clone() });
+                                    while (rhsCsv.Count < lhsCsv.Count)
+                                        rhsCsv.Add(new[] { rhsCsv.First().Single().Clone() });
+
+                                    // Perform math on each bracketed value.
+                                    var newCsv =
+                                        lhsCsv
+                                            .Select((o, i) => DoNodeMath(o.Single(), symbolNode, rhsCsv[i].Single()))
+                                            .Select(o => new GenericSyntaxNode(FloatToken.From(o, MaxDp).AsIntIfPossible()));
+
+                                    // Replace bracket content and sum.
+                                    brackets.ReplaceWith(new RoundBracketSyntaxNode(newCsv.ToCsv()));
+                                    symbolNode.Remove();
+                                    rhsVectorNode.Remove();
+                                    rhsVectorBrackets.Remove();
+
+                                    didChange = true;
                                 }
                             }
                         }

@@ -272,6 +272,53 @@ namespace UnitTests
             Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(expected));
         }
 
-        // todo - vec and vec
+        [Test, Sequential]
+        public void CheckArithmeticWithVectorAndVector(
+            [Values("vec2 f = vec2(1.1, 2.2) + vec2(1, 2);",
+                    "vec2 f = vec2(1.1, 2.2) + vec2(1, 2) + vec2(6, 7);",
+                    "vec2 f = vec2(1.1, 2.2) + vec2(1, 2) + vec2(5);",
+                    "vec2 f = vec2(1.1, 2.2) + vec2(1, 2) + 2.0;",
+                    "vec2 f = vec2(1.1, 2.2) + vec2(1, 2) * vec2(6, 7);",
+                    "vec2 f = vec2(1.1, 2.2) + vec2(1, 2) * vec2(5);",
+                    "vec2 f = vec2(1.1, 2.2) + vec2(1, 2) * 2.0;",
+                    "vec2 f = vec2(1.1, 2.2) * vec2(1, 2);",
+                    "vec2 f = vec2(1.1, 2.2) * vec2(1, 2) + vec2(6, 7);",
+                    "vec2 f = vec2(1.1, 2.2) * vec2(1, 2) + vec2(5);",
+                    "vec2 f = vec2(1.1, 2.2) * vec2(1, 2) + 2.0;",
+                    "vec2 f = vec2(1.1, 2.2) * vec2(1, 2) * vec2(6, 7);",
+                    "vec2 f = vec2(1.1, 2.2) * vec2(1, 2) * vec2(5);",
+                    "vec2 f = vec2(1.1, 2.2) * vec2(1, 2) * 2.0;",
+                    "vec2 f = vec2(3) + vec2(4);",
+                    "vec2 f = vec2(3, 4) + vec2(5);",
+                    "vec2 f = vec2(3) + vec2(4, 5);")] string code,
+            [Values("vec2 f = vec2(2.1, 4.2);",
+                    "vec2 f = vec2(8.1, 11.2);",
+                    "vec2 f = vec2(7.1, 9.2);",
+                    "vec2 f = vec2(4.1, 6.2);",
+                    "vec2 f = vec2(7.1, 16.2);",
+                    "vec2 f = vec2(6.1, 12.2);",
+                    "vec2 f = vec2(3.1, 6.2);",
+                    "vec2 f = vec2(1.1, 4.4);",
+                    "vec2 f = vec2(7.1, 11.4);",
+                    "vec2 f = vec2(6.1, 9.4);",
+                    "vec2 f = vec2(3.1, 6.4);",
+                    "vec2 f = vec2(6.6, 30.8);",
+                    "vec2 f = vec2(5.5, 22);",
+                    "vec2 f = vec2(2.2, 8.8);",
+                    "vec2 f = vec2(7);",
+                    "vec2 f = vec2(8, 9);",
+                    "vec2 f = vec2(7, 8);")] string expected)
+        {
+            var lexer = new Lexer();
+            lexer.Load(code);
+
+            var options = CustomOptions.None();
+            options.PerformArithmetic = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(expected));
+        }
     }
 }

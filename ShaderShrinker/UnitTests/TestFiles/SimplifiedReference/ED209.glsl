@@ -1,4 +1,4 @@
-// Processed by 'GLSL Shader Shrinker' (Shrunk by 926 characters)
+// Processed by 'GLSL Shader Shrinker' (Shrunk by 948 characters)
 // (https://github.com/deanthecoder/GLSLShaderShrinker)
 
 float stretch, gunsUp, gunsForward, edWalk, edTwist, edDown, edShoot, doorOpen, glow;
@@ -159,14 +159,13 @@ MarchData gunPod(vec3 p) {
 }
 
 MarchData arms(vec3 p) {
-	const vec3 wrist = vec3(1.5, 0, 0) - vec3(0, 0, .3);
 	MarchData r;
 	setBodyMaterial(r);
 	p.x = abs(p.x);
 	p.yz += vec2(.24, 0);
 	p.xy *= rot(.15 * (gunsUp - 1.));
-	r.d = min(sdCapsule(p, vec3(0), vec3(1.5, 0, 0)), sdCapsule(p, vec3(1.5, 0, 0), wrist));
-	p -= wrist;
+	r.d = min(sdCapsule(p, vec3(0), vec3(1.5, 0, 0)), sdCapsule(p, vec3(1.5, 0, 0), vec3(1.5, 0, -.3)));
+	p -= vec3(1.5, 0, -.3);
 	p.z -= gunsForward * .15;
 	return minResult(r, gunPod(p));
 }

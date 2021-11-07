@@ -1,4 +1,4 @@
-// Processed by 'GLSL Shader Shrinker' (Shrunk by 396 characters)
+// Processed by 'GLSL Shader Shrinker' (Shrunk by 408 characters)
 // (https://github.com/deanthecoder/GLSLShaderShrinker)
 
 #define SKYCOL	vec3(.6, .8, .9)
@@ -145,7 +145,7 @@ void mainImage(out vec4 fragColor, vec2 fragCoord) {
 	vec2 hit = vec2(0),
 	     uv = (fragCoord - .5 * iResolution.xy) / iResolution.y;
 	vec3 p,
-	     forward = normalize(vec3(-13, -4, 0) - vec3(7, 6.5, -25)),
+	     forward = normalize(vec3(-20, -10.5, 25)),
 	     right = normalize(cross(vec3(0, 1, 0), forward)),
 	     rayDir = normalize(forward + uv.x * right + uv.y * cross(forward, right)),
 	     sunPosUnit = normalize(vec3(.5, .8, .7)),
