@@ -145,10 +145,10 @@ void mainImage(out vec4 fragColor, vec2 fragCoord) {
 	vec2 hit = vec2(0),
 	     uv = (fragCoord - .5 * iResolution.xy) / iResolution.y;
 	vec3 p,
-	     forward = normalize(vec3(-20, -10.5, 25)),
+	     forward = vec3(-.59359, -.31163, .74198),
 	     right = normalize(cross(vec3(0, 1, 0), forward)),
 	     rayDir = normalize(forward + uv.x * right + uv.y * cross(forward, right)),
-	     sunPosUnit = normalize(vec3(.5, .8, .7)),
+	     sunPosUnit = vec3(.42563, .68101, .59588),
 	     sunPos = sunPosUnit * 1e2,
 	     col = vec3(0);
 	float d = 0.;

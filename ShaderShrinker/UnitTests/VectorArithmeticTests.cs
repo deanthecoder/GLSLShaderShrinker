@@ -122,7 +122,7 @@ namespace UnitTests
         }
 
         [Test, Sequential]
-        public void CheckArithmeticWitSqrtFunction(
+        public void CheckArithmeticWithSqrtFunction(
             [Values("float f = sqrt(4.0);",
                     "float f = sqrt(-8.0);",
                     "float f; f = sqrt(sqrt(4.));")] string code,
@@ -140,6 +140,129 @@ namespace UnitTests
                 .Simplify(options);
 
             Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(expected));
+        }
+
+        [Test, Sequential]
+        public void CheckArithmeticWithLengthFunction(
+            [Values("float f = length(12.34);",
+                    "float f = length(-12.34);",
+                    "float f = length(vec2(3, 4));",
+                    "float f = length(vec3(9));")] string code,
+            [Values("float f = 12.34;",
+                    "float f = 12.34;",
+                    "float f = 5.;",
+                    "float f = 15.58846;")] string expected)
+        {
+            var lexer = new Lexer();
+            lexer.Load(code);
+
+            var options = CustomOptions.None();
+            options.PerformArithmetic = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(expected));
+        }
+
+        [Test, Sequential]
+        public void CheckArithmeticWithNormalizeFunction(
+            [Values("float f = normalize(vec2(3, 4));",
+                    "float f = normalize(vec3(9));")] string code,
+            [Values("float f = vec2(.6, .8);",
+                    "float f = vec3(.57735);")] string expected)
+        {
+            var lexer = new Lexer();
+            lexer.Load(code);
+
+            var options = CustomOptions.None();
+            options.PerformArithmetic = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(expected));
+        }
+
+        [Test, Sequential]
+        public void CheckArithmeticWithClampFunction(
+            [Values("float f = clamp(12.34, 0.0, 20.0);",
+                    "float f = clamp(12.34, 15.0, 20.0);",
+                    "float f = clamp(12.34, 0.0, 10.0);")] string code,
+            [Values("float f = 12.34;",
+                    "float f = 15.;",
+                    "float f = 10.;")] string expected)
+        {
+            var lexer = new Lexer();
+            lexer.Load(code);
+
+            var options = CustomOptions.None();
+            options.PerformArithmetic = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void CheckArithmeticWithFloorFunction()
+        {
+            var lexer = new Lexer();
+            lexer.Load("float f = floor(12.3);");
+
+            var options = CustomOptions.None();
+            options.PerformArithmetic = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo("float f = 12.;"));
+        }
+
+        [Test]
+        public void CheckArithmeticWithCeilFunction()
+        {
+            var lexer = new Lexer();
+            lexer.Load("float f = ceil(12.3);");
+
+            var options = CustomOptions.None();
+            options.PerformArithmetic = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo("float f = 13.;"));
+        }
+
+        [Test]
+        public void CheckArithmeticWithTruncFunction()
+        {
+            var lexer = new Lexer();
+            lexer.Load("float f = trunc(12.9);");
+
+            var options = CustomOptions.None();
+            options.PerformArithmetic = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo("float f = 12.;"));
+        }
+
+        [Test]
+        public void CheckArithmeticWithFractFunction()
+        {
+            var lexer = new Lexer();
+            lexer.Load("float f = fract(12.9);");
+
+            var options = CustomOptions.None();
+            options.PerformArithmetic = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo("float f = .9;"));
         }
 
         [Test, Sequential]
@@ -326,5 +449,7 @@ namespace UnitTests
 
             Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(expected));
         }
+
+        // todo - normalize(vec3(-20, -10.5, 25))
     }
 }

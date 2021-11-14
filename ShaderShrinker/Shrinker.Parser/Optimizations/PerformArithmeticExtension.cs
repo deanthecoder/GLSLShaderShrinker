@@ -138,10 +138,66 @@ namespace Shrinker.Parser.Optimizations
                     }
                 }
 
+                // clamp(n, min, max) => <the result>
+                foreach (var clampNode in functionCalls
+                    .Where(o => o.Name == "clamp" && o.Params.IsNumericCsv())
+                    .ToList())
+                {
+                    var xyz = clampNode.Params.Children.Where(o => o.Token is FloatToken).Select(o => ((FloatToken)o.Token).Number).ToList();
+                    if (xyz.Count == 3)
+                    {
+                        clampNode.Params.Remove();
+                        clampNode.ReplaceWith(new GenericSyntaxNode(FloatToken.From(Math.Min(Math.Max(xyz[0], xyz[1]), xyz[2]), MaxDp)));
+                        didChange = true;
+                    }
+                }
+
+                // length(vecN) => <the result>
+                foreach (var lengthNode in functionCalls
+                    .Where(o => o.Name == "length" && o.Params.Children.Count == 2)
+                    .ToList())
+                {
+                    var nums = GetVectorNumericCsv(lengthNode.Params.Children.First());
+                    if (nums == null)
+                        continue;
+
+                    var len = Math.Sqrt(nums.Sum(o => o * o));
+                    lengthNode.ReplaceWith(new GenericSyntaxNode(FloatToken.From(len, MaxDp)));
+                    didChange = true;
+                }
+
+                // normalize(vecN) => <the result>
+                foreach (var normalizeNode in functionCalls
+                    .Where(o => o.Name == "normalize" && o.Params.Children.Count == 2)
+                    .ToList())
+                {
+                    var nums = GetVectorNumericCsv(normalizeNode.Params.Children.First());
+                    if (nums == null)
+                        continue;
+
+                    var mag = Math.Sqrt(nums.Sum(o => o * o));
+
+                    // Squash vecN(n, n, n, ...) down to vecN(n)
+                    if (nums.Count > 1 && nums.Distinct().Count() == 1)
+                        nums = new List<double> { nums.First() };
+
+                    var newVectorNumNodes = nums.SelectMany(o => new[]
+                    {
+                        new GenericSyntaxNode(new CommaToken()),
+                        new GenericSyntaxNode(FloatToken.From(o / mag, MaxDp).AsIntIfPossible())
+                    }).Skip(1);
+
+                    var newVectorBrackets = new RoundBracketSyntaxNode(newVectorNumNodes);
+                    var newVectorNode = new GenericSyntaxNode(normalizeNode.Params.Children.First().Token.Content);
+                    normalizeNode.ReplaceWith(newVectorNode).InsertNextSibling(newVectorBrackets);
+                    didChange = true;
+                }
+
                 // Constant math/trig functions => <the result>
                 var mathOp = new List<Tuple<string, Func<double, double>>>
                 {
                     new Tuple<string, Func<double, double>>("abs", Math.Abs),
+                    new Tuple<string, Func<double, double>>("length", Math.Abs),
                     new Tuple<string, Func<double, double>>("sqrt", d => Math.Sqrt(Math.Abs(d))),
                     new Tuple<string, Func<double, double>>("sin", Math.Sin),
                     new Tuple<string, Func<double, double>>("cos", Math.Cos),
@@ -151,7 +207,11 @@ namespace Shrinker.Parser.Optimizations
                     new Tuple<string, Func<double, double>>("atan", Math.Atan),
                     new Tuple<string, Func<double, double>>("radians", x => x / 180.0 * Math.PI),
                     new Tuple<string, Func<double, double>>("degrees", x => x / Math.PI * 180.0),
-                    new Tuple<string, Func<double, double>>("sign", x => Math.Sign(x))
+                    new Tuple<string, Func<double, double>>("sign", x => Math.Sign(x)),
+                    new Tuple<string, Func<double, double>>("floor", Math.Floor),
+                    new Tuple<string, Func<double, double>>("ceil", Math.Ceiling),
+                    new Tuple<string, Func<double, double>>("trunc", Math.Truncate),
+                    new Tuple<string, Func<double, double>>("fract", x => x - Math.Truncate(x))
                 };
 
                 foreach (var mathNode in functionCalls
@@ -333,6 +393,35 @@ namespace Shrinker.Parser.Optimizations
             }
 
             return repeatSimplifications;
+        }
+
+        private static List<double> GetVectorNumericCsv(SyntaxNode vectorNode)
+        {
+            if (vectorNode.Next is not RoundBracketSyntaxNode brackets || !brackets.IsNumericCsv())
+                return null;
+
+            // Get vector type.
+            int c;
+            switch (vectorNode.Token?.Content)
+            {
+                case "vec2":
+                    c = 2;
+                    break;
+                case "vec3":
+                    c = 3;
+                    break;
+                case "vec4":
+                    c = 4;
+                    break;
+                default:
+                    return null;
+            }
+
+            // Support vectors with single component (E.g. vec3(x)).
+            var nums = brackets.GetCsv().Select(o => double.Parse(o.Single().Token.Content)).ToList();
+            while (nums.Count < c)
+                nums.Add(nums.Last());
+            return nums;
         }
 
         private static bool IsSafeToPerformMath(SyntaxNode lhsNumNode, SymbolOperatorToken symbol, SyntaxNode rhsNumNode)
