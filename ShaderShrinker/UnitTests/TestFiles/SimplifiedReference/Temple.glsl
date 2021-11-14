@@ -1,4 +1,4 @@
-// Processed by 'GLSL Shader Shrinker' (Shrunk by 408 characters)
+// Processed by 'GLSL Shader Shrinker' (Shrunk by 412 characters)
 // (https://github.com/deanthecoder/GLSLShaderShrinker)
 
 #define SKYCOL	vec3(.6, .8, .9)
@@ -48,12 +48,12 @@ float sdTempleColumn(vec3 p) {
 	d = sdColumn(p, r);
 	{
 		vec3 q = p;
-		q.y -= 4. + .16;
+		q.y -= 4.16;
 		d = min(d, sdCube(q, vec3(.7, .16, .7)) - .05);
 	}
 	{
 		vec3 q = p;
-		q.y += 4. - .4;
+		q.y += 3.6;
 		d = min(d, sdCube(q, vec3(.7, .16, .7)) - .05);
 	}
 	return d;

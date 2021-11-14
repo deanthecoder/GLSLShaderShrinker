@@ -238,7 +238,8 @@ namespace UnitTests
                     "vec2 main() { return 1. + 3. * vec2(1, 2); }",
                     "vec2 main() { return 1. + vec2(1, 2) * 3.; }",
                     "vec2 main() { return vec2(21, 22) / 7.; }",
-                    "vec3 main() { vec3 v = vec3(.4); float k = 1.; return (v + vec3(.6, .8, 1) * .5 * k) / (1. + k); }")] string code,
+                    "vec3 main() { vec3 v = vec3(.4); float k = 1.; return (v + vec3(.6, .8, 1) * .5 * k) / (1. + k); }",
+                    "p.xy -= 5. * vec2(0.64, 0.7) - 2.5;")] string code,
             [Values("vec2 f = vec2(4.4, 5.5);",
                     "vec3 f = vec3(-3.3, -2.2, -1.1);",
                     "vec4 f = vec4(2.42);",
@@ -258,7 +259,8 @@ namespace UnitTests
                     "vec2 main() { return vec2(4, 7); }",
                     "vec2 main() { return vec2(4, 7); }",
                     "vec2 main() { return vec2(21, 22) / 7.; }",
-                    "vec3 main() { vec3 v = vec3(.4); float k = 1.; return (v + vec3(.3, .4, .5) * k) / (1. + k); }")] string expected)
+                    "vec3 main() { vec3 v = vec3(.4); float k = 1.; return (v + vec3(.3, .4, .5) * k) / (1. + k); }",
+                    "p.xy -= vec2(.7, 1);")] string expected)
         {
             var lexer = new Lexer();
             lexer.Load(code);

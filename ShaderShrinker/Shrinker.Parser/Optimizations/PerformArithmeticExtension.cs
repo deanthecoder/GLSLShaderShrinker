@@ -354,6 +354,12 @@ namespace Shrinker.Parser.Optimizations
                 case TokenExtensions.MathSymbolType.AddSubtract:
                     var prevSymbol = (lhsNumNode.Previous as GenericSyntaxNode)?.Token as SymbolOperatorToken;
                     var nextSymbol = (rhsNumNode.Next is RoundBracketSyntaxNode ? rhsNumNode.Next.Next : rhsNumNode.Next)?.Token as SymbolOperatorToken;
+
+                    if (prevSymbol?.GetMathSymbolType() == TokenExtensions.MathSymbolType.Unknown)
+                        prevSymbol = null;
+                    if (nextSymbol?.GetMathSymbolType() == TokenExtensions.MathSymbolType.Unknown)
+                        nextSymbol = null;
+
                     return new[] { prevSymbol, nextSymbol }.Where(o => o != null).All(o => o.GetMathSymbolType() == symbolType);
 
                 default:

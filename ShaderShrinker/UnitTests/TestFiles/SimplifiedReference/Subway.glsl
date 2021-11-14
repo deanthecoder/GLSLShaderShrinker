@@ -1,4 +1,4 @@
-// Processed by 'GLSL Shader Shrinker' (Shrunk by 1,318 characters)
+// Processed by 'GLSL Shader Shrinker' (Shrunk by 1,322 characters)
 // (https://github.com/deanthecoder/GLSLShaderShrinker)
 
 #define MY_GPU_CAN_TAKE_IT
@@ -79,7 +79,7 @@ vec2 sdStep(vec3 p) {
 	float d2,
 	      d1 = sdBox(p, vec3(1.4, .02, .02));
 	if (d1 > 1.) return vec2(d1, 3.5);
-	p.y += .16 + .02;
+	p.y += .18;
 	d2 = sdBox(p, vec3(1.385, .145, .02));
 	d1 = min(d1, sdBox(p - vec3(0, 0, .015), vec3(1.4, .16, .02)));
 	p.yz += vec2(.18, .32);
