@@ -191,10 +191,7 @@ namespace Shrinker.Parser.Optimizations
                             var numberNode = symbolNode.Next;
                             if (numberNode?.Token is FloatToken)
                             {
-                                // Number must not be used in a following math operation of a different category.
-                                if (numberNode.Next?.Token is not SymbolOperatorToken nextMath ||
-                                    nextMath.GetMathSymbolType() == symbol.GetMathSymbolType() ||
-                                    nextMath.GetMathSymbolType() == TokenExtensions.MathSymbolType.AddSubtract)
+                                if (IsSafeToPerformMath(vectorNode, symbol, numberNode))
                                 {
                                     // Perform math on each bracketed value.
                                     var newCsv =
@@ -231,8 +228,7 @@ namespace Shrinker.Parser.Optimizations
                             var numberNode = symbolNode.Previous;
                             if (numberNode?.Token is FloatToken)
                             {
-                                // Number must not be used in a preceding math operation.
-                                if (numberNode.Previous?.Token is not SymbolOperatorToken nextMath || nextMath.GetMathSymbolType() != TokenExtensions.MathSymbolType.MultiplyDivide)
+                                if (IsSafeToPerformMath(numberNode, symbol, vectorNode))
                                 {
                                     // Perform math on each bracketed value.
                                     var newCsv =
@@ -270,11 +266,7 @@ namespace Shrinker.Parser.Optimizations
                             if (rhsVectorNode?.Token is TypeToken t && t.IsVector())
                             {
                                 var rhsVectorBrackets = rhsVectorNode.Next as RoundBracketSyntaxNode;
-
-                                // RHS vector must not be used in a following math operation of a different category.
-                                if (rhsVectorBrackets?.Next?.Token is not SymbolOperatorToken nextMath ||
-                                    nextMath.GetMathSymbolType() == symbol.GetMathSymbolType() ||
-                                    nextMath.GetMathSymbolType() == TokenExtensions.MathSymbolType.AddSubtract)
+                                if (IsSafeToPerformMath(vectorNode, symbol, rhsVectorNode))
                                 {
                                     // Ensure both brackets have the same number of elements.
                                     var lhsCsv = brackets.GetCsv().ToList();
@@ -314,22 +306,10 @@ namespace Shrinker.Parser.Optimizations
                     .ToList())
                 {
                     var symbolNode = numNodeA.Next;
-                    var symbolType = symbolNode.Token.GetMathSymbolType();
-
-                    if (symbolType != TokenExtensions.MathSymbolType.MultiplyDivide &&
-                        numNodeA.Previous != null &&
-                        numNodeA.Previous.Token is not CommaToken &&
-                        numNodeA.Previous.Token?.GetMathSymbolType() != symbolType)
-                    {
-                        continue;
-                    }
-
                     var numNodeB = symbolNode.Next;
-                    if (numNodeB?.Next?.Token is SymbolOperatorToken &&
-                        numNodeB.Next.Token.GetMathSymbolType() != TokenExtensions.MathSymbolType.AddSubtract)
-                    {
+
+                    if (!IsSafeToPerformMath(numNodeA, symbolNode.Token as SymbolOperatorToken, numNodeB))
                         continue;
-                    }
 
                     var c = DoNodeMath(numNodeA, symbolNode, numNodeB);
 
@@ -353,6 +333,32 @@ namespace Shrinker.Parser.Optimizations
             }
 
             return repeatSimplifications;
+        }
+
+        private static bool IsSafeToPerformMath(SyntaxNode lhsNumNode, SymbolOperatorToken symbol, SyntaxNode rhsNumNode)
+        {
+            if (lhsNumNode == null || symbol == null || rhsNumNode == null)
+                return false;
+
+            var symbolType = symbol.GetMathSymbolType();
+            switch (symbolType)
+            {
+                case TokenExtensions.MathSymbolType.Unknown:
+                    return false;
+
+                // If main symbol is * or /, that's fine - Any further symbols in the expression won't affect things.
+                case TokenExtensions.MathSymbolType.MultiplyDivide:
+                    return true;
+
+                // Only ok to perform math on the two nodes if the surrounding symbols are + or - (or don't exist).
+                case TokenExtensions.MathSymbolType.AddSubtract:
+                    var prevSymbol = (lhsNumNode.Previous as GenericSyntaxNode)?.Token as SymbolOperatorToken;
+                    var nextSymbol = (rhsNumNode.Next is RoundBracketSyntaxNode ? rhsNumNode.Next.Next : rhsNumNode.Next)?.Token as SymbolOperatorToken;
+                    return new[] { prevSymbol, nextSymbol }.Where(o => o != null).All(o => o.GetMathSymbolType() == symbolType);
+
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         private static double DoNodeMath(SyntaxNode numNodeA, SyntaxNode symbolNode, SyntaxNode numNodeB)

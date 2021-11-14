@@ -1,4 +1,4 @@
-// Processed by 'GLSL Shader Shrinker' (Shrunk by 948 characters)
+// Processed by 'GLSL Shader Shrinker' (Shrunk by 950 characters)
 // (https://github.com/deanthecoder/GLSLShaderShrinker)
 
 float stretch, gunsUp, gunsForward, edWalk, edTwist, edDown, edShoot, doorOpen, glow;
@@ -85,7 +85,7 @@ void setBodyMaterial(inout MarchData mat) {
 	mat.specPower = 30.;
 }
 
-float legWalkAngle(float f) { return sin(edWalk * 3.141 * 6. * f) * .2; }
+float legWalkAngle(float f) { return sin(edWalk * 18.846 * f) * .2; }
 
 float edZ() { return mix(5., -2., edWalk); }
 
