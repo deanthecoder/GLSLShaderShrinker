@@ -35,11 +35,11 @@ namespace Shrinker.Parser.SyntaxNodes
             }
         }
 
-        public VariableAssignmentSyntaxNode(string nameNode, List<SyntaxNode> valueNodes = null) : this(new GenericSyntaxNode(nameNode), valueNodes)
+        public VariableAssignmentSyntaxNode(string nameNode, IList<SyntaxNode> valueNodes = null) : this(new GenericSyntaxNode(nameNode), valueNodes)
         {
         }
 
-        public VariableAssignmentSyntaxNode(GenericSyntaxNode nameNode, List<SyntaxNode> valueNodes = null)
+        public VariableAssignmentSyntaxNode(GenericSyntaxNode nameNode, IList<SyntaxNode> valueNodes = null)
         {
             Name = ((AlphaNumToken)nameNode?.Token)?.Content ?? throw new ArgumentNullException(nameof(nameNode));
 

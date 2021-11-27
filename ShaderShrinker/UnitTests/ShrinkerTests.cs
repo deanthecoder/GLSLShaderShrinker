@@ -2077,7 +2077,9 @@ namespace UnitTests
                        "float f(float a) { return a + 1.1; }\nfloat main() { return f(iTime) + f(2.2); }",
                        "mat2 rot(float a) { float c = cos(a), s = sin(a); return mat2(c, s, -s, c); }\nmat2 main() { return rot(0.707); }",
                        "mat2 rot(float a) { float c = cos(a), s = sin(a); return mat2(c, s, -s, c); }\nmat2 main() { return rot(-.55); }",
-                       "int f(int a, int b) { return a * b; }\nint main() { return f(2, 6); }")] string code,
+                       "int f(int a, int b) { return a * b; }\nint main() { return f(2, 6); }",
+                       "float f(vec2 v) { return dot(v, v); } float main() { return f(vec2(1, 2)); }",
+                       "float f(in vec2 v) { return dot(v, v); } float main() { return f(vec2(1, 2)); }")] string code,
             [Values(
                        "int main() { return 2; }",
                        "int main() { return -22; }",
@@ -2088,7 +2090,9 @@ namespace UnitTests
                        "float f(float a) { return a + 1.1; }\n\nfloat main() { return f(iTime) + 3.3; }",
                        "mat2 main() { return mat2(.76031, .64956, -.64956, .76031); }",
                        "mat2 main() { return mat2(.85252, -.52269, .52269, .85252); }",
-                       "int main() { return 12; }")] string expected)
+                       "int main() { return 12; }",
+                       "float main() { return dot(vec2(1, 2), vec2(1, 2)); }",
+                       "float main() { return dot(vec2(1, 2), vec2(1, 2)); }")] string expected)
         {
             var lexer = new Lexer();
             lexer.Load(code);

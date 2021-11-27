@@ -34,9 +34,9 @@ namespace Shrinker.Parser.Optimizations
                     // Clone the callee function, so we can attempt to simplify it.
                     var callee = (FunctionDefinitionSyntaxNode)functionCall.GetCallee().Clone();
 
-                    var callerParams = functionCall.Params.Children.Select(o => o.Clone()).ToList();
+                    var callerParams = ((RoundBracketSyntaxNode)functionCall.Params.Clone()).GetCsv().ToList();
 
-                    // Convert params to local variables.
+                    // Convert caller's params to local variables in the clone of the callee.
                     var nodesToPrefix = new List<VariableDeclarationSyntaxNode>();
                     var paramIndex = 0;
                     var i = 0;
@@ -53,8 +53,7 @@ namespace Shrinker.Parser.Optimizations
                         var nameNode = (GenericSyntaxNode)callee.Params.Children[i++].Clone();
 
                         var declNode = new VariableDeclarationSyntaxNode(typeNode);
-                        declNode.Adopt(new VariableAssignmentSyntaxNode(nameNode, new List<SyntaxNode> { callerParams[paramIndex * 2] }));
-                        paramIndex++;
+                        declNode.Adopt(new VariableAssignmentSyntaxNode(nameNode, callerParams[paramIndex++]));
 
                         nodesToPrefix.Add(declNode);
                     }
@@ -70,7 +69,7 @@ namespace Shrinker.Parser.Optimizations
                         continue;
                     var reparsed = new Parser(lexer).Parse();
 
-                    // 'Shrink' our cloned function.
+                    // 'Shrink' our cloned function, if it's just a 'return' statement.
                     var simplified = reparsed.Simplify();
                     if (simplified.Children.FirstOrDefault() is BraceSyntaxNode braces &&
                         braces.Children.FirstOrDefault() is ReturnSyntaxNode returnNode)
