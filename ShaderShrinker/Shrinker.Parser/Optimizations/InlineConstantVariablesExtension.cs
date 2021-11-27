@@ -9,6 +9,7 @@
 //  </summary>
 // -----------------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Linq;
 using Shrinker.Lexer;
 using Shrinker.Parser.SyntaxNodes;
@@ -35,7 +36,8 @@ namespace Shrinker.Parser.Optimizations
                 {
                     var usages = potentialUsage
                         .Where(o => o.Token.Content.StartsWithVarName(definition.Name) &&
-                                    !IsNameMaskedByFunctionParam(definition.Name, o))
+                                    !IsNameMaskedByFunctionParam(definition.Name, o) &&
+                                    !IsDeclarationMaskedByChildDeclaration(definition.Name, o))
                         .ToList();
 
                     if (!usages.Any())
@@ -100,6 +102,12 @@ namespace Shrinker.Parser.Optimizations
                 if (!constDeclNode.Definitions.Any())
                     constDeclNode.Remove();
             }
+        }
+
+        private static bool IsDeclarationMaskedByChildDeclaration(string variableName, GenericSyntaxNode currentCodeNode)
+        {
+            var count = currentCodeNode.Ancestors().SelectMany(o => o.Children).OfType<VariableDeclarationSyntaxNode>().Count(o => o.IsDeclared(variableName));
+            return count > 1;
         }
 
         private static bool IsNameMaskedByFunctionParam(string name, SyntaxNode node)

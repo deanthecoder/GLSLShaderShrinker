@@ -18,6 +18,7 @@ using UnitTests.Extensions;
 
 namespace UnitTests
 {
+    // todo - https://www.shadertoy.com/view/Nlc3D4 - simplify color in ACESFitted (return statement and *= op.)
     // todo - same vector/matrix used multiple time in a function => make variable.
     // todo - min(min(min(a, b), c), d) -> min(min(a, b), min(c, d)) ?
 
@@ -2079,7 +2080,8 @@ namespace UnitTests
                        "mat2 rot(float a) { float c = cos(a), s = sin(a); return mat2(c, s, -s, c); }\nmat2 main() { return rot(-.55); }",
                        "int f(int a, int b) { return a * b; }\nint main() { return f(2, 6); }",
                        "float f(vec2 v) { return dot(v, v); } float main() { return f(vec2(1, 2)); }",
-                       "float f(in vec2 v) { return dot(v, v); } float main() { return f(vec2(1, 2)); }")] string code,
+                       "float f(in vec2 v) { return dot(v, v); } float main() { return f(vec2(1, 2)); }",
+                       "const vec3 m = vec3(1); vec3 f(in vec3 p, float k) { float c = cos(k * p.x), s = sin(k * p.x); mat2 m = mat2(c, -s, s, c); return vec3(m * p.xy, p.z); } vec3 p; vec3 main() { return f(p, 0.1) + m; }")] string code,
             [Values(
                        "int main() { return 2; }",
                        "int main() { return -22; }",
@@ -2087,12 +2089,13 @@ namespace UnitTests
                        "float main() { return 3.3; }",
                        "float main() { return .9; }",
                        "float main() { return 3.3; }",
-                       "float f(float a) { return a + 1.1; }\n\nfloat main() { return f(iTime) + 3.3; }",
+                       "float f(float a) { return a + 1.1; } float main() { return f(iTime) + 3.3; }",
                        "mat2 main() { return mat2(.76031, .64956, -.64956, .76031); }",
                        "mat2 main() { return mat2(.85252, -.52269, .52269, .85252); }",
                        "int main() { return 12; }",
                        "float main() { return dot(vec2(1, 2), vec2(1, 2)); }",
-                       "float main() { return dot(vec2(1, 2), vec2(1, 2)); }")] string expected)
+                       "float main() { return dot(vec2(1, 2), vec2(1, 2)); }",
+                       "vec3 f(vec3 p) { float c = cos(.1 * p.x), s = sin(.1 * p.x); return vec3(mat2(c, -s, s, c) * p.xy, p.z); } vec3 p; vec3 main() { return f(p) + vec3(1); }")] string expected)
         {
             var lexer = new Lexer();
             lexer.Load(code);
@@ -2101,7 +2104,8 @@ namespace UnitTests
                 .Parse()
                 .Simplify(CustomOptions.All());
 
-            Assert.That(rootNode.ToCode(), Is.EqualTo(expected));
+            var simple = rootNode.ToCode().ToSimple();
+            Assert.That(simple, Is.EqualTo(expected));
         }
 
         [Test]

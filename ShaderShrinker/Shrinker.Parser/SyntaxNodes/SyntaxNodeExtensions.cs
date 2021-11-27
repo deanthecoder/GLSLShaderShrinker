@@ -27,7 +27,7 @@ namespace Shrinker.Parser.SyntaxNodes
         public static T FindAncestor<T>(this SyntaxNode node) =>
             node.Ancestors().OfType<T>().FirstOrDefault();
 
-        private static IEnumerable<SyntaxNode> Ancestors(this SyntaxNode node)
+        public static IEnumerable<SyntaxNode> Ancestors(this SyntaxNode node)
         {
             while (node.Parent != null)
             {
