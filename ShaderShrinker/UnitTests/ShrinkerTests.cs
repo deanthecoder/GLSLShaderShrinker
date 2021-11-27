@@ -2032,7 +2032,7 @@ namespace UnitTests
             [Values(
                        "int main() { const int arr[2] = int[2](23, 32); return arr[0]; }",
                        "int main() { int arr[2]; arr[0] = 1; }",
-                       "int main() { const int arr[] = int[](1); arr[0] *= 2; }",
+                       "int main() { int arr[] = int[](1); arr[0] *= 2; }",
                        "int main() { int arr[] = int[](1); arr[0] = arr[1] * 2; }",
                        "int main() { const int arr[2] = int[2](23, 32); return arr[1]; }")] string expected)
         {

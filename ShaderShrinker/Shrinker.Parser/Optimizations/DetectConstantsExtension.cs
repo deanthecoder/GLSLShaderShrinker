@@ -52,7 +52,7 @@ namespace Shrinker.Parser.Optimizations
                     var uses = nodesInScope
                         .Where(o => o.Token?.Content.StartsWithVarName(defCandidate.Name) == true)
                         .ToList();
-                    var isModified = uses.Any(o => o.Next?.Token?.IsAnyOf(SymbolOperatorToken.ModifyingOperator) == true);
+                    var isModified = uses.Any(IsModifiedByOperator);
 
                     // ...or '++i' ?
                     if (!isModified)
@@ -92,6 +92,19 @@ namespace Shrinker.Parser.Optimizations
             }
 
             return repeatSimplifications;
+        }
+
+        private static bool IsModifiedByOperator(SyntaxNode node)
+        {
+            // Could be node[index]
+            if (node.Next is SquareBracketSyntaxNode)
+                node = node.Next;
+
+            // Could be node.rgb
+            if (node.Next?.Token is DotToken)
+                node = node.Next?.Next;
+
+            return node.Next?.Token?.IsAnyOf(SymbolOperatorToken.ModifyingOperator) == true;
         }
     }
 }
