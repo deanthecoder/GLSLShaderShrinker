@@ -1,6 +1,9 @@
 [![Twitter URL](https://img.shields.io/twitter/url/https/twitter.com/deanthecoder.svg?style=social&label=Follow%20%40deanthecoder)](https://twitter.com/deanthecoder)
 # GLSL Shader Shrinker
-Download from the [Releases](https://github.com/deanthecoder/GLSLShaderShrinker/releases) section.
+* Download from the [Releases](https://github.com/deanthecoder/GLSLShaderShrinker/releases) section.
+* May require the [.NET Desktop runtime](https://dotnet.microsoft.com/download/dotnet/thank-you/runtime-desktop-6.0.0-windows-x64-installer)
+* May require the [ASP.NET .NET runtime](https://dotnet.microsoft.com/download/dotnet/thank-you/runtime-aspnetcore-6.0.0-windows-hosting-bundle-installer)
+
 ## What Is It For?
 GLSL Shader Shrinker is a Windows GUI tool that attempts to reduce the size of GLSL fragment shader code, whilst keeping it _readable_ and understandable.
 
