@@ -9,6 +9,7 @@
 //  </summary>
 // -----------------------------------------------------------------------
 
+using System;
 using System.Linq;
 using Shrinker.Parser.SyntaxNodes;
 
@@ -35,7 +36,7 @@ namespace Shrinker.Parser.Optimizations
                         continue; // Function was used.
 
                     // Perhaps used by a #define?
-                    if (rootNode.TheTree.OfType<PragmaDefineSyntaxNode>().Any(o => o.ToCode().Contains(testFunction.Name)))
+                    if (rootNode.TheTree.OfType<PragmaDefineSyntaxNode>().Any(o => DoesPragmaDefineReferenceFunction(o, testFunction)))
                         continue; // Yup - Used.
 
                     // Function not used - Remove it (and any matching declaration).
@@ -47,6 +48,22 @@ namespace Shrinker.Parser.Optimizations
                 if (!functionRemoved)
                     return;
             }
+        }
+
+        private static bool DoesPragmaDefineReferenceFunction(PragmaDefineSyntaxNode define, FunctionDefinitionSyntaxNode function)
+        {
+            var defineCode = define.ToCode();
+            var functionIndex = defineCode.IndexOf(function.Name, StringComparison.Ordinal);
+            if (functionIndex == -1)
+                return false;
+
+            var cppCommentIndex = defineCode.IndexOf("//", StringComparison.Ordinal);
+            var cCommentIndex = defineCode.IndexOf("/*", StringComparison.Ordinal);
+            var comments = new[] { cppCommentIndex, cCommentIndex }.Where(o => o >= 0).ToList();
+            if (comments.Any() && comments.Min() < functionIndex)
+                return false; // Reference found, but in a comment.
+
+            return true;
         }
     }
 }
