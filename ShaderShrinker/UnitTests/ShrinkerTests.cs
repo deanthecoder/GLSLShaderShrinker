@@ -594,6 +594,23 @@ namespace UnitTests
             Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo("void main() { return; }"));
         }
 
+        [Test]
+        public void CheckRemovingFunctionAlsoRemovesFunctionComment()
+        {
+            const string Code = "// header\n\n//comment\nvoid f() {}\nvoid main() {}";
+
+            var lexer = new Lexer();
+            lexer.Load(Code);
+
+            var options = CustomOptions.None();
+            options.RemoveUnusedFunctions = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode(), Is.EqualTo("// header\nvoid main() { }"));
+        }
+
         [Test, Sequential]
         public void CheckUnreferencedFunctionsNotRemovedIfEntryPointFunctionDetected()
         {

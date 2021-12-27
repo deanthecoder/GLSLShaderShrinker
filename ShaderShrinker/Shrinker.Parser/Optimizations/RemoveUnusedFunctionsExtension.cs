@@ -40,14 +40,25 @@ namespace Shrinker.Parser.Optimizations
                         continue; // Yup - Used.
 
                     // Function not used - Remove it (and any matching declaration).
-                    testFunction.GetDeclaration()?.Remove();
-                    testFunction.Remove();
+                    RemoveFunction(testFunction);
                     functionRemoved = true;
                 }
 
                 if (!functionRemoved)
                     return;
             }
+        }
+
+        private static void RemoveFunction(FunctionDefinitionSyntaxNode function)
+        {
+            var precedingNode = function.Previous;
+
+            function.GetDeclaration()?.Remove();
+            function.Remove();
+
+            // Remove function comment, if present.
+            if (precedingNode is CommentSyntaxNodeBase commentNode)
+                commentNode.Remove();
         }
 
         private static bool DoesPragmaDefineReferenceFunction(PragmaDefineSyntaxNode define, FunctionDefinitionSyntaxNode function)
