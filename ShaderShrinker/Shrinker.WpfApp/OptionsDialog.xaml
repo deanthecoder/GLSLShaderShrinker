@@ -22,6 +22,7 @@
 
     <Grid.RowDefinitions>
         <RowDefinition Height="*"/>
+        <RowDefinition Height="*"/>
         <RowDefinition Height="Auto"/>
     </Grid.RowDefinitions>
 
@@ -31,7 +32,12 @@
         <ColumnDefinition Width="0.5*"/>
     </Grid.ColumnDefinitions>
 
-    <StackPanel Grid.Row="0" Grid.Column="0">
+    <StackPanel Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Right" Orientation="Horizontal" Margin="0,0,0,16">
+        <Label Content="Presets:" VerticalAlignment="Center"/>
+        <ComboBox ItemsSource="{Binding Presets}" DisplayMemberPath="Name" Width="150" SelectedItem="{Binding SelectedPreset}"/>
+    </StackPanel>
+
+    <StackPanel Grid.Row="1" Grid.Column="0">
         <CheckBox x:Name="removeCommentsCheck" Content="Remove comments" IsChecked="{Binding CustomOptions.RemoveComments}">
             <CheckBox.ToolTip>
                 <MdXaml:MarkdownScrollViewer xml:space="preserve">
@@ -332,11 +338,11 @@
         </CheckBox>
     </StackPanel>
 
-    <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Margin="16,0">
+    <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Margin="16,0">
         <Separator Width="3" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
     </StackPanel>
 
-    <StackPanel Grid.Row="0" Grid.Column="2">
+    <StackPanel Grid.Row="1" Grid.Column="2">
         <CheckBox Content="Simplify float number format" IsChecked="{Binding CustomOptions.SimplifyNumberFormat}">
             <CheckBox.ToolTip>
                 <MdXaml:MarkdownScrollViewer xml:space="preserve">
@@ -627,10 +633,10 @@
         </CheckBox>
     </StackPanel>
 
-    <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" Margin="0,16,0,0" VerticalAlignment="Center">
+    <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal" Margin="0,16,0,0" VerticalAlignment="Center">
         <materialDesign:PackIcon Kind="InfoCircle" Width="16" Height="16" Foreground="{DynamicResource PrimaryHueLightBrush}"/>
         <TextBlock Text="See tooltips for more information" Margin="4,0" VerticalAlignment="Center"/>
     </StackPanel>
 
-    <Button Grid.Row="1" Grid.Column="2" Content="APPLY" Command="{Binding OnCustomOptionsAcceptedCommand}" HorizontalAlignment="Right" Margin="0,16,0,0" Foreground="White"/>
+    <Button Grid.Row="2" Grid.Column="2" Content="APPLY" Command="{Binding OnCustomOptionsAcceptedCommand}" HorizontalAlignment="Right" Margin="0,16,0,0" Foreground="White"/>
 </Grid>

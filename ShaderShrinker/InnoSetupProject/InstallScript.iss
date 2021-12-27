@@ -21,6 +21,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]
 Source: "bin\Release\net5.0-windows\publish\win-x64\*.*"; DestDir: "{app}"; Excludes: "*.pdb"; Flags: ignoreversion
+Source: "bin\Release\net5.0-windows\publish\win-x64\Presets\*.*"; DestDir: "{app}\Presets"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"

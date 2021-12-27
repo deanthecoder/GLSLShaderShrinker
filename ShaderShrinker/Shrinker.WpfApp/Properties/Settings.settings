@@ -5,5 +5,8 @@
     <Setting Name="CustomOptions" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="MostRecentPreset" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Maximum</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

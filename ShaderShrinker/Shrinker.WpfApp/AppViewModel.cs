@@ -48,6 +48,10 @@ namespace Shrinker.WpfApp
         private bool m_showProgress;
         private string m_originalCode;
         private int m_originalSize;
+        private FileInfo m_selectedPreset;
+        private CustomOptions m_customOptions = CustomOptions.All();
+        private List<FileInfo> m_presets;
+        private readonly FileInfo m_customPreset = new FileInfo("Custom");
 
         public event EventHandler<(string originalCode, string newCode)> GlslLoaded;
 
@@ -60,7 +64,7 @@ namespace Shrinker.WpfApp
         public ICommand OnCustomOptionsAcceptedCommand => m_customOptionsAcceptedCommand ??= new RelayCommand(AcceptCustomOptions);
         public ICommand OnHintsAcceptedCommand => m_hintsAcceptedCommand ??= new RelayCommand(AcceptHints);
 
-        public CustomOptions CustomOptions { get; }
+        public CustomOptions CustomOptions => m_customOptions;
 
         public string ShadertoyShaderId { get; set; }
 
@@ -145,13 +149,56 @@ namespace Shrinker.WpfApp
                 return $"{assemblyInfo.ProductName} v{assemblyInfo.Version}";
             }
         }
+
         public ObservableCollection<CodeHint> Hints { get; } = new ObservableCollection<CodeHint>();
+
+        public IEnumerable<FileInfo> Presets
+        {
+            get
+            {
+                if (m_presets == null)
+                {
+                    var presetsDir = new DirectoryInfo(Path.Combine(AppContext.BaseDirectory, "Presets"));
+                    m_presets = presetsDir.Exists ? presetsDir.EnumerateFiles().ToList() : new List<FileInfo>();
+
+                    // Add 'special' case.
+                    m_presets.Add(m_customPreset);
+                }
+
+                return m_presets;
+            }
+        }
+
+        public FileInfo SelectedPreset
+        {
+            get => m_selectedPreset ??= Presets.FirstOrDefault(o => o.Name == Settings.Default.MostRecentPreset) ?? Presets.FirstOrDefault();
+            set
+            {
+                if (m_selectedPreset == value)
+                    return;
+
+                m_selectedPreset = value;
+                Settings.Default.MostRecentPreset = value.Name;
+                Settings.Default.Save();
+
+                LoadOptionsFromPreset();
+            }
+        }
 
         public AppViewModel()
         {
-            if (!string.IsNullOrWhiteSpace(Settings.Default.CustomOptions))
-                CustomOptions = JsonConvert.DeserializeObject<CustomOptions>(Settings.Default.CustomOptions);
-            CustomOptions ??= CustomOptions.All();
+            LoadOptionsFromPreset();
+        }
+
+        private void LoadOptionsFromPreset()
+        {
+            var options = SelectedPreset == m_customPreset ? Settings.Default.CustomOptions : File.ReadAllText(SelectedPreset.FullName);
+            if (string.IsNullOrEmpty(options))
+                m_customOptions = CustomOptions.All();
+            else
+                JsonConvert.PopulateObject(options, m_customOptions);
+
+            OnPropertyChanged(nameof(CustomOptions));
         }
 
         private void LoadGlslFromClipboard(object obj)
@@ -187,7 +234,7 @@ namespace Shrinker.WpfApp
 
         private void LoadGlslFromShadertoy(object obj)
         {
-            var id = ShadertoyShaderId.Trim();
+            var id = ShadertoyShaderId?.Trim();
             if (string.IsNullOrWhiteSpace(id) || id.Length != 6)
                 return;
 
@@ -273,14 +320,13 @@ namespace Shrinker.WpfApp
             finally
             {
                 ShowProgress = false;
+                SaveCustomOptions();
             }
 
             m_optimizedRoot = null;
             OptimizedCode = null;
             OptimizedSize = 0;
             GlslLoaded?.Invoke(this, (OriginalCode, string.Empty));
-
-            SaveCustomOptions();
         }
 
         private (int optimizedSize, string optimizedCode, IEnumerable<CodeHint> hints) Shrink(string glsl, string level)
@@ -305,6 +351,9 @@ namespace Shrinker.WpfApp
 
         public void SaveCustomOptions()
         {
+            if (Settings.Default.MostRecentPreset != "Custom")
+                return;
+
             Settings.Default.CustomOptions = JsonConvert.SerializeObject(CustomOptions);
             Settings.Default.Save();
         }
