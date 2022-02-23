@@ -323,34 +323,38 @@ namespace Shrinker.Parser.Optimizations
                         {
                             // Find the second vector.
                             var rhsVectorNode = symbolNode.Next;
-                            if (rhsVectorNode?.Token is TypeToken t && t.IsVector())
-                            {
-                                var rhsVectorBrackets = rhsVectorNode.Next as RoundBracketSyntaxNode;
-                                if (IsSafeToPerformMath(vectorNode, symbol, rhsVectorNode))
-                                {
-                                    // Ensure both brackets have the same number of elements.
-                                    var lhsCsv = brackets.GetCsv().ToList();
-                                    var rhsCsv = rhsVectorBrackets.GetCsv().ToList();
-                                    while (lhsCsv.Count < rhsCsv.Count)
-                                        lhsCsv.Add(new[] { lhsCsv.First().Single().Clone() });
-                                    while (rhsCsv.Count < lhsCsv.Count)
-                                        rhsCsv.Add(new[] { rhsCsv.First().Single().Clone() });
+                            if (rhsVectorNode?.Token is not TypeToken t || !t.IsVector())
+                                continue;
 
-                                    // Perform math on each bracketed value.
-                                    var newCsv =
-                                        lhsCsv
-                                            .Select((o, i) => DoNodeMath(o.Single(), symbolNode, rhsCsv[i].Single()))
-                                            .Select(o => new GenericSyntaxNode(FloatToken.From(o, MaxDp).AsIntIfPossible()));
+                            var rhsVectorBrackets = rhsVectorNode.Next as RoundBracketSyntaxNode;
+                            if (!IsSafeToPerformMath(vectorNode, symbol, rhsVectorNode))
+                                continue;
 
-                                    // Replace bracket content and sum.
-                                    brackets.ReplaceWith(new RoundBracketSyntaxNode(newCsv.ToCsv()));
-                                    symbolNode.Remove();
-                                    rhsVectorNode.Remove();
-                                    rhsVectorBrackets.Remove();
+                            // Ensure both brackets have the same number of elements.
+                            var lhsCsv = brackets.GetCsv().ToList();
+                            var rhsCsv = rhsVectorBrackets.GetCsv().ToList();
+                            while (lhsCsv.Count < rhsCsv.Count)
+                                lhsCsv.Add(new[] { lhsCsv.First().Single().Clone() });
+                            while (rhsCsv.Count < lhsCsv.Count)
+                                rhsCsv.Add(new[] { rhsCsv.First().Single().Clone() });
 
-                                    didChange = true;
-                                }
-                            }
+                            // Don't yet support 'vecN(f) * vecN(a * b, ...)'
+                            if (lhsCsv.Any(o => o.Count > 1) || rhsCsv.Any(o => o.Count > 1))
+                                continue;
+
+                            // Perform math on each bracketed value.
+                            var newCsv =
+                                lhsCsv
+                                    .Select((o, i) => DoNodeMath(o.Single(), symbolNode, rhsCsv[i].Single()))
+                                    .Select(o => new GenericSyntaxNode(FloatToken.From(o, MaxDp).AsIntIfPossible()));
+
+                            // Replace bracket content and sum.
+                            brackets.ReplaceWith(new RoundBracketSyntaxNode(newCsv.ToCsv()));
+                            symbolNode.Remove();
+                            rhsVectorNode.Remove();
+                            rhsVectorBrackets.Remove();
+
+                            didChange = true;
                         }
                     }
                 }
