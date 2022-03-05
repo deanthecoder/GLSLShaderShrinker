@@ -11,6 +11,7 @@
 
 using System.Diagnostics;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Navigation;
 
 namespace Shrinker.WpfApp
@@ -20,12 +21,13 @@ namespace Shrinker.WpfApp
         public MainWindow()
         {
             InitializeComponent();
+            ToolTipService.ShowOnDisabledProperty.OverrideMetadata(typeof(FrameworkElement), new FrameworkPropertyMetadata(true));
 
             var appViewModel = new AppViewModel();
             DataContext = appViewModel;
 
-            Closing += (sender, args) => appViewModel.SaveCustomOptions();
-            appViewModel.GlslLoaded += (sender, args) =>
+            Closing += (_, _) => appViewModel.SaveCustomOptions();
+            appViewModel.GlslLoaded += (_, args) =>
             {
                 using (new BusyCursor())
                 {

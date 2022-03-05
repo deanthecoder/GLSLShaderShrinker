@@ -251,7 +251,7 @@ namespace Shrinker.Parser.SyntaxNodes
                 .Take(types.Length)
                 .ToList();
             if (samples.Count == types.Length &&
-                samples.Where((o, i) => samples[i].GetType() == types[i] || samples[i].Token?.GetType() == types[i])
+                samples.Where((_, i) => samples[i].GetType() == types[i] || samples[i].Token?.GetType() == types[i])
                     .Count() == types.Length)
             {
                 return samples;

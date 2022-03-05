@@ -34,10 +34,10 @@ namespace Shrinker.Parser.SyntaxNodes
 
             // Read (and discard) '#if' arguments to get name.
             var ifName = new StringBuilder();
-            OutputFormatter.AppendCode(ifName, startNode);
+            GlslOutputFormatter.AppendCode(ifName, startNode);
 
             var ifArgs = startNode.TakeSiblingsWhile(o => o.Token is not LineEndToken).ToList();
-            ifArgs.ForEach(o => OutputFormatter.AppendCode(ifName, o));
+            ifArgs.ForEach(o => GlslOutputFormatter.AppendCode(ifName, o));
             ifArgs.ForEach(o => o.Remove());
 
             Name = ifName.ToString().Trim();

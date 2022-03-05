@@ -46,7 +46,7 @@ namespace Shrinker.Parser.SyntaxNodes
 
         public static SyntaxNode FindLastChild(this SyntaxNode node, Func<SyntaxNode, bool> isMatchFunc) => node.FindLastChild<SyntaxNode>(isMatchFunc);
 
-        public static IEnumerable<SyntaxNode> TakeSiblings(this SyntaxNode node, int count) => node.TakeSiblingsWhile(o => true).Take(count);
+        public static IEnumerable<SyntaxNode> TakeSiblings(this SyntaxNode node, int count) => node.TakeSiblingsWhile(_ => true).Take(count);
 
         public static IEnumerable<SyntaxNode> TakeSiblingsWhile(this SyntaxNode node, Func<SyntaxNode, bool> isMatchFunc)
         {

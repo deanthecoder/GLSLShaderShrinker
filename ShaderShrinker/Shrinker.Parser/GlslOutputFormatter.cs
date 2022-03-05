@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-//  <copyright file="OutputFormatter.cs">
+//  <copyright file="GlslOutputFormatter.cs">
 //      Copyright (c) 2021 Dean Edis. All rights reserved.
 //  </copyright>
 //  <summary>
@@ -20,7 +20,7 @@ namespace Shrinker.Parser
     /// <summary>
     /// Takes a syntax tree and converts it back into GLSL code for output.
     /// </summary>
-    public static class OutputFormatter
+    public static class GlslOutputFormatter
     {
         public static string ToCode(this SyntaxNode rootNode)
         {

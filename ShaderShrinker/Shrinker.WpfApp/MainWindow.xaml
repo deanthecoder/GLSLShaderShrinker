@@ -93,7 +93,7 @@
                             </Button>
                         </StackPanel>
 
-                        <TextBlock Grid.Column="1" Text="GLSL Import" VerticalAlignment="Center">
+                        <TextBlock Grid.Column="1" Text="Shader Import" VerticalAlignment="Center">
                             <TextBlock.LayoutTransform>
                                 <RotateTransform Angle="-90"/>
                             </TextBlock.LayoutTransform>
@@ -147,6 +147,11 @@
                         <StackPanel Grid.Column="0">
                             <TextBlock Text="Step 3" FontSize="10" Margin="0,-16,0,0"/>
 
+                            <StackPanel Margin="8,8,8,0">
+                                <RadioButton Content="GLSL" IsChecked="{Binding IsOutputGlsl}"/>
+                                <RadioButton Content="C-Style" IsChecked="{Binding IsOutputC}"/>
+                            </StackPanel>
+
                             <Button ToolTip="To Clipboard (CTRL+C)" Command="{Binding OnSaveToClipboardCommand}">
                                 <materialDesign:PackIcon Kind="ClipboardArrowRight"/>
                             </Button>
@@ -161,7 +166,7 @@
                             </materialDesign:Badged>
                         </StackPanel>
 
-                        <TextBlock Grid.Column="1" Text="GLSL Export" VerticalAlignment="Center">
+                        <TextBlock Grid.Column="1" Text="Shader Export" VerticalAlignment="Center">
                             <TextBlock.LayoutTransform>
                                 <RotateTransform Angle="-90"/>
                             </TextBlock.LayoutTransform>

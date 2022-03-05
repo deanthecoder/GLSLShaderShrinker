@@ -52,6 +52,7 @@ namespace Shrinker.WpfApp
         private CustomOptions m_customOptions = CustomOptions.All();
         private List<FileInfo> m_presets;
         private readonly FileInfo m_customPreset = new FileInfo("Custom");
+        private bool m_isOutputGlsl = true;
 
         public event EventHandler<(string originalCode, string newCode)> GlslLoaded;
 
@@ -184,6 +185,22 @@ namespace Shrinker.WpfApp
                 LoadOptionsFromPreset();
             }
         }
+        public bool IsOutputGlsl
+        {
+            get => m_isOutputGlsl;
+            set
+            {
+                m_isOutputGlsl = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(IsOutputC));
+            }
+        }
+
+        public bool IsOutputC
+        {
+            get => !IsOutputGlsl;
+            set => IsOutputGlsl = !value;
+        }
 
         public AppViewModel()
         {
@@ -214,7 +231,7 @@ namespace Shrinker.WpfApp
             if (string.IsNullOrEmpty(glsl))
                 return;
 
-            Clipboard.SetText(glsl.WithAppMessage(OriginalSize, OptimizedSize));
+            Clipboard.SetText(GetShaderOutputText(glsl));
             MyMessageQueue.Enqueue("GLSL saved to clipboard");
         }
 
@@ -257,12 +274,12 @@ namespace Shrinker.WpfApp
             var dialog = new SaveFileDialog
             {
                 Title = "Save GLSL file",
-                Filter = "GLSL Files|*.txt;*.glsl|All Files|*.*"
+                Filter = "GLSL Files|*.txt;*.glsl;*.c;*.cpp;*.h;*.inl|All Files|*.*"
             };
             if (dialog.ShowDialog() != true)
                 return;
 
-            File.WriteAllText(dialog.FileName, OptimizedCode.WithAppMessage(OriginalSize, OptimizedSize));
+            File.WriteAllText(dialog.FileName, GetShaderOutputText(OptimizedCode));
             MyMessageQueue.Enqueue("GLSL saved to file");
         }
 
@@ -357,5 +374,8 @@ namespace Shrinker.WpfApp
             Settings.Default.CustomOptions = JsonConvert.SerializeObject(CustomOptions);
             Settings.Default.Save();
         }
+
+        private string GetShaderOutputText(string glsl) =>
+            IsOutputGlsl ? glsl.WithAppMessage(OriginalSize, OptimizedSize) : glsl.ToCCode(OriginalSize, OptimizedSize);
     }
 }

@@ -17,7 +17,7 @@ namespace Shrinker.Parser
     /// <summary>
     /// Takes a syntax tree produced by the Parser class, and optimizes it.
     /// </summary>
-    /// <remarks>The output from this stage can be passed to the OutputFormatter.</remarks>
+    /// <remarks>The output from this stage can be passed to the GlslOutputFormatter.</remarks>
     public static class Shrinker
     {
         public static SyntaxNode Simplify(this SyntaxNode rootNode, CustomOptions options = null)
