@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 //  <copyright file="SimplifyVectorReferencesExtension.cs">
-//      Copyright (c) 2021 Dean Edis. All rights reserved.
+//      Copyright (c) 2021 Dean Edis. (Twitter: @deanthecoder) All rights reserved.
 //  </copyright>
 //  <summary>
 //  This code is provided on an "as is" basis and without warranty of any kind.
