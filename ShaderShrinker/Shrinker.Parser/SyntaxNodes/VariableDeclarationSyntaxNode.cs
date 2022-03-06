@@ -19,7 +19,7 @@ namespace Shrinker.Parser.SyntaxNodes
 {
     public class VariableDeclarationSyntaxNode : SyntaxNode
     {
-        public TypeToken VariableType { get; }
+        public TypeToken VariableType { get; private set; }
 
         public IEnumerable<VariableAssignmentSyntaxNode> Definitions => Children.OfType<VariableAssignmentSyntaxNode>().ToList();
 
@@ -56,5 +56,8 @@ namespace Shrinker.Parser.SyntaxNodes
         public bool IsSameType(VariableDeclarationSyntaxNode other) =>
             VariableType.Content == other.VariableType.Content &&
             VariableType.IsConst == other.VariableType.IsConst;
+
+        public void RenameType(string newTypeName) =>
+            VariableType = new TypeToken(VariableType.IsConst ? $"const {newTypeName}" : newTypeName);
     }
 }

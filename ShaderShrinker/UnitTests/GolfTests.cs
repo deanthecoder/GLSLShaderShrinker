@@ -95,6 +95,7 @@ namespace UnitTests
         public void CheckGolfingCommonTerms(
             [Values(
                        "void f() { vec3 a; vec3 b; }|void f() { vec3 a; vec3 b; }",
+                       "void f(vec3 q) { const vec3 a = vec3(1); vec3 b; vec3 c; vec3 d; vec3 e; vec3 f; vec3 g; vec3 h; vec3 i; }|#define v3 vec3 void f(v3 q) { const v3 a = v3(1); v3 b; v3 c; v3 d; v3 e; v3 f; v3 g; v3 h; v3 i; }",
                        "float f(float a, float b) { return smoothstep(0.0, 1.0, a) + smoothstep(0.5, 1.5, b) + smoothstep(0.0, 1.0, a + b); }|#define S smoothstep float f(float a, float b) { return S(0.0, 1.0, a) + S(0.5, 1.5, b) + S(0.0, 1.0, a + b); }"
                    )]
             string codeAndGolfed)

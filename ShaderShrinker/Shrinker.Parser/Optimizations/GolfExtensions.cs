@@ -11,9 +11,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net;
 using Shrinker.Parser.SyntaxNodes;
 
 namespace Shrinker.Parser.Optimizations
@@ -42,6 +40,7 @@ namespace Shrinker.Parser.Optimizations
             var userDefinedNames = rootNode.FindUserDefinedNames();
             var defineMap = new Dictionary<string, string[]>
             {
+                { "float", new[] { "F", "f", "_f" } },
                 { "abs", new[] { "A" } },
                 { "acos", new[] { "AC" } },
                 { "acosh", new[] { "ACH" } },
@@ -63,7 +62,7 @@ namespace Shrinker.Parser.Optimizations
                 { "distance", new[] { "DST" } },
                 { "dot", new[] { "D" } },
                 { "faceforward", new[] { "FF" } },
-                { "floor", new[] { "F" } },
+                { "floor", new[] { "FL" } },
                 { "fract", new[] { "FC" } },
                 { "fwidth", new[] { "FW" } },
                 { "greaterThan", new[] { "GT" } },
@@ -122,13 +121,12 @@ namespace Shrinker.Parser.Optimizations
 
             var keywordNodes = 
                 rootNode.TheTree
-                    .OfType<GlslFunctionCallSyntaxNode>()
-                    .Where(o => defineMap.ContainsKey(o.Name))
+                    .Where(o => o is IRenamable or VariableDeclarationSyntaxNode && defineMap.ContainsKey(GetSupportedBuiltinName(o)))
                     .ToList();
             foreach (var keyword in defineMap.Keys)
             {
                 // How many occurrences are in the code?
-                var nodes = keywordNodes.Where(o => o.Name == keyword).ToList();
+                var nodes = keywordNodes.Where(o => GetSupportedBuiltinName(o) == keyword).ToList();
                 if (nodes.Count <= 1)
                     continue; // Not worth it.
 
@@ -144,13 +142,34 @@ namespace Shrinker.Parser.Optimizations
                     continue; // Could replace with #define, but not worth it.
 
                 // We'll get a space saving - Replace the nodes...
-                nodes.ForEach(o => o.Rename(replacement));
+                foreach (var node in nodes)
+                {
+                    if (node is IRenamable r)
+                        r.Rename(replacement);
+                    else
+                        ((VariableDeclarationSyntaxNode)node).RenameType(replacement);
+                }
 
                 // ...and add a #define.
                 var existingDefine = rootNode.Children.OfType<PragmaDefineSyntaxNode>().FirstOrDefault();
                 var insertBefore = existingDefine ?? rootNode.Children.First();
                 insertBefore.Parent.InsertChild(insertBefore.NodeIndex, new PragmaDefineSyntaxNode(replacement, null, new SyntaxNode[] { new GenericSyntaxNode(keyword) }));
             }
+        }
+
+        private static string GetSupportedBuiltinName(SyntaxNode node)
+        {
+            if (node is IRenamable n)
+                return n.Name;
+            if (node is VariableDeclarationSyntaxNode decl)
+            {
+                var name = decl.VariableType.Content;
+                if (name.StartsWith("const"))
+                    name = name.Substring(5).TrimStart();
+                return name;
+            }
+
+            return null;
         }
 
         private static string NameWithoutDotSuffix(string name) => name.Split('.').First();
