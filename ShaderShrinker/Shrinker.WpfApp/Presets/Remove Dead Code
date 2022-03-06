@@ -22,5 +22,6 @@
   "PerformArithmetic": false,
   "SimplifyBranching": false,
   "ReplaceFunctionCallsWithResult": false,
-  "MoveConstantParametersIntoCalledFunctions": false
+  "MoveConstantParametersIntoCalledFunctions": false,
+  "GolfNames": false
 }

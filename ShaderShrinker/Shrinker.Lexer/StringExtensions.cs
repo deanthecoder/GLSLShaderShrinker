@@ -43,31 +43,7 @@ namespace Shrinker.Lexer
                     glsl = glsl.Remove(startComment, endComment - startComment + 2);
             }
 
-            return glsl.Split('\r', '\n').Sum(o => o.GetCodeCharCountForLine());
-        }
-
-        private static int GetCodeCharCountForLine(this string line)
-        {
-            return line.Count(ch => !char.IsWhiteSpace(ch));
-            //var commentIndex = line.IndexOf("//");
-            //if (commentIndex >= 0)
-            //    line = line.Substring(0, commentIndex);
-            //commentIndex = line.IndexOf("/*");
-            //if (commentIndex >= 0)
-            //    line = line.Substring(0, commentIndex);
-
-            //var sb = new StringBuilder(line.Trim());
-            //int l;
-            //do
-            //{
-            //    l = sb.Length;
-            //    sb.Replace(" ", null)
-            //      .Replace("\t", null)
-            //      .Replace("\r", null)
-            //      .Replace("\n", null);
-            //} while (sb.Length != l);
-
-            //return sb.Length;
+            return glsl.Split('\r', '\n').Sum(o => o.Count(ch => !char.IsWhiteSpace(ch)));
         }
 
         public static bool IsNewline(this char ch) => ch == '\n' || ch == '\r';

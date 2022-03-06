@@ -14,7 +14,7 @@ using Shrinker.Lexer;
 
 namespace Shrinker.Parser.SyntaxNodes
 {
-    public class GenericSyntaxNode : SyntaxNode
+    public class GenericSyntaxNode : SyntaxNode, IRenamable
     {
         public GenericSyntaxNode(IToken token) : base(token)
         {
@@ -31,14 +31,13 @@ namespace Shrinker.Parser.SyntaxNodes
         /// </summary>
         public VariableDeclarationSyntaxNode FindVarDeclaration()
         {
-            var varName = Token.Content.Split('.').First();
             var node = (SyntaxNode)this;
 
             while (node != null)
             {
                 var decl = node.Parent?.Children
                     .OfType<VariableDeclarationSyntaxNode>()
-                    .FirstOrDefault(o => o.IsDeclared(varName));
+                    .FirstOrDefault(o => o.IsDeclared(Name));
                 if (decl != null)
                     return decl;
 
@@ -52,5 +51,18 @@ namespace Shrinker.Parser.SyntaxNodes
         public bool IsVarName(string varName) => this.HasNodeContent(varName);
 
         protected override SyntaxNode CreateSelf() => new GenericSyntaxNode(Token.Clone());
+
+        public string Name => Token.Content.Split('.').First();
+
+        public void Rename(string newName)
+        {
+            if (Token.Content.Contains('.'))
+            {
+                // Looks like a variable name referencing a named element. (E.g. foo.x) - Rename the prefix only.
+                newName += Token.Content.Substring(Name.Length);
+            }
+
+            Token = new AlphaNumToken(newName);
+        }
     }
 }

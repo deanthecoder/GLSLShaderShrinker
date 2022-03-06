@@ -47,6 +47,7 @@ namespace Shrinker.Parser
         public bool SimplifyBranching { get; set; }
         public bool ReplaceFunctionCallsWithResult { get; set; }
         public bool MoveConstantParametersIntoCalledFunctions { get; set; }
+        public bool GolfNames { get; set; }
 
         private CustomOptions()
         {
@@ -56,12 +57,13 @@ namespace Shrinker.Parser
         {
             var options = SetAllOptions(true);
             options.KeepHeaderComments = false;
+            options.GolfNames = false;
             return options;
         }
 
         public static CustomOptions None() => SetAllOptions(false);
 
-        private static CustomOptions SetAllOptions(bool value)
+        public static CustomOptions SetAllOptions(bool value)
         {
             var options = new CustomOptions();
 

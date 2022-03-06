@@ -23,5 +23,5 @@
   "SimplifyBranching": true,
   "ReplaceFunctionCallsWithResult": true,
   "MoveConstantParametersIntoCalledFunctions": true,
-  "GolfNames": false
+  "GolfNames": true
 }

@@ -34,7 +34,7 @@
 
     <StackPanel Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Right" Orientation="Horizontal" Margin="0,0,0,16">
         <Label Content="Presets:" VerticalAlignment="Center"/>
-        <ComboBox ItemsSource="{Binding Presets}" DisplayMemberPath="Name" Width="150" SelectedItem="{Binding SelectedPreset}"/>
+        <ComboBox ItemsSource="{Binding Presets}" DisplayMemberPath="Name" Width="180" SelectedItem="{Binding SelectedPreset}"/>
     </StackPanel>
 
     <StackPanel Grid.Row="1" Grid.Column="0">
@@ -631,6 +631,31 @@
                 </MdXaml:MarkdownScrollViewer>
             </CheckBox.ToolTip>
         </CheckBox>
+
+        <TextBlock Text="Code Golf (Experimental)" Margin="0,8,0,0"/>
+        <StackPanel Margin="16,0,0,0">
+            <CheckBox Content="Rename functions/variables" IsChecked="{Binding CustomOptions.GolfNames}">
+                <CheckBox.ToolTip>
+                    <MdXaml:MarkdownScrollViewer xml:space="preserve">
+                        ### GOLF user defined code names
+                        Reduce the size of the code by renaming user-defined names.
+                        Attempts are made to keep some of the letters of the object to rename.
+                        #### Before
+                        ```c
+                        float sum(float number, float anotherNumber) {
+                            return number + anotherNumber;
+                        }
+                        ```
+                        #### After
+                        ```c
+                        float s(float n, float a) {
+                            return n + a;
+                        }
+                        ```
+                    </MdXaml:MarkdownScrollViewer>
+                </CheckBox.ToolTip>
+            </CheckBox>
+        </StackPanel>
     </StackPanel>
 
     <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal" Margin="0,16,0,0" VerticalAlignment="Center">

@@ -97,5 +97,26 @@ namespace Shrinker.Parser.SyntaxNodes
                 .FunctionDefinitions()
                 .Select(o => o.Name)
                 .Any(o => o.StartsWith("main"));
+
+        /// <summary>
+        /// Find all function/variable/#define names declared in the code.
+        /// </summary>
+        public static IEnumerable<string> FindUserDefinedNames(this SyntaxNode root)
+        {
+            var names = root.GlobalVariables().Select(o => o.Name).ToList();
+
+            var functionDefinitions = root.FunctionDefinitions().ToList();
+            names.AddRange(functionDefinitions.Select(o => o.Name));
+
+            var functionParams = functionDefinitions.SelectMany(o => o.ParamNames).Select(o => o.Name);
+            names.AddRange(functionParams);
+
+            var functionVariables = functionDefinitions.SelectMany(o => o.LocalVariables().Select(v => v.Name));
+            names.AddRange(functionVariables);
+            names.AddRange(root.TheTree.OfType<PragmaDefineSyntaxNode>().Select(o => o.Name));
+
+            // Skip non-user-defined names.
+            return names.Where(o => !o.IsAnyOf("main", "mainImage", "mainSound", "mainVR")).Distinct().OrderBy(o => o);
+        }
     }
 }

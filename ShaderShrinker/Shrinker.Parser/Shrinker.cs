@@ -107,6 +107,9 @@ namespace Shrinker.Parser
                     repeatSimplifications |= rootNode.MoveConstantParametersIntoCalledFunctions();
             }
 
+            if (options.GolfNames)
+                rootNode.GolfNames();
+
             return rootNode;
         }
     }

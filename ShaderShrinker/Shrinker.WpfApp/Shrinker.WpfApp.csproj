@@ -52,7 +52,16 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <None Update="Presets\GOLF">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Presets\Maximum">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Presets\Maximum %28+Experimental%29">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Presets\Maximum %28Golfed%29">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Presets\Minimum %28Reformat%29">

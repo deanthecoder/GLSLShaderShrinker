@@ -17,9 +17,10 @@ namespace Shrinker.Parser.SyntaxNodes
     /// <summary>
     /// Represents a user-defined function.
     /// </summary>
-    public class FunctionCallSyntaxNode : SyntaxNode
+    public class FunctionCallSyntaxNode : SyntaxNode, IRenamable
     {
-        public string Name { get; }
+        public string Name { get; private set; }
+
         public RoundBracketSyntaxNode Params => (RoundBracketSyntaxNode)Children[0];
 
         public FunctionCallSyntaxNode(GenericSyntaxNode nameNode, RoundBracketSyntaxNode brackets) : this(nameNode?.Token?.Content)
@@ -45,5 +46,10 @@ namespace Shrinker.Parser.SyntaxNodes
         /// </summary>
         public FunctionDefinitionSyntaxNode GetCallee() =>
             this.Root().FunctionDefinitions().FirstOrDefault(o => o.Name == Name && Params.GetCsv().Count() == o.Params.GetCsv().Count());
+
+        public void Rename(string newName)
+        {
+            Name = newName;
+        }
     }
 }

@@ -17,9 +17,9 @@ using Shrinker.Lexer;
 
 namespace Shrinker.Parser.SyntaxNodes
 {
-    public class VariableAssignmentSyntaxNode : SyntaxNode
+    public class VariableAssignmentSyntaxNode : SyntaxNode, IRenamable
     {
-        public string Name { get; }
+        public string Name { get; private set; }
 
         /// <summary>
         /// The variable name, including any array [].
@@ -58,7 +58,9 @@ namespace Shrinker.Parser.SyntaxNodes
         protected override SyntaxNode CreateSelf() => new VariableAssignmentSyntaxNode(Name);
 
         public bool IsArray => Children.FirstOrDefault() is SquareBracketSyntaxNode;
+
         public IEnumerable<SyntaxNode> ValueNodes => Children.SkipWhile(o => o is SquareBracketSyntaxNode);
+
         public bool HasValue => ValueNodes.Any();
 
         /// <summary>
@@ -76,10 +78,7 @@ namespace Shrinker.Parser.SyntaxNodes
                     .Skip(1) // Skip 'this' node itself.
                     .All(
                          o => o is RoundBracketSyntaxNode ||
-                              o.Token is SymbolOperatorToken ||
-                              o.Token is CommaToken ||
-                              o.Token is INumberToken ||
-                              o.Token is TypeToken);
+                              o.Token is SymbolOperatorToken or CommaToken or INumberToken or TypeToken);
 
             var arrayValueParent = TheTree.OfType<RoundBracketSyntaxNode>().ToList();
             if (arrayValueParent.Count != 1)
@@ -90,10 +89,7 @@ namespace Shrinker.Parser.SyntaxNodes
                 .TheTree
                 .Skip(1)
                 .All(
-                     o => o.Token is SymbolOperatorToken ||
-                          o.Token is CommaToken ||
-                          o.Token is INumberToken ||
-                          o.Token is TypeToken);
+                     o => o.Token is SymbolOperatorToken or CommaToken or INumberToken or TypeToken);
         }
 
         /// <summary>
@@ -116,5 +112,16 @@ namespace Shrinker.Parser.SyntaxNodes
 
         public VariableDeclarationSyntaxNode GetDeclaration() =>
             Parent as VariableDeclarationSyntaxNode ?? this.Root().TheTree.TakeWhile(o => o != this).OfType<VariableDeclarationSyntaxNode>().LastOrDefault(o => o.IsDeclared(Name));
+
+        public void Rename(string newName)
+        {
+            if (Name.Contains('.'))
+            {
+                // Looks like a variable name referencing a named element. (E.g. foo.x) - Rename the prefix only.
+                newName += Name.Substring(Name.IndexOf('.'));
+            }
+            
+            Name = newName;
+        }
     }
 }

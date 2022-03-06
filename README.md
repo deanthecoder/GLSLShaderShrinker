@@ -21,17 +21,15 @@ After writing a Shadertoy shader, usually from my boilerplate starting code, the
 
 It occurred to me all of these steps can be automated.
 
-## What Is It *Not* For?
-This is *not* a tool to compete with certain other tools to absolutely MINIMIZE the size of the code - Useful for preparing GLSL for use in 4KB graphics demos, etc.
+## What It *Can* Do
+Over time more and more functionality has been added to this tool which can be used to '[GOLF](https://en.wikipedia.org/wiki/Code_golf)' code.
+This is an ongoing process, and other tools are much more likely to produce more compact/compressible code (Especially when preparing GLSL for use in 4KB graphics demos, etc). However, GLSL Shader Shrinker can... 
 
-GLSL Shader Shrink will _not_:
 * Rename functions and variable to single-characters.
 * Inline functions.
 * Introduce ```#define``` macros to minimize the code character count.
-* Replace code with a 'more compressible' equivalent.
-* ...or otherwise '[GOLF](https://en.wikipedia.org/wiki/Code_golf)' anything.
 
-...although some of these items might be suggested as a 'hint'.
+(Some of of these items might be suggested as a 'hint' even when not GOLFing.)
 
 ## Example (Shadertoy Starting Point)
 A small snippet of GLSL which shows **some** of the optimizations available.
@@ -90,7 +88,7 @@ Next choose the level of processing you want to apply.
 
 * Maximum processing - All options enabled.
 * Minimal processing - Minimal changes (Mostly code reformatting).
-* Custom options - Toggle exactly which processing features you require.
+* Custom options - Toggle exactly which processing features you require (Including GOLFing options)
 
 ### Step 3 - Exporting GLSL Code
 Export the 'shrunk' GLSL.
@@ -146,6 +144,7 @@ In most cases they can be worked-around using a set of 'custom' settings which d
 * [Perform Simple Arithmetic](#perform-simple-arithmetic)
 * [Replace Functions Calls With Result](#replace-functions-calls-with-result)
 * [Move constant parameters to within called functions](#move-constant-parameters-to-within-called-functions)
+* [GOLF user defined code names](#golf-user-defined-code-names)
 ## Remove Comments
 Remove all C/C++ -style comments from the code.
 #### Before
@@ -610,6 +609,23 @@ float doMaths(float b) {
 
 float f() {
     float result = doMaths(3.0) + doMaths(5.0);
+}
+```
+
+---
+## GOLF user defined code names
+Reduce the size of the code by renaming user-defined names.
+Attempts are made to keep some of the letters of the object to rename.
+#### Before
+```c
+float sum(float number, float anotherNumber) {
+    return number + anotherNumber;
+}
+```
+#### After
+```c
+float s(float n, float a) {
+    return n + a;
 }
 ```
 

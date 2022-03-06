@@ -69,7 +69,7 @@ namespace Shrinker.Parser.SyntaxNodes
 
         public IEnumerable<SyntaxNode> NextSiblings => SelfAndNextSiblings.Skip(1);
 
-        public IToken Token { get; }
+        public IToken Token { get; protected set; }
 
         public IReadOnlyList<SyntaxNode> Children => m_children;
 

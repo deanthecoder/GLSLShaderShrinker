@@ -15,7 +15,7 @@ using Shrinker.Lexer;
 
 namespace Shrinker.Parser.SyntaxNodes
 {
-    public abstract class FunctionSyntaxNodeBase : SyntaxNode
+    public abstract class FunctionSyntaxNodeBase : SyntaxNode, IRenamable
     {
         public string ReturnType { get; protected set; }
         public string Name => Children[0].Token.Content;
@@ -37,5 +37,7 @@ namespace Shrinker.Parser.SyntaxNodes
         }
 
         public bool IsMain() => Name.StartsWith("main");
+
+        public void Rename(string newName) => Children[0].ReplaceWith(new GenericSyntaxNode(newName));
     }
 }
