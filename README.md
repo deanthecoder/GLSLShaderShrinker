@@ -145,6 +145,7 @@ In most cases they can be worked-around using a set of 'custom' settings which d
 * [Replace Functions Calls With Result](#replace-functions-calls-with-result)
 * [Move constant parameters to within called functions](#move-constant-parameters-to-within-called-functions)
 * [GOLF user defined code names](#golf-user-defined-code-names)
+* [Define common terms](#define-common-terms)
 ## Remove Comments
 Remove all C/C++ -style comments from the code.
 #### Before
@@ -626,6 +627,23 @@ float sum(float number, float anotherNumber) {
 ```c
 float s(float n, float a) {
     return n + a;
+}
+```
+
+---
+## Define common terms
+Reduce the size of the code by adding #defines for regularly used terms.
+#### Before
+```c
+float f(float number, float anotherNumber) {
+    return smoothstep(0.0, 1.0, number) + smoothstep(0.5, 1.5, anotherNumber);
+}
+```
+#### After
+```c
+#define S smoothstep
+float f(float number, float anotherNumber) {
+    return S(0.0, 1.0, number) + S(0.5, 1.5, anotherNumber);
 }
 ```
 

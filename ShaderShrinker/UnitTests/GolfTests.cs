@@ -90,5 +90,27 @@ namespace UnitTests
             var golfed = rootNode.ToCode().ToSimple();
             Assert.That(golfed, Is.EqualTo(expected));
         }
+
+        [Test]
+        public void CheckGolfingCommonTerms(
+            [Values(
+                       "void f() { vec3 a; vec3 b; }|void f() { vec3 a; vec3 b; }",
+                       "float f(float a, float b) { return smoothstep(0.0, 1.0, a) + smoothstep(0.5, 1.5, b) + smoothstep(0.0, 1.0, a + b); }|#define S smoothstep float f(float a, float b) { return S(0.0, 1.0, a) + S(0.5, 1.5, b) + S(0.0, 1.0, a + b); }"
+                   )]
+            string codeAndGolfed)
+        {
+            var code = codeAndGolfed.Split('|')[0];
+            var expected = codeAndGolfed.Split('|')[1];
+
+            var lexer = new Lexer();
+            lexer.Load(code);
+
+            var options = CustomOptions.None();
+            options.GolfDefineCommonTerms = true;
+
+            var rootNode = new Parser(lexer).Parse().Simplify(options);
+            var golfed = rootNode.ToCode().ToSimple();
+            Assert.That(golfed, Is.EqualTo(expected));
+        }
     }
 }

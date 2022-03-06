@@ -30,7 +30,6 @@ namespace Shrinker.Parser.SyntaxNodes
                                                                                         "asin",
                                                                                         "asinh",
                                                                                         "atan",
-                                                                                        "atan",
                                                                                         "atanh",
                                                                                         "BitsToInt",
                                                                                         "BitsToUint",

@@ -655,6 +655,28 @@
                     </MdXaml:MarkdownScrollViewer>
                 </CheckBox.ToolTip>
             </CheckBox>
+
+            <CheckBox Content="Define common terms" IsChecked="{Binding CustomOptions.GolfDefineCommonTerms}">
+                <CheckBox.ToolTip>
+                    <MdXaml:MarkdownScrollViewer xml:space="preserve">
+                        ### Define common terms
+                        Reduce the size of the code by adding #defines for regularly used terms.
+                        #### Before
+                        ```c
+                        float f(float number, float anotherNumber) {
+                            return smoothstep(0.0, 1.0, number) + smoothstep(0.5, 1.5, anotherNumber);
+                        }
+                        ```
+                        #### After
+                        ```c
+                        #define S smoothstep
+                        float f(float number, float anotherNumber) {
+                            return S(0.0, 1.0, number) + S(0.5, 1.5, anotherNumber);
+                        }
+                        ```
+                    </MdXaml:MarkdownScrollViewer>
+                </CheckBox.ToolTip>
+            </CheckBox>
         </StackPanel>
     </StackPanel>
 

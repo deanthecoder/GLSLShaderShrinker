@@ -23,5 +23,6 @@
   "SimplifyBranching": true,
   "ReplaceFunctionCallsWithResult": true,
   "MoveConstantParametersIntoCalledFunctions": true,
-  "GolfNames": true
+  "GolfNames": true,
+  "GolfDefineCommonTerms": true
 }

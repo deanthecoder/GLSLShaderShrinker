@@ -23,5 +23,6 @@
   "SimplifyBranching": false,
   "ReplaceFunctionCallsWithResult": false,
   "MoveConstantParametersIntoCalledFunctions": false,
-  "GolfNames": false
+  "GolfNames": false,
+  "GolfDefineCommonTerms": false
 }

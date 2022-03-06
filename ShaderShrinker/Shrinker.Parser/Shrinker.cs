@@ -110,6 +110,9 @@ namespace Shrinker.Parser
             if (options.GolfNames)
                 rootNode.GolfNames();
 
+            if (options.GolfDefineCommonTerms)
+                rootNode.GolfDefineCommonTerms();
+
             return rootNode;
         }
     }

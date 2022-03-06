@@ -48,6 +48,7 @@ namespace Shrinker.Parser
         public bool ReplaceFunctionCallsWithResult { get; set; }
         public bool MoveConstantParametersIntoCalledFunctions { get; set; }
         public bool GolfNames { get; set; }
+        public bool GolfDefineCommonTerms { get; set; }
 
         private CustomOptions()
         {
@@ -58,6 +59,7 @@ namespace Shrinker.Parser
             var options = SetAllOptions(true);
             options.KeepHeaderComments = false;
             options.GolfNames = false;
+            options.GolfDefineCommonTerms = false;
             return options;
         }
 
