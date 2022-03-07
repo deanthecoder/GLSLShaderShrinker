@@ -54,7 +54,7 @@ namespace Shrinker.Parser.SyntaxNodes
 
         public string Name => Token.Content.Split('.').First();
 
-        public void Rename(string newName)
+        public void Rename(string oldName, string newName)
         {
             if (Token.Content.Contains('.'))
             {

@@ -100,7 +100,8 @@ namespace Shrinker.Parser.Optimizations
                             f is FunctionCallSyntaxNode call && !call.HasOutParam)
                         {
                             f.Remove();
-                            zeroNode.Previous.Remove();
+                            if (!zeroNode.IsOnlyChild() && !(zeroNode.Previous?.Token?.Content == "," || zeroNode.Next?.Token?.Content == ",")) // Don't remove '0.0' if not surrounded by something.
+                                zeroNode.Previous.Remove();
                             didChange = true;
                         }
                     }
@@ -118,7 +119,8 @@ namespace Shrinker.Parser.Optimizations
                         .ToList())
                     {
                         zeroNode.Previous.Remove();
-                        zeroNode.Remove();
+                        if (!zeroNode.IsOnlyChild() && !(zeroNode.Previous?.Token?.Content == "," || zeroNode.Next?.Token?.Content == ",")) // Don't remove '0.0' if not surrounded by something.
+                            zeroNode.Remove();
                         didChange = true;
                     }
                 }

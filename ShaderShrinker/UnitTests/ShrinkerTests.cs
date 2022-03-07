@@ -704,12 +704,16 @@ namespace UnitTests
 
             Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo("#define AA float main() { return 2.3; }"));
         }
-        
+
         [Test, Sequential]
-        public void CheckInliningConstantDefinesWhenUsageIsWithVectorComponent()
+        public void CheckInliningConstantDefinesWhenUsageIsWithVectorComponent(
+            [Values(
+                       "#define R iResolution\nfloat main() { return R.x; }|float main() { return iResolution.x; }",
+                       "#define V vec3(1, 2, 3)\nfloat main() { return V.x; }|float main() { return vec3(1, 2, 3).x; }"
+                       )] string codeAndExpected)
         {
             var lexer = new Lexer();
-            lexer.Load("#define R iResolution\nfloat main() { return R.x; }");
+            lexer.Load(codeAndExpected.Split('|')[0]);
 
             var options = CustomOptions.None();
             options.InlineDefines = true;
@@ -717,10 +721,10 @@ namespace UnitTests
                 .Parse()
                 .Simplify(options);
 
-            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo("float main() { return iResolution.x; }"));
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(codeAndExpected.Split('|')[1]));
         }
 
-        [Test, Sequential]
+        [Test]
         public void CheckInliningConstantDefinesWhenUsageIsFunctionName()
         {
             var lexer = new Lexer();
@@ -2098,7 +2102,11 @@ namespace UnitTests
                        "int f(int a, int b) { return a * b; }\nint main() { return f(2, 6); }",
                        "float f(vec2 v) { return dot(v, v); } float main() { return f(vec2(1, 2)); }",
                        "float f(in vec2 v) { return dot(v, v); } float main() { return f(vec2(1, 2)); }",
-                       "const vec3 m = vec3(1); vec3 f(in vec3 p, float k) { float c = cos(k * p.x), s = sin(k * p.x); mat2 m = mat2(c, -s, s, c); return vec3(m * p.xy, p.z); } vec3 p; vec3 main() { return f(p, 0.1) + m; }")] string code,
+                       "const vec3 m = vec3(1); vec3 f(in vec3 p, float k) { float c = cos(k * p.x), s = sin(k * p.x); mat2 m = mat2(c, -s, s, c); return vec3(m * p.xy, p.z); } vec3 p; vec3 main() { return f(p, 0.1) + m; }",
+                       "float f(float a) { return -sin(a); } float main() { return f(0.0); }",
+                       "vec3 f(float a) { return vec3(-sin(a), 0, 0); } float main() { return f(0.0); }",
+                       "vec3 f(float a) { return vec3(0, -sin(a), 0); } float main() { return f(0.0); }",
+                       "vec3 f(float a) { return vec3(0, 0, -sin(a)); } float main() { return f(0.0); }")] string code,
             [Values(
                        "int main() { return 2; }",
                        "int main() { return -22; }",
@@ -2112,7 +2120,11 @@ namespace UnitTests
                        "int main() { return 12; }",
                        "float main() { return dot(vec2(1, 2), vec2(1, 2)); }",
                        "float main() { return dot(vec2(1, 2), vec2(1, 2)); }",
-                       "vec3 f(vec3 p) { float c = cos(.1 * p.x), s = sin(.1 * p.x); return vec3(mat2(c, -s, s, c) * p.xy, p.z); } vec3 p; vec3 main() { return f(p) + vec3(1); }")] string expected)
+                       "vec3 f(vec3 p) { float c = cos(.1 * p.x), s = sin(.1 * p.x); return vec3(mat2(c, -s, s, c) * p.xy, p.z); } vec3 p; vec3 main() { return f(p) + vec3(1); }",
+                       "float main() { return 0.; }",
+                       "float main() { return vec3(0); }",
+                       "float main() { return vec3(0); }",
+                       "float main() { return vec3(0); }")] string expected)
         {
             var lexer = new Lexer();
             lexer.Load(code);

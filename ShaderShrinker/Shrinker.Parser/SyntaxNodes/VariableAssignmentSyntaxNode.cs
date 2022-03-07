@@ -113,7 +113,7 @@ namespace Shrinker.Parser.SyntaxNodes
         public VariableDeclarationSyntaxNode GetDeclaration() =>
             Parent as VariableDeclarationSyntaxNode ?? this.Root().TheTree.TakeWhile(o => o != this).OfType<VariableDeclarationSyntaxNode>().LastOrDefault(o => o.IsDeclared(Name));
 
-        public void Rename(string newName)
+        public void Rename(string oldName, string newName)
         {
             if (Name.Contains('.'))
             {

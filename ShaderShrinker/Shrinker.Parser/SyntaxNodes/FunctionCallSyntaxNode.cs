@@ -47,7 +47,7 @@ namespace Shrinker.Parser.SyntaxNodes
         public FunctionDefinitionSyntaxNode GetCallee() =>
             this.Root().FunctionDefinitions().FirstOrDefault(o => o.Name == Name && Params.GetCsv().Count() == o.Params.GetCsv().Count());
 
-        public void Rename(string newName)
+        public void Rename(string oldName, string newName)
         {
             Name = newName;
         }

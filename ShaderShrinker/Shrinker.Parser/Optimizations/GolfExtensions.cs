@@ -25,10 +25,13 @@ namespace Shrinker.Parser.Optimizations
         {
             var nameMap = BuildGolfRenameMap(rootNode).Where(o => o.Key != o.Value).ToDictionary(o => o.Key, o => o.Value);
 
-            foreach (var node in rootNode.TheTree.OfType<IRenamable>().Where(o => nameMap.ContainsKey(NameWithoutDotSuffix(o.Name))).ToList())
+            foreach (var node in rootNode.TheTree.OfType<IRenamable>().Where(o => nameMap.ContainsKey(RenamablePartOfNodeName(o.Name))).ToList())
             {
                 if (!((SyntaxNode)node).HasAncestor<StructDefinitionSyntaxNode>())
-                    node.Rename(nameMap[NameWithoutDotSuffix(node.Name)]);
+                {
+                    var oldName = RenamablePartOfNodeName(node.Name);
+                    node.Rename(oldName, nameMap[oldName]);
+                }
             }
         }
 
@@ -40,8 +43,10 @@ namespace Shrinker.Parser.Optimizations
             var userDefinedNames = rootNode.FindUserDefinedNames();
             var defineMap = new Dictionary<string, string[]>
             {
+                { "iResolution", new[] { "R", "iR", "_R" } },
+                { "iTime", new[] { "T", "iT", "_T" } },
                 { "float", new[] { "F", "f", "_f" } },
-                { "abs", new[] { "A" } },
+                { "abs", new[] { "A", "ab" } },
                 { "acos", new[] { "AC" } },
                 { "acosh", new[] { "ACH" } },
                 { "asin", new[] { "AS" } },
@@ -50,11 +55,13 @@ namespace Shrinker.Parser.Optimizations
                 { "atanh", new[] { "ATH" } },
                 { "BitsToInt", new[] { "B2I" } },
                 { "BitsToUint", new[] { "B2U" } },
+                { "break", new[] { "brk", "BRK" } },
                 { "ceil", new[] { "CL" } },
-                { "clamp", new[] { "C" } },
+                { "clamp", new[] { "C", "_c" } },
+                { "continue", new[] { "cnt", "CNT" } },
                 { "cos", new[] { "CS" } },
                 { "cosh", new[] { "CH" } },
-                { "cross", new[] { "X" } },
+                { "cross", new[] { "X", "_x" } },
                 { "degrees", new[] { "DG" } },
                 { "determinant", new[] { "DT" } },
                 { "dFdx", new[] { "DX" } },
@@ -68,9 +75,9 @@ namespace Shrinker.Parser.Optimizations
                 { "greaterThan", new[] { "GT" } },
                 { "greaterThanEqual", new[] { "GTE" } },
                 { "intBitsTo", new[] { "IB2" } },
-                { "inverse", new[] { "I" } },
+                { "inverse", new[] { "I", "INV" } },
                 { "inversesqrt", new[] { "IS" } },
-                { "length", new[] { "L" } },
+                { "length", new[] { "L", "LNG" } },
                 { "lessThan", new[] { "LT" } },
                 { "lessThanEqual", new[] { "LTE" } },
                 { "matrixCompMult", new[] { "MCM" } },
@@ -79,19 +86,20 @@ namespace Shrinker.Parser.Optimizations
                 { "modf", new[] { "MF" } },
                 { "normalize", new[] { "N", "U", "NM" } },
                 { "notEqual", new[] { "NE" } },
-                { "radians", new[] { "R" } },
+                { "radians", new[] { "RAD" } },
                 { "reflect", new[] { "RL" } },
                 { "refract", new[] { "RR" } },
                 { "round", new[] { "RND" } },
+                { "return", new[] { "RET", "ret" } },
                 { "sin", new[] { "SN" } },
                 { "sinh", new[] { "SNH" } },
-                { "smoothstep", new[] { "S", "SS" } },
+                { "smoothstep", new[] { "S", "SS", "_S", "_s" } },
                 { "sqrt", new[] { "SQ" } },
                 { "tan", new[] { "TN" } },
                 { "tanh", new[] { "TH" } },
                 { "texelFetch", new[] { "TF" } },
                 { "texelFetchOffset", new[] { "TFO" } },
-                { "texture", new[] { "T" } },
+                { "texture", new[] { "TX" } },
                 { "textureGrad", new[] { "TG" } },
                 { "textureGradOffset", new[] { "TGO" } },
                 { "textureLod", new[] { "TL" } },
@@ -119,7 +127,7 @@ namespace Shrinker.Parser.Optimizations
             if (duplicates.Any())
                 throw new InvalidOperationException("Duplicate substitutes detected: " + duplicates.Aggregate((a, b) => $"{a}, {b}"));
 
-            var keywordNodes = 
+            var keywordNodes =
                 rootNode.TheTree
                     .Where(o => o is IRenamable or VariableDeclarationSyntaxNode && defineMap.ContainsKey(GetSupportedBuiltinName(o)))
                     .ToList();
@@ -141,19 +149,19 @@ namespace Shrinker.Parser.Optimizations
                 if (toAdd >= toRemove)
                     continue; // Could replace with #define, but not worth it.
 
-                // We'll get a space saving - Replace the nodes...
-                foreach (var node in nodes)
-                {
-                    if (node is IRenamable r)
-                        r.Rename(replacement);
-                    else
-                        ((VariableDeclarationSyntaxNode)node).RenameType(replacement);
-                }
-
-                // ...and add a #define.
+                // We'll get a space saving - Add a #define.
                 var existingDefine = rootNode.Children.OfType<PragmaDefineSyntaxNode>().FirstOrDefault();
                 var insertBefore = existingDefine ?? rootNode.Children.First();
                 insertBefore.Parent.InsertChild(insertBefore.NodeIndex, new PragmaDefineSyntaxNode(replacement, null, new SyntaxNode[] { new GenericSyntaxNode(keyword) }));
+
+                // Rename the nodes...
+                foreach (var node in nodes)
+                {
+                    if (node is IRenamable r)
+                        r.Rename(keyword, replacement);
+                    else
+                        ((VariableDeclarationSyntaxNode)node).RenameType(replacement);
+                }
             }
         }
 
@@ -172,7 +180,13 @@ namespace Shrinker.Parser.Optimizations
             return null;
         }
 
-        private static string NameWithoutDotSuffix(string name) => name.Split('.').First();
+        private static string RenamablePartOfNodeName(string name)
+        {
+            if (name.StartsWith("#if"))
+                name = name.Substring(name.IndexOf(' ')).TrimStart();
+
+            return name.Split('.').First();
+        }
 
         private static Dictionary<string, string> BuildGolfRenameMap(SyntaxNode rootNode)
         {

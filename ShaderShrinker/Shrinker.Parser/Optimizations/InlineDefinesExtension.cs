@@ -45,14 +45,26 @@ namespace Shrinker.Parser.Optimizations
                 foreach (var usage in usages)
                 {
                     var newContent = define.ValueNodes.Select(o => o.Clone()).ToList();
-                    if (usage.Token.Content != define.Name)
+                    if (usage.Token.Content == define.Name)
                     {
-                        // We have a reference of the form DEFINE.xy, so keep the last '.xy'.
-                        var newLastContent = newContent.Last().Token.Content + usage.Token.Content.Substring(define.Name.Length);
-                        newContent[newContent.Count - 1] = new GenericSyntaxNode(newLastContent);
+                        usage.ReplaceWith(newContent);
+                        continue;
                     }
 
-                    usage.ReplaceWith(newContent);
+                    // We have a reference of the form DEFINE.xy, so keep the last '.xy'.
+                    var suffix = usage.Token.Content.Substring(define.Name.Length);
+                    if (newContent.Last().Token != null)
+                    {
+                        var newLastContent = newContent.Last().ToCode() + suffix;
+                        newContent[newContent.Count - 1] = new GenericSyntaxNode(newLastContent);
+                        usage.ReplaceWith(newContent);
+                    }
+                    else
+                    {
+                        // Same situation, but last node in the #define is not 'simple'.
+                        var prefix = define.ToCode().Split('\t')[1];
+                        usage.ReplaceWith(new GenericSyntaxNode(prefix + suffix));
+                    }
                 }
             }
         }

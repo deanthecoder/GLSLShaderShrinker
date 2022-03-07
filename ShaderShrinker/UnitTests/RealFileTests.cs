@@ -56,5 +56,28 @@ namespace UnitTests
 
             Assert.That(simplifiedCode.ToSimple(), Is.EqualTo(referenceCode.ToSimple()));
         }
+
+        [Test, Sequential]
+        public void CheckGolfingReturnsExpectedContent([ValueSource(nameof(TestFiles))] FileInfo testFile)
+        {
+            var referenceFile = $"{testFile.Directory.FullName}/GolfedReference/{testFile.Name}";
+            var referenceCode = File.ReadAllText(referenceFile);
+
+            var lexer = new Lexer();
+            lexer.Load(testFile);
+
+            var rootNode = new Parser(lexer).Parse();
+            var originalCount = File.ReadAllText(testFile.FullName).GetCodeCharCount();
+
+            rootNode = rootNode.Simplify(PresetsUpdater.GetGolfingOptions());
+
+            var simplifiedCode = rootNode.ToCode();
+            var simpleCount = simplifiedCode.GetCodeCharCount();
+
+            simplifiedCode = simplifiedCode.WithAppMessage(originalCount, simpleCount);
+            File.WriteAllText(referenceFile, simplifiedCode);
+
+            Assert.That(simplifiedCode.ToSimple(), Is.EqualTo(referenceCode.ToSimple()));
+        }
    }
 }

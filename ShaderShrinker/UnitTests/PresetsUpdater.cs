@@ -35,9 +35,14 @@ namespace UnitTests
             File.WriteAllText(Path.Combine(presetDir.FullName, "Minimum (Reformat)"), OptionsAsString(CustomOptions.None()));
             File.WriteAllText(Path.Combine(presetDir.FullName, "Remove Dead Code"), OptionsAsString(RemoveSurplus()));
 
+            File.WriteAllText(Path.Combine(presetDir.FullName, "Maximum (Golfed)"), OptionsAsString(GetGolfingOptions()));
+        }
+
+        internal static CustomOptions GetGolfingOptions()
+        {
             var golfOptions = CustomOptions.SetAllOptions(true);
             golfOptions.KeepHeaderComments = false;
-            File.WriteAllText(Path.Combine(presetDir.FullName, "Maximum (Golfed)"), OptionsAsString(golfOptions));
+            return golfOptions;
         }
 
         private static string OptionsAsString(CustomOptions options) =>

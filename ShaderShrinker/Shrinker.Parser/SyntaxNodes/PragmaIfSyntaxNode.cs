@@ -16,12 +16,12 @@ using Shrinker.Lexer;
 
 namespace Shrinker.Parser.SyntaxNodes
 {
-    public class PragmaIfSyntaxNode : SyntaxNode
+    public class PragmaIfSyntaxNode : SyntaxNode, IRenamable
     {
         private readonly SyntaxNode m_elseNode;
         private readonly SyntaxNode m_endNode;
 
-        public string Name { get; }
+        public string Name { get; private set; }
 
         public bool HasFalseBranch => m_elseNode != null;
 
@@ -52,10 +52,13 @@ namespace Shrinker.Parser.SyntaxNodes
             throw new InvalidOperationException();
 
         public bool Is0() => Name.StartsWith("#if 0");
+
         public bool Is1() => Name.StartsWith("#if 1");
 
         public static bool IsStart(SyntaxNode node) => (node?.Token as PreprocessorToken)?.IsAnyOf("#if", "#ifdef", "#ifndef") == true;
+
         public static bool IsElse(SyntaxNode node) => (node?.Token as PreprocessorToken)?.Content == "#else";
+
         public static bool IsEnd(SyntaxNode node) => (node?.Token as PreprocessorToken)?.Content == "#endif";
 
         public static bool ContainsNode(SyntaxNode node)
@@ -120,5 +123,8 @@ namespace Shrinker.Parser.SyntaxNodes
             // Do it.
             toRemove.ForEach(o => o.Remove());
         }
+
+        public void Rename(string oldName, string newName) =>
+            Name = Name.Replace(" " + oldName, " " + newName);
     }
 }

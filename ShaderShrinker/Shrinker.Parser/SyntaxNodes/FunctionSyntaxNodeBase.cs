@@ -38,6 +38,7 @@ namespace Shrinker.Parser.SyntaxNodes
 
         public bool IsMain() => Name.StartsWith("main");
 
-        public void Rename(string newName) => Children[0].ReplaceWith(new GenericSyntaxNode(newName));
+        public void Rename(string oldName, string newName) =>
+            Children[0].ReplaceWith(new GenericSyntaxNode(newName));
     }
 }

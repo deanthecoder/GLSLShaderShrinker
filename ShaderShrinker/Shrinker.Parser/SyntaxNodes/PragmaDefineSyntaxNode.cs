@@ -21,7 +21,9 @@ namespace Shrinker.Parser.SyntaxNodes
         private bool m_hasValues;
 
         public string Name => Children[0].Token.Content;
+
         public RoundBracketSyntaxNode Params => m_hasParams ? (RoundBracketSyntaxNode)Children[1] : null;
+
         public IList<SyntaxNode> ValueNodes => m_hasValues ? Children.Skip(m_hasParams ? 2 : 1).ToList() : null;
 
         public PragmaDefineSyntaxNode(GenericSyntaxNode nameNode, RoundBracketSyntaxNode paramsNode = null, IList<SyntaxNode> valueNodes = null) : base((AlphaNumToken)nameNode?.Token)
