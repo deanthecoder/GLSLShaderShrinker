@@ -1845,6 +1845,19 @@ namespace UnitTests
         }
 
         [Test]
+        public void CheckBracesNotRemovedInIfWithNestedIf()
+        {
+            var lexer = new Lexer();
+            lexer.Load("int main() { if (true) { if (false) return 1; } else { return 2; } }");
+
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(CustomOptions.None());
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo("int main() { if (true) { if (false) return 1; } else return 2; }"));
+        }
+
+        [Test]
         public void CheckSupportForTernaryOperator()
         {
             var lexer = new Lexer();

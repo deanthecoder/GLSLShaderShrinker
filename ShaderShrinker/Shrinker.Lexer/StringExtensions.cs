@@ -48,11 +48,14 @@ namespace Shrinker.Lexer
 
         public static bool IsNewline(this char ch) => ch == '\n' || ch == '\r';
 
+        /// <summary>
+        /// Remove start/end braces if the content is a single-line instruction.
+        /// </summary>
         public static string AllowBraceRemoval(this string s)
         {
             s = s.Trim();
             if (s.StartsWith("{") && s.EndsWith("}") && s.Count(ch => ch == ';') == 1)
-                return s.Trim('{', '}', ' ');
+                return s.Substring(1, s.Length - 2).Trim();
             return s;
         }
 

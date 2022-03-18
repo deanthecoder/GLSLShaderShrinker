@@ -328,7 +328,9 @@ namespace Shrinker.Parser
 
                     var braceCode = new StringBuilder();
                     AppendCode(braceCode, o.TrueBranch);
-                    var trueBranch = braceCode.ToString().AllowBraceRemoval();
+                    var trueBranch = braceCode.ToString();
+                    if (o.TrueBranch.Children.FirstOrDefault() is not IfSyntaxNode || o.FalseBranch == null)
+                        trueBranch = trueBranch.AllowBraceRemoval();
                     sb.AppendLine(trueBranch);
 
                     if (o.FalseBranch != null)
