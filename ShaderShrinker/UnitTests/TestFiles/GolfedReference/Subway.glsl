@@ -1,11 +1,13 @@
-// Processed by 'GLSL Shader Shrinker' (Shrunk by 2,908 characters)
+// Processed by 'GLSL Shader Shrinker' (Shrunk by 2,979 characters)
 // (https://github.com/deanthecoder/GLSLShaderShrinker)
 
 #define v3	vec3
 #define v2	vec2
 #define TX	texture
+#define RET	return
 #define NM	normalize
 #define MN	min
+#define MX	max
 #define LNG	length
 #define _f	float
 #define iT	iTime
@@ -15,54 +17,54 @@
 const v2 b0 = v2(.36, .66);
 float SN(_f a, _f b, _f k) {
 	_f h = clamp(.5 + .5 * (b - a) / k, 0., 1.);
-	return mix(b, a, h) - k * h * (1. - h);
+	RET mix(b, a, h) - k * h * (1. - h);
 }
 
 mat2 RT(_f a) {
 	_f c = cos(a),
 	   s = sin(a);
-	return mat2(c, s, -s, c);
+	RET mat2(c, s, -s, c);
 }
 
 float sx(v3 p, v3 b) {
 	v3 q = abs(p) - b;
-	return LNG(max(q, 0.)) + MN(max(q.x, max(q.y, q.z)), 0.);
+	RET LNG(MX(q, 0.)) + MN(MX(q.x, MX(q.y, q.z)), 0.);
 }
 
 float sr(v3 p, _f h, _f r) {
 	v2 d = abs(v2(LNG(p.xz), p.y)) - v2(h, r);
-	return MN(max(d.x, d.y), 0.) + LNG(max(d, 0.));
+	RET MN(MX(d.x, d.y), 0.) + LNG(MX(d, 0.));
 }
 
 float se(v3 p, v3 a, v3 b, _f r) {
 	v3 Y = p - a,
 	   f = b - a;
-	return LNG(Y - f * clamp(dot(Y, f) / dot(f, f), 0., 1.)) - r;
+	RET LNG(Y - f * clamp(dot(Y, f) / dot(f, f), 0., 1.)) - r;
 }
 
 float sk(v3 p, _f K, _f R1, _f R2) {
-	v3 q = v3(p.x, max(abs(p.y) - K, 0.), p.z);
-	return LNG(v2(LNG(q.xy) - R1, q.z)) - R2;
+	v3 q = v3(p.x, MX(abs(p.y) - K, 0.), p.z);
+	RET LNG(v2(LNG(q.xy) - R1, q.z)) - R2;
 }
 
 vec3 F(v3 RO, v3 O, v2 UV) {
 	v3 z = NM(O - RO),
 	   rt = NM(cross(v3(0, 1, 0), z));
-	return NM(z + rt * UV.x + cross(z, rt) * UV.y);
+	RET NM(z + rt * UV.x + cross(z, rt) * UV.y);
 }
 
-vec2 T(v2 a, v2 b) { return a.x < b.x ? a : b; }
+vec2 T(v2 a, v2 b) { RET a.x < b.x ? a : b; }
 
-vec2 l(v2 p, _f c, v2 I, v2 J) { return p - c * clamp(round(p / c), -I, J); }
+vec2 l(v2 p, _f c, v2 I, v2 J) { RET p - c * clamp(round(p / c), -I, J); }
 
 vec3 U(v3 p) {
 	p.x = abs(p.x) - 2.8;
-	return p;
+	RET p;
 }
 
 vec3 rZ(v3 p, _f c, v2 I, v2 J) {
 	p.xz = l(p.xz, c, I, J);
-	return p;
+	RET p;
 }
 
 float SB(v3 p) {
@@ -70,36 +72,36 @@ float SB(v3 p) {
 	_f d = sx(p, v3(.385, .05, .385));
 	p.y -= .01;
 	p.xz = l(p.xz + v2(.06666), .13332, v2(2), v2(3));
-	return MN(d, sr(p, .0225, .05));
+	RET MN(d, sr(p, .0225, .05));
 }
 
 float SP(v3 p) {
 	p.xz = l(p.xz, .8, v2(3, 0), v2(4, 0));
-	return SB(p);
+	RET SB(p);
 }
 
-float sb(v3 p) { return sx(p, v3(.485, .05, .485)); }
+float sb(v3 p) { RET sx(p, v3(.485, .05, .485)); }
 
-float a0(v3 p) { return sx(p - v3(0, 0, .2), v3(.485, .05, .185)); }
+float a0(v3 p) { RET sx(p - v3(0, 0, .2), v3(.485, .05, .185)); }
 
 _f G = 0.,
    y = 1.;
 vec2 sp(v3 p) {
 	_f t,
 	   o = sx(p, v3(1.4, .02, .02));
-	if (o > 1.) return v2(o, 3.5);
+	if (o > 1.) RET v2(o, 3.5);
 	p.y += .18;
 	t = sx(p, v3(1.385, .145, .02));
 	o = MN(o, sx(p - v3(0, 0, .015), v3(1.4, .16, .02)));
 	p.yz += v2(.18, .32);
-	return T(v2(MN(o, sx(p + v3(0, .015, 0), v3(1.4, .02, .305))), 3.5), v2(MN(t, sx(p, v3(1.385, .02, .305))), 4.5));
+	RET T(v2(MN(o, sx(p + v3(0, .015, 0), v3(1.4, .02, .305))), 3.5), v2(MN(t, sx(p, v3(1.385, .02, .305))), 4.5));
 }
 
-vec2 ss(v3 p) { return sp(p + max(0., floor(-p.z / b0.y)) * v3(0, b0)); }
+vec2 ss(v3 p) { RET sp(p + MX(0., floor(-p.z / b0.y)) * v3(0, b0)); }
 
 float SR(v3 p) {
 	p.x -= .35;
-	return max(sk(p.yxz, .1, .25, .06), p.y);
+	RET MX(sk(p.yxz, .1, .25, .06), p.y);
 }
 
 vec2 SS(v3 p) {
@@ -123,23 +125,23 @@ vec2 SS(v3 p) {
 		   w = 2.9 - W;
 		PP = X;
 		PP.z -= S;
-		d = max(d, sx(PP, v3(3, 1e3, w / 2.)));
+		d = MX(d, sx(PP, v3(3, 1e3, w / 2.)));
 	}
 
-	return T(v2(d, 1.5), v2(t, 2.5));
+	RET T(v2(d, 1.5), v2(t, 2.5));
 }
 
 vec2 sn(v3 p) {
 	v2 t,
 	   o = SS(p);
-	if (p.y > 2.) return o;
+	if (p.y > 2.) RET o;
 	t = ss(rZ(p, 2.8, v2(1, 0), v2(1, 0)));
 	_f u,
 	   d = a0(rZ(p, 1., v2(3, 0), v2(3, 0)));
 	p.z -= .4;
 	u = SP(p);
 	u -= .006 * mix(.8, 1., TX(iChannel0, p.xz * 1.7).r);
-	return T(v2(MN(d, sb(rZ(p - v3(0, 0, 1.3), 1., v2(3, 0), v2(3, 5)))), 6.5), T(o, T(t, v2(u, 5.5))));
+	RET T(v2(MN(d, sb(rZ(p - v3(0, 0, 1.3), 1., v2(3, 0), v2(3, 5)))), 6.5), T(o, T(t, v2(u, 5.5))));
 }
 
 vec2 P(v3 p, bool uw) {
@@ -150,7 +152,7 @@ vec2 P(v3 p, bool uw) {
 	PP.z = abs(p.z - 1.8);
 	d = MN(MN(d, sk(PP - v3(1.8, 4.7, .9), .2, .2, .015)), sk(p - v3(1.8, 4.7, -2), .2, .2, .015));
 	PP -= v3(0, 5, 2.5);
-	d = MN(d, max(sx(PP, v3(1, .25, .06)), -sx(PP + v3(0, .3, 0), v3(.95, .2, .1))));
+	d = MN(d, MX(sx(PP, v3(1, .25, .06)), -sx(PP + v3(0, .3, 0), v3(.95, .2, .1))));
 	if (uw) {
 		_f D,
 		   x = 1. - clamp((abs(p.x) - .8) / .2, 0., 1.);
@@ -167,15 +169,15 @@ vec2 P(v3 p, bool uw) {
 	p.z -= 9.;
 	p.xz *= mat2(.70711, -.70711, .70711, .70711);
 	p.x -= 9.08;
-	return T(v2(d, 1.5), T(t, sn(p)));
+	RET T(v2(d, 1.5), T(t, sn(p)));
 }
 
 vec3 i(v3 p) {
 	const v2 e = v2(1, -1) * .5773e-4;
-	return NM(e.xyy * P(p + e.xyy, false).x + e.yyx * P(p + e.yyx, false).x + e.yxy * P(p + e.yxy, false).x + e.xxx * P(p + e.xxx, false).x);
+	RET NM(e.xyy * P(p + e.xyy, false).x + e.yyx * P(p + e.yyx, false).x + e.yxy * P(p + e.yxy, false).x + e.xxx * P(p + e.xxx, false).x);
 }
 
-float g(v3 p, v3 n, _f d) { return clamp(P(p + n * d, false).x / d, 0., 1.); }
+float g(v3 p, v3 n, _f d) { RET clamp(P(p + n * d, false).x / d, 0., 1.); }
 
 float j(v3 p, v3 N) {
 	_f sd,
@@ -186,23 +188,23 @@ float j(v3 p, v3 N) {
 	p += NM(N - p) * .01;
 	for (_f i = MN(iT, 0.); i < 30.; i++) {
 		p += ST;
-		sw = MN(sw, max(P(p, false).x, 0.) / (sd * i));
+		sw = MN(sw, MX(P(p, false).x, 0.) / (sd * i));
 	}
 
-	return sw / pow(d / 20. + 1., 2.);
+	RET sw / pow(d / 20. + 1., 2.);
 }
 
 vec3 ve(v3 m, v2 B) {
 	v2 q = B.xy / iR.xy;
 	m *= .5 + .5 * pow(16. * q.x * q.y * (1. - q.x) * (1. - q.y), .4);
-	return m;
+	RET m;
 }
 
 vec3 E(v3 p, v3 RD, v3 n, _f H) {
 	v3 R, m,
 	   L = NM(v3(0, 4.5, 4.3) - p),
 	   M = NM(v3(0, 4.5, -.6) - p);
-	_f sc = pow(max(max(dot(reflect(L, n), RD) * y, dot(reflect(M, n), RD)), 0.), 50.);
+	_f sc = pow(MX(MX(dot(reflect(L, n), RD) * y, dot(reflect(M, n), RD)), 0.), 50.);
 	if (H == 3.5) R = v3(.1);
 	else if (H == 4.5) R = v3(smoothstep(0., .6, TX(iChannel0, (abs(n.y) < .1 ? p.xy : p.xz) * 1.4125).r));
 	else if (H == 5.5) {
@@ -212,8 +214,8 @@ vec3 E(v3 p, v3 RD, v3 n, _f H) {
 	else if (H == 6.5) R = v3(mix(.3, .5, TX(iChannel0, p.xz * 1.743).r));
 	else R = v3(1);
 
-	m = R * v3(1, 1, 1.1) * ((max(max(0., dot(L, n) * y), dot(M, n)) + sc) * (j(p, v3(0, 4.5, 4.3)) * y + j(p, v3(0, 4.5, -.6))) / 2. + MN(1., .2 + g(p, n, .15) * g(p, n, .05)) * .025);
-	return m + MN(G, 1.);
+	m = R * v3(1, 1, 1.1) * ((MX(MX(0., dot(L, n) * y), dot(M, n)) + sc) * (j(p, v3(0, 4.5, 4.3)) * y + j(p, v3(0, 4.5, -.6))) / 2. + MN(1., .2 + g(p, n, .15) * g(p, n, .05)) * .025);
+	RET m + MN(G, 1.);
 }
 
 void Q(v3 RO, v3 RD, out vec3 p, out vec2 h) {

@@ -13,10 +13,14 @@ using System.Linq;
 
 namespace Shrinker.Parser.SyntaxNodes
 {
-    public class ReturnSyntaxNode : GroupSyntaxNode
+    public class ReturnSyntaxNode : GroupSyntaxNode, IRenamable
     {
         public override string UiName => Children.Any() ? "return ..." : "return";
 
         protected override SyntaxNode CreateSelf() => new ReturnSyntaxNode();
+
+        public string Name { get; private set; } = "return";
+
+        public void Rename(string oldName, string newName) => Name = newName;
     }
 }

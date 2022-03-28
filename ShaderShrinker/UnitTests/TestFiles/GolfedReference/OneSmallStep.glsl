@@ -1,8 +1,9 @@
-// Processed by 'GLSL Shader Shrinker' (Shrunk by 505 characters)
+// Processed by 'GLSL Shader Shrinker' (Shrunk by 540 characters)
 // (https://github.com/deanthecoder/GLSLShaderShrinker)
 
 #define v3	vec3
 #define v2	vec2
+#define RET	return
 #define U	normalize
 #define _f	float
 #define R	iResolution
@@ -15,39 +16,39 @@ float E(v3 p) {
 	vec4 h = vec4(0, s.yz, s.y + s.z) + dot(x, s);
 	h = mix(fract(sin(h) * 43.5453), fract(sin(h + s.x) * 43.5453), p.x);
 	h.xy = mix(h.xz, h.yw, p.y);
-	return mix(h.x, h.y, p.z);
+	RET mix(h.x, h.y, p.z);
 }
 
 float L(_f a, _f b) {
 	_f h = clamp(.5 + .5 * (b - a) / -.8, 0., 1.);
-	return mix(b, a, h) + .8 * h * (1. - h);
+	RET mix(b, a, h) + .8 * h * (1. - h);
 }
 
 mat2 H(_f a) {
 	_f c = cos(a),
 	   s = sin(a);
-	return mat2(c, s, -s, c);
+	RET mat2(c, s, -s, c);
 }
 
-float m(v3 p) { return (E(p) + E(p * 2.12) * .5 + E(p * 4.42) * .25 + E(p * 8.54) * .125 + E(p * 16.32) * .062 + E(p * 32.98) * .031 + E(p * 63.52) * .0156) * .5; }
+float m(v3 p) { RET (E(p) + E(p * 2.12) * .5 + E(p * 4.42) * .25 + E(p * 8.54) * .125 + E(p * 16.32) * .062 + E(p * 32.98) * .031 + E(p * 63.52) * .0156) * .5; }
 
 float J(v3 p, v3 b) {
 	v3 q = abs(p) - b;
-	return length(max(q, 0.)) + min(max(q.x, max(q.y, q.z)), 0.);
+	RET length(max(q, 0.)) + min(max(q.x, max(q.y, q.z)), 0.);
 }
 
 float K(v2 p) {
 	p.x = abs(p.x);
 	_f k = dot(p, v2(.12, .99277));
-	if (k < 0.) return length(p) - 1.2;
-	if (k > 2.48192) return length(p - v2(0, 2.5)) - 1.5;
-	return dot(p, v2(.99277, -.12)) - 1.2;
+	if (k < 0.) RET length(p) - 1.2;
+	if (k > 2.48192) RET length(p - v2(0, 2.5)) - 1.5;
+	RET dot(p, v2(.99277, -.12)) - 1.2;
 }
 
 vec3 w(v3 G, v2 O) {
 	v3 f = U(v3(0, 0, .8) - G),
 	   r = U(cross(v3(0, 1, 0), f));
-	return U(f + r * O.x + cross(f, r) * O.y);
+	RET U(f + r * O.x + cross(f, r) * O.y);
 }
 
 float I(v3 p) {
@@ -61,12 +62,12 @@ float I(v3 p) {
 	N.z -= 1.1;
 	t = min(t, J(N, v3(.53 - .12 * N.z, .16, 1.6)));
 	p.z /= cos(p.z * .1);
-	return max(max(K(p.xz), p.y), -t);
+	RET max(max(K(p.xz), p.y), -t);
 }
 
 float C(v3 p) {
 	_f i = m(p) * (.5 + 2. * exp(-pow(length(p.xz - v2(.5, 2.2)), 2.) * .26));
-	return L(p.y - .27 - i, -I(p) + (i * i * .5 - .5) * .12);
+	RET L(p.y - .27 - i, -I(p) + (i * i * .5 - .5) * .12);
 }
 
 vec3 j(v3 p, _f t) {
@@ -77,7 +78,7 @@ vec3 j(v3 p, _f t) {
 		n += e * C(p + e * h);
 	}
 
-	return U(n);
+	RET U(n);
 }
 
 float l(v3 p, v3 A) {
@@ -90,15 +91,15 @@ float l(v3 p, v3 A) {
 		if (s < .001) break;
 	}
 
-	return clamp(s, 0., 1.);
+	RET clamp(s, 0., 1.);
 }
 
-float g(v3 p, v3 n, _f h) { return C(p + h * n) / h; }
+float g(v3 p, v3 n, _f h) { RET C(p + h * n) / h; }
 
 vec3 P(v3 c, v2 o) {
 	v2 q = o.xy / R.xy;
 	c *= .5 + .5 * pow(16. * q.x * q.y * (1. - q.x) * (1. - q.y), .4);
-	return c;
+	RET c;
 }
 
 vec3 B(v3 p, v3 F, _f d) {
@@ -110,7 +111,7 @@ vec3 B(v3 p, v3 F, _f d) {
 	   M = max(0., dot(F, reflect(A, n))) * .1,
 	   v = smoothstep(.7, 1., 1. + dot(F, n));
 	y *= .1 + .9 * l(p, A);
-	return mix(.3, .4, v) * ((y + z) * g + M) * v3(2, 1.8, 1.7);
+	RET mix(.3, .4, v) * ((y + z) * g + M) * v3(2, 1.8, 1.7);
 }
 
 _f d = 0.;
@@ -124,7 +125,7 @@ vec3 D(v3 G, v3 F) {
 		d += h;
 	}
 
-	return B(p, F, d) * exp(-d * .14);
+	RET B(p, F, d) * exp(-d * .14);
 }
 
 void mainImage(out vec4 u, v2 o) {

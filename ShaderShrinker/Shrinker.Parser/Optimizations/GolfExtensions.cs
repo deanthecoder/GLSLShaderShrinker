@@ -146,7 +146,8 @@ namespace Shrinker.Parser.Optimizations
                 // What would the saving be, should we #define it?
                 var toAdd = $"#define {replacement} {keyword} ".Length + nodes.Count * replacement.Length;
                 var toRemove = nodes.Count * keyword.Length;
-                if (toAdd >= toRemove)
+                var delta = toAdd - toRemove;
+                if (delta > 0)
                     continue; // Could replace with #define, but not worth it.
 
                 // We'll get a space saving - Add a #define.

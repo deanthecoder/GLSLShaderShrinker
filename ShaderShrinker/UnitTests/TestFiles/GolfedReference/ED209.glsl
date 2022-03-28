@@ -1,9 +1,11 @@
-// Processed by 'GLSL Shader Shrinker' (Shrunk by 3,321 characters)
+// Processed by 'GLSL Shader Shrinker' (Shrunk by 3,410 characters)
 // (https://github.com/deanthecoder/GLSLShaderShrinker)
 
 #define v3	vec3
+#define m2	mat2
 #define v2	vec2
 #define SS	smoothstep
+#define RET	return
 #define NM	normalize
 #define MN	min
 #define MX	max
@@ -23,27 +25,27 @@ struct MarchData {
 mat2 c0(_f a) {
 	_f c = cos(a),
 	   s = sin(a);
-	return mat2(c, s, -s, c);
+	RET m2(c, s, -s, c);
 }
 
-float rp(_f f, _f i1, _f i2, _f o1, _f o2) { return mix(o1, o2, _c((f - i1) / (i2 - i1), 0., 1.)); }
+float rp(_f f, _f i1, _f i2, _f o1, _f o2) { RET mix(o1, o2, _c((f - i1) / (i2 - i1), 0., 1.)); }
 
 float sx(v3 p, v3 b) {
 	v3 q = ab(p) - b;
-	return LNG(MX(q, 0.)) + MN(MX(q.x, MX(q.y, q.z)), 0.);
+	RET LNG(MX(q, 0.)) + MN(MX(q.x, MX(q.y, q.z)), 0.);
 }
 
 float d0(v3 p, v3 r) {
 	_f H = sx(p, r);
-	p.xz *= mat2(.70721, .707, -.707, .70721);
+	p.xz *= m2(.70721, .707, -.707, .70721);
 	r.xz *= + 1.28234;
-	return MX(H, sx(p, r));
+	RET MX(H, sx(p, r));
 }
 
 float sm(v3 p) {
 	const v2 h = v2(.1, .5);
 	v3 q = ab(p);
-	return MX(q.z - h.y, MX(q.x * .866025 + p.y * .5, -p.y) - h.x * .5);
+	RET MX(q.z - h.y, MX(q.x * .866025 + p.y * .5, -p.y) - h.x * .5);
 }
 
 float se(v3 p) {
@@ -58,18 +60,18 @@ float se(v3 p) {
 	   f = _c((.1 * (x - .25) + pa * o) / (.01 + o), 0., 1.),
 	   C = x - .25 - f * .1,
 	   D = pa - f;
-	return ((C < 0. && B < 0.) ? -1. : 1.) * sqrt(MN(A * A + B * B * o, C * C + D * D * o));
+	RET ((C < 0. && B < 0.) ? -1. : 1.) * sqrt(MN(A * A + B * B * o, C * C + D * D * o));
 }
 
 float sr(v3 p, _f h, _f r) {
 	v2 d = ab(v2(LNG(p.xy), p.z)) - v2(h, r);
-	return MN(MX(d.x, d.y), 0.) + LNG(MX(d, 0.));
+	RET MN(MX(d.x, d.y), 0.) + LNG(MX(d, 0.));
 }
 
 float SE(v3 p, v3 a, v3 b) {
 	v3 PA = p - a,
 	   m = b - a;
-	return LNG(PA - m * _c(dot(PA, m) / dot(m, m), 0., 1.)) - .2;
+	RET LNG(PA - m * _c(dot(PA, m) / dot(m, m), 0., 1.)) - .2;
 }
 
 float sn(v2 p, _f r) {
@@ -78,18 +80,18 @@ float sn(v2 p, _f r) {
 	p -= 2. * MN(dot(k.xy, p), 0.) * k.xy;
 	p -= 2. * MN(dot(v2(-k.x, k.y), p), 0.) * v2(-k.x, k.y);
 	p -= v2(_c(p.x, -k.z * r, k.z * r), r);
-	return LNG(p) * sign(p.y);
+	RET LNG(p) * sign(p.y);
 }
 
 vec3 gr(v3 RO, v3 lt, v2 UV) {
 	v3 Z = NM(lt - RO),
 	   RT = NM(cross(v3(0, 1, 0), Z));
-	return NM(Z + RT * UV.x + cross(Z, RT) * UV.y);
+	RET NM(Z + RT * UV.x + cross(Z, RT) * UV.y);
 }
 
 MarchData MT(MarchData a, MarchData b) {
-	if (a.d < b.d) return a;
-	return b;
+	if (a.d < b.d) RET a;
+	RET b;
 }
 
 void sl(inout MarchData mt) {
@@ -97,13 +99,13 @@ void sl(inout MarchData mt) {
 	mt.specPower = 30.;
 }
 
-float LE(_f f) { return sin(T * 18.846 * f) * .2; }
+float LE(_f f) { RET sin(T * 18.846 * f) * .2; }
 
-float U() { return mix(5., -2., T); }
+float U() { RET mix(5., -2., T); }
 
-float W() { return ab(sin(R * 78.5375)); }
+float W() { RET ab(sin(R * 78.5375)); }
 
-float he(v3 p) { return (LNG(p / v3(1, .8, 1)) - 1.) * .8; }
+float he(v3 p) { RET (LNG(p / v3(1, .8, 1)) - 1.) * .8; }
 
 MarchData HR(v3 p, _f h, _f w) {
 	w *= sin(p.x * 150.) * sin(p.y * 150.) * .002;
@@ -111,7 +113,7 @@ MarchData HR(v3 p, _f h, _f w) {
 	rt.d = MX(mix(sx(p, v3(1, h, 2)), he(p), .57), -p.y) - w;
 	rt.mat = v3(.05);
 	rt.specPower = 30.;
-	return rt;
+	RET rt;
 }
 
 MarchData hr(v3 p) {
@@ -130,7 +132,7 @@ MarchData hr(v3 p) {
 	p.z -= -1.1;
 	r.d = MX(r.d, -MX(MX(sr(p.xzy, 1., .03), -sr(p.xzy, .55, 1.)), p.z + .2));
 	sl(r);
-	return r;
+	RET r;
 }
 
 MarchData GD(v3 p) {
@@ -144,7 +146,7 @@ MarchData GD(v3 p) {
 	r.d = MN(r.d, sm(PP));
 	PP = p;
 	PP.x = ab(p.x);
-	PP.xy *= mat2(.70721, .707, -.707, .70721);
+	PP.xy *= m2(.70721, .707, -.707, .70721);
 	_f FS,
 	   w = sign(sin(PP.z * 33.3)) * .003,
 	   d = sx(PP, v3(.1 - w, .38 - w, .34)) - .02;
@@ -167,7 +169,7 @@ MarchData GD(v3 p) {
 		}
 	}
 
-	return r;
+	RET r;
 }
 
 MarchData l(v3 p) {
@@ -179,29 +181,29 @@ MarchData l(v3 p) {
 	r.d = MN(SE(p, v3(0), v3(1.5, 0, 0)), SE(p, v3(1.5, 0, 0), v3(1.5, 0, -.3)));
 	p -= v3(1.5, 0, -.3);
 	p.z -= a0 * .15;
-	return MT(r, GD(p));
+	RET MT(r, GD(p));
 }
 
 float TE(v3 p) {
 	p.yz += v2(.1, .32);
-	return MX(sx(p, v3(.3 + .2 * (p.z - .18) - p.y * .228, .3 + .2 * cos((p.z - .18) * 3.69), .35)), .1 - p.y);
+	RET MX(sx(p, v3(.3 + .2 * (p.z - .18) - p.y * .228, .3 + .2 * cos((p.z - .18) * 3.69), .35)), .1 - p.y);
 }
 
 float Y(v3 p) {
 	p.z += .8;
-	p.yz *= mat2(.65244, .75784, -.75784, .65244);
+	p.yz *= m2(.65244, .75784, -.75784, .65244);
 	_f d = TE(p);
-	p.xz *= mat2(8e-4, 1, -1, 8e-4);
+	p.xz *= m2(8e-4, 1, -1, 8e-4);
 	p.x -= .43;
 	p.z = .25 - ab(p.z);
-	return MN(d, TE(p));
+	RET MN(d, TE(p));
 }
 
 MarchData wt(v3 p) {
 	MarchData r;
 	sl(r);
 	p.y += .65;
-	p.yz *= mat2(.98007, -.19867, .19867, .98007);
+	p.yz *= m2(.98007, -.19867, .19867, .98007);
 	_f w, d,
 	   le = LE(1.);
 	p.xy *= c0(le * .3);
@@ -227,7 +229,7 @@ MarchData wt(v3 p) {
 		r.mat = v3(.02);
 	}
 
-	return r;
+	RET r;
 }
 
 MarchData ls(v3 p) {
@@ -238,13 +240,13 @@ MarchData ls(v3 p) {
 	p.yz *= c0(le * sign(p.x));
 	p.z -= .27;
 	p.y += .65;
-	p.yz *= mat2(.98007, -.19867, .19867, .98007);
+	p.yz *= m2(.98007, -.19867, .19867, .98007);
 	p.xy *= c0(le * .3);
 	v3 G,
 	   PP = p;
 	PP.x = ab(PP.x);
 	PP.y += .48;
-	PP.yz *= mat2(.83357, -.55241, .55241, .83357);
+	PP.yz *= m2(.83357, -.55241, .55241, .83357);
 	PP.x -= .98;
 	G = PP;
 	p = PP;
@@ -261,7 +263,7 @@ MarchData ls(v3 p) {
 		r.mat = v3(.8);
 	}
 
-	return r;
+	RET r;
 }
 
 MarchData P(v3 p) {
@@ -275,7 +277,7 @@ MarchData P(v3 p) {
 	r = MT(r, wt(p));
 	p.yz *= c0(.1 * (-Q + LE(2.) + SS(0., 1., _c((sh - .5) * 6., 0., 1.)) - 1.));
 	p.xz *= c0(S * .2);
-	return MT(MT(MT(r, hr(p)), HR(p, .8, 1.)), l(p));
+	RET MT(MT(MT(r, hr(p)), HR(p, .8, 1.)), l(p));
 }
 
 MarchData rm(v3 p) {
@@ -305,7 +307,7 @@ MarchData rm(v3 p) {
 		r.specPower = 10.;
 	}
 
-	return r;
+	RET r;
 }
 
 MarchData mp(v3 p) {
@@ -316,7 +318,7 @@ MarchData mp(v3 p) {
 		r.mat = v3(.1);
 	}
 
-	return r;
+	RET r;
 }
 
 float z(v3 p) {
@@ -330,21 +332,21 @@ float z(v3 p) {
 		if (rs < .001 || t > 25.) break;
 	}
 
-	return _c(rs, 0., 1.);
+	RET _c(rs, 0., 1.);
 }
 
 vec3 y(v3 p, _f t) {
 	_f d = .01 * t * .33;
 	v2 e = v2(1, -1) * .5773 * d;
-	return NM(e.xyy * mp(p + e.xyy).d + e.yyx * mp(p + e.yyx).d + e.yxy * mp(p + e.yxy).d + e.xxx * mp(p + e.xxx).d);
+	RET NM(e.xyy * mp(p + e.xyy).d + e.yyx * mp(p + e.yyx).d + e.yxy * mp(p + e.yxy).d + e.xxx * mp(p + e.xxx).d);
 }
 
-float i(v3 p, v3 n) { return mp(p + .33 * n).d / .33; }
+float i(v3 p, v3 n) { RET mp(p + .33 * n).d / .33; }
 
 vec3 ve(v3 E, v2 fd) {
 	v2 q = fd.xy / iR.xy;
 	E *= .5 + .5 * pow(16. * q.x * q.y * (1. - q.x) * (1. - q.y), .4);
-	return E;
+	RET E;
 }
 
 vec3 j(v3 p, v3 RD, _f d, MarchData I) {
@@ -356,7 +358,7 @@ vec3 j(v3 p, v3 RD, _f d, MarchData I) {
 	   fe = SS(.7, 1., 1. + dot(RD, n)),
 	   X = exp(-LNG(p) * .05);
 	py *= mix(.2, 1., z(p));
-	return mix(I.mat * ((py + v) * i(p, n) + f0) * v3(2, 1.6, 1.7), v3(.01), fe) * X;
+	RET mix(I.mat * ((py + v) * i(p, n) + f0) * v3(2, 1.6, 1.7), v3(.01), fe) * X;
 }
 
 vec3 GR(v3 RO, v3 RD) {
@@ -368,12 +370,12 @@ vec3 GR(v3 RO, v3 RD) {
 		p = RO + RD * d;
 		h = mp(p);
 		if (ab(h.d) < .0015 * d) break;
-		if (d > 64.) return v3(0);
+		if (d > 64.) RET v3(0);
 		d += h.d;
 	}
 
 	g = gw;
-	return j(p, RD, d, h) + W() * .3 + g;
+	RET j(p, RD, d, h) + W() * .3 + g;
 }
 
 void mainImage(out vec4 fr, v2 fd) {

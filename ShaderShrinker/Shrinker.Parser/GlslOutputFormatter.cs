@@ -249,7 +249,7 @@ namespace Shrinker.Parser
                     o.Children.ToList().ForEach(child => AppendCode(subExpr, child));
                     var s = subExpr.ToString().Trim();
 
-                    sb.Append(string.IsNullOrEmpty(s) ? "return" : $"return {s}");
+                    sb.Append(string.IsNullOrEmpty(s) ? o.Name : $"{o.Name} {s}");
                     break;
                 }
 

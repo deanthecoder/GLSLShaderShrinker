@@ -41,6 +41,8 @@ namespace Shrinker.Lexer
                 var endComment = glsl.IndexOf("*/", startComment, StringComparison.Ordinal);
                 if (endComment > startComment)
                     glsl = glsl.Remove(startComment, endComment - startComment + 2);
+                else
+                    break; // Couldn't find comment end.
             }
 
             return glsl.Split('\r', '\n').Sum(o => o.Count(ch => !char.IsWhiteSpace(ch)));

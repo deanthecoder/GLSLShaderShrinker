@@ -1,19 +1,20 @@
-// Processed by 'GLSL Shader Shrinker' (Shrunk by 676 characters)
+// Processed by 'GLSL Shader Shrinker' (Shrunk by 681 characters)
 // (https://github.com/deanthecoder/GLSLShaderShrinker)
 
 #define v3	vec3
 #define v2	vec2
 #define S	smoothstep
+#define RET	return
 #define N	normalize
 #define F	float
 #define R	iResolution
 
-float v(v2 A) { return abs(2. * fbm(A) - 1.); }
+float v(v2 A) { RET abs(2. * fbm(A) - 1.); }
 
-float w(v3 p) { return length(p - v3(0, -.8, 2)) - .7; }
+float w(v3 p) { RET length(p - v3(0, -.8, 2)) - .7; }
 
 float x(v3 p) {
-	if (p.y > 0.) return 1e10;
+	if (p.y > 0.) RET 1e10;
 	F h = v(p.xz * .2);
 	p.xz += v2(1);
 	h += .5 * v(p.xz * .8);
@@ -21,18 +22,18 @@ float x(v3 p) {
 	h += .03 * v(p.xz * 16.1);
 	h *= .7 * fbm(p.xz);
 	h -= .7;
-	return abs(p.y - h) * .6;
+	RET abs(p.y - h) * .6;
 }
 
 vec2 q(v3 p) {
 	F f = x(p),
 	  g = w(p);
-	return f < g ? v2(f, 1) : v2(g, 2);
+	RET f < g ? v2(f, 1) : v2(g, 2);
 }
 
 vec3 c(v3 p) {
 	const v2 e = v2(1, -1) * 29e-5;
-	return N(e.xyy * q(p + e.xyy).x + e.yyx * q(p + e.yyx).x + e.yxy * q(p + e.yxy).x + e.xxx * q(p + e.xxx).x);
+	RET N(e.xyy * q(p + e.xyy).x + e.yyx * q(p + e.yyx).x + e.yxy * q(p + e.yxy).x + e.xxx * q(p + e.xxx).x);
 }
 
 float a(v3 r, v3 m) {
@@ -44,7 +45,7 @@ float a(v3 r, v3 m) {
 		s = min(s, i / d);
 		d += clamp(i, .2, 1.);
 	}
-	return S(0., 1., s);
+	RET S(0., 1., s);
 }
 
 void mainImage(out vec4 j, v2 l) {

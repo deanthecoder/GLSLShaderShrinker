@@ -1,7 +1,8 @@
-// Processed by 'GLSL Shader Shrinker' (Shrunk by 2,059 characters)
+// Processed by 'GLSL Shader Shrinker' (Shrunk by 2,088 characters)
 // (https://github.com/deanthecoder/GLSLShaderShrinker)
 
 #define v3	vec3
+#define RET	return
 #define NM	normalize
 #define _f	float
 #define iR	iResolution
@@ -19,31 +20,31 @@ struct Hit {
 	v3 uv;
 };
 
-#define H	p = fract(p * .1031); p *= p + 3.3456; return fract(p * (p + p));
+#define H	p = fract(p * .1031); p *= p + 3.3456; RET fract(p * (p + p));
 #define F(a)	if (a.d < h.d) h = a
 
 mat2 L(_f a) {
 	_f c = cos(a),
 	   s = sin(a);
-	return mat2(c, s, -s, c);
+	RET mat2(c, s, -s, c);
 }
 
 float P(v3 p) {
 	v3 q = abs(p) - v3(1);
-	return length(max(q, 0.)) + min(max(q.x, max(q.y, q.z)), 0.);
+	RET length(max(q, 0.)) + min(max(q.x, max(q.y, q.z)), 0.);
 }
 
 vec3 I(v3 K, vec2 T) {
 	v3 f = NM(v3(0, 2, 0) - K),
 	   r = NM(cross(v3(0, 1, 0), f));
-	return NM(f + r * T.x + cross(f, r) * T.y);
+	RET NM(f + r * T.x + cross(f, r) * T.y);
 }
 
 Hit D(v3 p) {
 	Hit h = Hit(length(p - v3(0, 2.5, 0)) - 1., 1, p);
 	F(Hit(P(p - v3(0, 1, 0)), 2, p));
 	F(Hit(abs(p.y), 3, p));
-	return h;
+	RET h;
 }
 
 vec3 N(v3 p, _f t) {
@@ -54,7 +55,7 @@ vec3 N(v3 p, _f t) {
 		n += e * D(p + e * h).d;
 	}
 
-	return NM(n);
+	RET NM(n);
 }
 
 float Q(v3 p, v3 z) {
@@ -68,20 +69,20 @@ float Q(v3 p, v3 z) {
 		if (s < .001 || t > 20.) break;
 	}
 
-	return M(s);
+	RET M(s);
 }
 
-float b(v3 p, v3 n, _f h) { return D(h * n + p).d / h; }
+float b(v3 p, v3 n, _f h) { RET D(h * n + p).d / h; }
 
-float S(v3 p, v3 z, _f h) { return smoothstep(0., 1., D(h * z + p).d / h); }
+float S(v3 p, v3 z, _f h) { RET smoothstep(0., 1., D(h * z + p).d / h); }
 
 vec3 U(v3 c, vec2 l) {
 	vec2 q = l.xy / iR.xy;
 	c *= .5 + .5 * pow(16. * q.x * q.y * (1. - q.x) * (1. - q.y), .4);
-	return c;
+	RET c;
 }
 
-float k(v3 v) { return exp(dot(v, v) * -.002); }
+float k(v3 v) { RET exp(dot(v, v) * -.002); }
 
 vec3 C(v3 p, v3 J, _f d, Hit h) {
 	v3 c,
@@ -103,7 +104,7 @@ vec3 C(v3 p, v3 J, _f d, Hit h) {
 	u = smoothstep(.7, 1., 1. + dot(J, n)) * .5;
 	B = x + y * _ + R;
 	g = w;
-	return mix(B * c * v3(2, 1.6, 1.4), v3(.01), u);
+	RET mix(B * c * v3(2, 1.6, 1.4), v3(.01), u);
 }
 
 vec4 E(inout vec3 p, v3 J, _f s, _f G) {
@@ -115,11 +116,11 @@ vec4 E(inout vec3 p, v3 J, _f s, _f G) {
 		h = D(p);
 		if (abs(h.d) < .0015) break;
 		d += h.d;
-		if (d > G) return vec4(0);
+		if (d > G) RET vec4(0);
 		p += h.d * J;
 	}
 
-	return vec4(g + C(p, J, d, h), h.id);
+	RET vec4(g + C(p, J, d, h), h.id);
 }
 
 vec3 O(v3 K, v3 J) {
@@ -132,7 +133,7 @@ vec3 O(v3 K, v3 J) {
 		j += .2 * E(p, J, 64., 10.) * k(K - p);
 	}
 
-	return j.rgb;
+	RET j.rgb;
 }
 
 void mainImage(out vec4 o, vec2 l) {
