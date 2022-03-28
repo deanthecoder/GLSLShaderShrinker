@@ -1,5 +1,35 @@
 ﻿// From https://www.shadertoy.com/view/3slfW2
 
+float hash(vec2 p) { return fract(sin(dot(p, vec2(123.45, 875.43))) * 5432.3); }
+
+float noise(vec2 p) {
+	vec2 i = floor(p),
+	     f = fract(p);
+	float a = hash(i),
+	      b = hash(i + vec2(1, 0)),
+	      c = hash(i + vec2(0, 1)),
+	      d = hash(i + vec2(1));
+	f = f * f * (3. - 2. * f);
+	return mix(a, b, f.x) + (c - a) * f.y * (1. - f.x) + (d - b) * f.x * f.y;
+}
+
+float fbm(vec2 p) {
+	float f = 0.;
+	f += .5 * noise(p * 1.1);
+	f += .22 * noise(p * 2.3);
+	f += .155 * noise(p * 3.9);
+	f += .0625 * noise(p * 8.4);
+	f += .03125 * noise(p * 15.);
+	return f;
+}
+
+float smoothBounds(float a, float b, float v) {
+	float midPoint = a + (b - a) * .5;
+	return smoothstep(a, midPoint, v) * smoothstep(b, midPoint, v);
+}
+
+float stars(vec2 uv) { return smoothBounds(.195, .2, fbm(uv * 1e2)); }
+
 float rfbm(vec2 xz) { return abs(2.0 * fbm(xz) - 1.0); }
 
 float sdEarth(vec3 p) {

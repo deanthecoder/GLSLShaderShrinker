@@ -1,5 +1,32 @@
-// Processed by 'GLSL Shader Shrinker' (Shrunk by 311 characters)
+// Processed by 'GLSL Shader Shrinker' (Shrunk by 360 characters)
 // (https://github.com/deanthecoder/GLSLShaderShrinker)
+
+float hash(vec2 p) { return fract(sin(dot(p, vec2(123.45, 875.43))) * 5432.3); }
+
+float noise(vec2 p) {
+	vec2 i = floor(p),
+	     f = fract(p);
+	float a = hash(i),
+	      b = hash(i + vec2(1, 0)),
+	      c = hash(i + vec2(0, 1)),
+	      d = hash(i + vec2(1));
+	f = f * f * (3. - 2. * f);
+	return mix(a, b, f.x) + (c - a) * f.y * (1. - f.x) + (d - b) * f.x * f.y;
+}
+
+float fbm(vec2 p) {
+	float f = 0.;
+	f += .5 * noise(p * 1.1);
+	f += .22 * noise(p * 2.3);
+	f += .155 * noise(p * 3.9);
+	f += .0625 * noise(p * 8.4);
+	f += .03125 * noise(p * 15.);
+	return f;
+}
+
+float smoothBounds(float v) { return smoothstep(.195, .1975, v) * smoothstep(.2, .1975, v); }
+
+float stars(vec2 uv) { return smoothBounds(fbm(uv * 1e2)); }
 
 float rfbm(vec2 xz) { return abs(2. * fbm(xz) - 1.); }
 
