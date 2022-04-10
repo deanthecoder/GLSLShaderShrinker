@@ -67,7 +67,7 @@ namespace Shrinker.WpfApp
 
         public CustomOptions CustomOptions => m_customOptions;
 
-        public string ShadertoyShaderId { get; set; }
+        public string ShadertoyShaderId { get; set; } = Settings.Default.ShadertoyShaderId;
 
         private string OriginalCode
         {
@@ -252,21 +252,41 @@ namespace Shrinker.WpfApp
         private void LoadGlslFromShadertoy(object obj)
         {
             var id = ShadertoyShaderId?.Trim();
-            if (string.IsNullOrWhiteSpace(id) || id.Length != 6)
-                return;
-
-            using (new BusyCursor())
-            using (var wc = new WebClient())
+            if (id != null)
             {
-                var json = wc.DownloadString($"https://www.shadertoy.com/api/v1/shaders/{id}?key=BtntM4");
-
-                var shaderData = JsonConvert.DeserializeObject<Root>(json);
-                var shaderCode = shaderData?.Shader?.renderpass.LastOrDefault()?.code;
-                if (!string.IsNullOrWhiteSpace(shaderCode))
-                    LoadGlslFromStringAsync(shaderCode);
+                const string Prefix = "https://www.shadertoy.com/view/";
+                if (id.StartsWith(Prefix))
+                    id = id.Substring(Prefix.Length);
             }
 
-            DialogHost.CloseDialogCommand.Execute(null, null);
+            if (string.IsNullOrWhiteSpace(id))
+                return;
+
+            try
+            {
+                using (new BusyCursor())
+                using (var wc = new WebClient())
+                {
+                    var json = wc.DownloadString($"https://www.shadertoy.com/api/v1/shaders/{id}?key=BtntM4");
+
+                    var shaderData = JsonConvert.DeserializeObject<Root>(json);
+                    var shaderCode = shaderData?.Shader?.renderpass.LastOrDefault()?.code;
+                    if (string.IsNullOrWhiteSpace(shaderCode))
+                    {
+                        MyMessageQueue.Enqueue($"Failed to import GLSL: {(string.IsNullOrEmpty(shaderData.Error) ? "Unknown error occurred." : shaderData.Error)}");
+                        return;
+                    }
+
+                    LoadGlslFromStringAsync(shaderCode);
+                    Settings.Default.ShadertoyShaderId = id;
+                    Settings.Default.Save();
+                    OnPropertyChanged(nameof(ShadertoyShaderId));
+                }
+            }
+            finally
+            {
+                DialogHost.CloseDialogCommand.Execute(null, null);
+            }
         }
 
         private void SaveGlslToFile(object obj)

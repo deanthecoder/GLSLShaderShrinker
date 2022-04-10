@@ -57,5 +57,12 @@ namespace Shrinker.WpfApp.ShadertoyApi
     public class Root
     {
         public Shader Shader { get; set; }
+        public string Error { get; set; }
+
+        public Root(Shader shader, string error)
+        {
+            Shader = shader;
+            Error = error;
+        }
     }
 }
