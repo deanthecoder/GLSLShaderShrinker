@@ -75,7 +75,8 @@ namespace UnitTests
                        "void f(float n) { } void g() { vec2 vector = vec2(1); f(vector.x); }|void f(float n) { } void g() { vec2 v = vec2(1); f(v.x); }",
                        "void f(vec2 a) { } void g() { vec2 vector = vec2(1); f(vector); }|void f(vec2 a) { } void g() { vec2 v = vec2(1); f(v); }",
                        "struct S { int num; }; void f() { int num; S s; s.num = 1; }|struct S { int num; }; void f() { int n; S s; s.num = 1; }",
-                       "#define NUM 1.0\nfloat f() { return NUM; }|#define N 1.0 float f() { return N; }"
+                       "#define NUM 1.0\nfloat f() { return NUM; }|#define N 1.0 float f() { return N; }",
+                       "uniform float iTime; double main() { return iTime; }|uniform float iTime; double main(){ return iTime; }"
                    )]
             string codeAndGolfed)
         {

@@ -103,7 +103,8 @@ namespace Shrinker.Parser.SyntaxNodes
         /// </summary>
         public static IEnumerable<string> FindUserDefinedNames(this SyntaxNode root)
         {
-            var names = root.GlobalVariables().Select(o => o.Name).ToList();
+            var nonUniformGlobals = root.GlobalVariables().Where(o => (o.Parent as VariableDeclarationSyntaxNode)?.VariableType.IsUniform != true);
+            var names = nonUniformGlobals.Select(o => o.Name).ToList();
 
             var functionDefinitions = root.FunctionDefinitions().ToList();
             names.AddRange(functionDefinitions.Select(o => o.Name));
