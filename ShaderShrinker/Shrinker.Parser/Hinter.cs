@@ -48,7 +48,8 @@ namespace Shrinker.Parser
         private static IEnumerable<CodeHint> DetectFunctionsToInline(SyntaxNode rootNode)
         {
             var localFunctions = rootNode.FunctionDefinitions().ToList();
-            foreach (var function in localFunctions)
+            var nonMainFunctions = localFunctions.Where(o => !o.IsMain()).ToList();
+            foreach (var function in nonMainFunctions)
             {
                 var callSites =
                     localFunctions
@@ -68,8 +69,8 @@ namespace Shrinker.Parser
 
         private static IEnumerable<CodeHint> DetectUnusedFunctionParam(SyntaxNode rootNode)
         {
-            var localFunctions = rootNode.FunctionDefinitions().ToList();
-            foreach (var function in localFunctions.Where(o => !o.IsMain()))
+            var localFunctions = rootNode.FunctionDefinitions().Where(o => !o.IsMain()).ToList();
+            foreach (var function in localFunctions)
             {
                 foreach (var paramName in function.ParamNames.Select(o => o.Token.Content))
                 {

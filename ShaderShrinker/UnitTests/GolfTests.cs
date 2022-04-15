@@ -63,6 +63,7 @@ namespace UnitTests
                        "void foo() { int a = 1; }|void f() { int a = 1; }",
                        "void foo() { int _a = 1; }|void f() { int a = 1; }",
                        "void main() { int number = 1; }|void main() { int n = 1; }",
+                       "void mainImage() { int number = 1; }|void mainImage() { int n = 1; }",
                        "int foo() { int number = 1; number++; return number; }|int f() { int n = 1; n++; return n; }",
                        "int foo() { int number = 1; return ++number; }|int f() { int n = 1; return ++n; }",
                        "int foo() { int number = 1; return number++; }|int f() { int n = 1; return n++; }",

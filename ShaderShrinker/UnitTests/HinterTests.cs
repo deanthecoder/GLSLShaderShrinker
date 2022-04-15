@@ -42,6 +42,17 @@ namespace UnitTests
             Assert.That(rootNode.GetHints().OfType<FunctionToInlineHint>().ToList(), Has.Count.EqualTo(1));
         }
 
+        [Test]
+        public void CheckInlineHintNotGivenForMainFunctions()
+        {
+            var lexer = new Lexer();
+            lexer.Load("vec3 mainImage() { return vec3(0); } vec3 main() { return mainImage(); }");
+
+            var rootNode = new Parser(lexer).Parse();
+
+            Assert.That(rootNode.GetHints().OfType<FunctionToInlineHint>().ToList(), Is.Empty);
+        }
+
         [Test, Sequential]
         public void CheckDetectingFunctionWithUnusedParam(
             [Values(
