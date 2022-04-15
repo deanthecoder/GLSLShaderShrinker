@@ -7,7 +7,7 @@
 #define _f	float
 #define iR	iResolution
 #define Z	min(iTime, 0.)
-#define M(x)	clamp(x, 0., 1.)
+#define O(x)	clamp(x, 0., 1.)
 
 _f g = 0.;
 vec4 m;
@@ -21,29 +21,29 @@ struct Hit {
 };
 
 #define H	p = fract(p * .1031); p *= p + 3.3456; RET fract(p * (p + p));
-#define F(a)	if (a.d < h.d) h = a
+#define G(a)	if (a.d < h.d) h = a
 
-mat2 L(_f a) {
+mat2 M(_f a) {
 	_f c = cos(a),
 	   s = sin(a);
 	RET mat2(c, s, -s, c);
 }
 
-float P(v3 p) {
+float Q(v3 p) {
 	v3 q = abs(p) - v3(1);
 	RET length(max(q, 0.)) + min(max(q.x, max(q.y, q.z)), 0.);
 }
 
-vec3 I(v3 K, vec2 T) {
-	v3 f = NM(v3(0, 2, 0) - K),
+vec3 J(v3 L, vec2 U) {
+	v3 f = NM(v3(0, 2, 0) - L),
 	   r = NM(cross(v3(0, 1, 0), f));
-	RET NM(f + r * T.x + cross(f, r) * T.y);
+	RET NM(f + r * U.x + cross(f, r) * U.y);
 }
 
-Hit D(v3 p) {
+Hit E(v3 p) {
 	Hit h = Hit(length(p - v3(0, 2.5, 0)) - 1., 1, p);
-	F(Hit(P(p - v3(0, 1, 0)), 2, p));
-	F(Hit(abs(p.y), 3, p));
+	G(Hit(Q(p - v3(0, 1, 0)), 2, p));
+	G(Hit(abs(p.y), 3, p));
 	RET h;
 }
 
@@ -52,108 +52,108 @@ vec3 N(v3 p, _f t) {
 	v3 n = v3(0);
 	for (int i = min(iFrame, 0); i < 4; i++) {
 		v3 e = .005773 * (2. * v3(((i + 3) >> 1) & 1, (i >> 1) & 1, i & 1) - 1.);
-		n += e * D(p + e * h).d;
+		n += e * E(p + e * h).d;
 	}
 
 	RET NM(n);
 }
 
-float Q(v3 p, v3 z) {
+float R(v3 p, v3 B) {
 	_f i, h,
 	   s = 1.,
 	   t = .1;
 	for (i = Z; i < 30.; i++) {
-		h = D(t * z + p).d;
+		h = E(t * B + p).d;
 		s = min(s, 15. * h / t);
 		t += h;
 		if (s < .001 || t > 20.) break;
 	}
 
-	RET M(s);
+	RET O(s);
 }
 
-float b(v3 p, v3 n, _f h) { RET D(h * n + p).d / h; }
+float j(v3 p, v3 n, _f h) { RET E(h * n + p).d / h; }
 
-float S(v3 p, v3 z, _f h) { RET smoothstep(0., 1., D(h * z + p).d / h); }
+float T(v3 p, v3 B, _f h) { RET smoothstep(0., 1., E(h * B + p).d / h); }
 
-vec3 U(v3 c, vec2 l) {
-	vec2 q = l.xy / iR.xy;
+vec3 V(v3 c, vec2 k) {
+	vec2 q = k.xy / iR.xy;
 	c *= .5 + .5 * pow(16. * q.x * q.y * (1. - q.x) * (1. - q.y), .4);
 	RET c;
 }
 
-float k(v3 v) { RET exp(dot(v, v) * -.002); }
+float o(v3 v) { RET exp(dot(v, v) * -.002); }
 
-vec3 C(v3 p, v3 J, _f d, Hit h) {
+vec3 D(v3 p, v3 K, _f d, Hit h) {
 	v3 c,
-	   z = NM(v3(6, 3, -10) - p),
+	   B = NM(v3(6, 3, -10) - p),
 	   n = N(p, d);
-	_f _, x, y, u, B,
-	   R = 0.,
-	   w = g;
+	_f b, y, z, w, C,
+	   S = 0.,
+	   x = g;
 	if (h.id == 1) {
 		c = v3(.5);
-		R = (S(p, z, .4) + S(p, z, 2.)) * .15;
+		S = (T(p, B, .4) + T(p, B, 2.)) * .15;
 	}
 	else if (h.id == 2) c = v3(.5, .4, .3);
 	else c = v3(.2);
 
-	_ = mix(b(p, n, .2), b(p, n, 2.), .7);
-	x = M(.1 + .9 * dot(z, n)) * (.3 + .7 * Q(p, z)) * (.3 + .7 * _);
-	y = M(.1 + .9 * dot(z * v3(-1, 0, -1), n)) * .3 + pow(M(dot(J, reflect(z, n))), 10.);
-	u = smoothstep(.7, 1., 1. + dot(J, n)) * .5;
-	B = x + y * _ + R;
-	g = w;
-	RET mix(B * c * v3(2, 1.6, 1.4), v3(.01), u);
+	b = mix(j(p, n, .2), j(p, n, 2.), .7);
+	y = O(.1 + .9 * dot(B, n)) * (.3 + .7 * R(p, B)) * (.3 + .7 * b);
+	z = O(.1 + .9 * dot(B * v3(-1, 0, -1), n)) * .3 + pow(O(dot(K, reflect(B, n))), 10.);
+	w = smoothstep(.7, 1., 1. + dot(K, n)) * .5;
+	C = y + z * b + S;
+	g = x;
+	RET mix(C * c * v3(2, 1.6, 1.4), v3(.01), w);
 }
 
-vec4 E(inout vec3 p, v3 J, _f s, _f G) {
+vec4 F(inout vec3 p, v3 K, _f s, _f I) {
 	_f i,
 	   d = .01;
 	g = 0.;
 	Hit h;
 	for (i = Z; i < s; i++) {
-		h = D(p);
+		h = E(p);
 		if (abs(h.d) < .0015) break;
 		d += h.d;
-		if (d > G) RET vec4(0);
-		p += h.d * J;
+		if (d > I) RET vec4(0);
+		p += h.d * K;
 	}
 
-	RET vec4(g + C(p, J, d, h), h.id);
+	RET vec4(g + D(p, K, d, h), h.id);
 }
 
-vec3 O(v3 K, v3 J) {
-	v3 p = K;
-	vec4 j = E(p, J, 120., 64.);
-	j.rgb *= k(p - K);
-	if (j.w > 0.) {
-		J = reflect(J, N(p, length(p - K)));
-		p += J * .01;
-		j += .2 * E(p, J, 64., 10.) * k(K - p);
+vec3 P(v3 L, v3 K) {
+	v3 p = L;
+	vec4 l = F(p, K, 120., 64.);
+	l.rgb *= o(p - L);
+	if (l.w > 0.) {
+		K = reflect(K, N(p, length(p - L)));
+		p += K * .01;
+		l += .2 * F(p, K, 64., 10.) * o(L - p);
 	}
 
-	RET j.rgb;
+	RET l.rgb;
 }
 
-void mainImage(out vec4 o, vec2 l) {
+void mainImage(out vec4 u, vec2 k) {
 	m = abs(iMouse / vec2(640, 360).xyxy);
-	v3 j,
-	   K = v3(0, 2, -5);
-	K.yz *= L(m.y - .5);
-	K.xz *= L((m.x - .5) * 3.141);
-	vec2 T = (l - .5 * iR.xy) / iR.y;
-	j = O(K, I(K, T));
+	v3 l,
+	   L = v3(0, 2, -5);
+	L.yz *= M(m.y - .5);
+	L.xz *= M((m.x - .5) * 3.141);
+	vec2 U = (k - .5 * iR.xy) / iR.y;
+	l = P(L, J(L, U));
 #ifdef A
-	if (fwidth(j.r) > .01) {
+	if (fwidth(l.r) > .01) {
 		for (_f dx = Z; dx <= 1.; dx++) {
 			for (_f dy = Z; dy <= 1.; dy++)
-				j += O(K, I(K, T + (vec2(dx, dy) - .5) / iR.xy));
+				l += P(L, J(L, U + (vec2(dx, dy) - .5) / iR.xy));
 		}
 
-		j /= 5.;
+		l /= 5.;
 	}
 
 #endif
-	o = vec4(U(pow(max(v3(0), j), v3(.45)) * M(iTime), l), 0);
+	u = vec4(V(pow(max(v3(0), l), v3(.45)) * O(iTime), k), 0);
 }

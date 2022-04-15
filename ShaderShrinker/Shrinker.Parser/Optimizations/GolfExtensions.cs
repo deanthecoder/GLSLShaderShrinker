@@ -197,7 +197,7 @@ namespace Shrinker.Parser.Optimizations
             foreach (var kvp in nameMap.Where(o => o.Value.Length > 1))
             {
                 // Try to abbreviate to one letter.
-                var candidate = $"{kvp.Value.First()}";
+                var candidate = $"{kvp.Value.Replace("_", null).First()}";
 
                 const string Letters = "abcdefghijlkmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
                 if (nameMap.ContainsValue(candidate))
