@@ -573,6 +573,7 @@
                     * Change ```pow(3.0, 2.0)``` to ```9.0```
                     * Change ```float a = 1.2 / 2.3 * 4.5;``` to ```float a = 2.3478;```
                     * Change ```vec2 f = vec2(1.1, 2.2) + 3.3 * 4.4;``` to ```vec2 f = vec2(15.62, 16.72);```
+                    * Change ```float f = dot(v, vec3(0, 1, 0));``` to ```float f = v.y;```
                 </MdXaml:MarkdownScrollViewer>
             </CheckBox.ToolTip>
         </CheckBox>

@@ -266,6 +266,32 @@ namespace UnitTests
         }
 
         [Test, Sequential]
+        public void CheckArithmeticWithSingleIndexDotFunction(
+            [Values("vec3 v; float f = dot(vec3(0, 0, 1), v);|vec3 v; float f = v.z;",
+                    "vec3 v; float f = dot(vec3(0, 1, 0), v);|vec3 v; float f = v.y;",
+                    "vec3 v; float f = dot(vec3(1, 0, 0), v);|vec3 v; float f = v.x;",
+                    "vec3 v; float f = dot(v, vec3(0, 1, 0));|vec3 v; float f = v.y;",
+                    "vec2 v; float f = dot(v, vec2(1, 0));|vec2 v; float f = v.x;",
+                    "float f = dot(vec2(1, 2), vec2(3, 4));|float f = 11.;",
+                    "float f = dot(vec2(2), vec2(3, 4));|float f = 14.;",
+                    "vec2 v; float f = dot(v + v, vec2(1, 0));|vec2 v; float f = dot(v + v, vec2(1, 0));")] string code)
+        {
+            var input = code.Split('|')[0];
+            var expected = code.Split('|')[1];
+
+            var lexer = new Lexer();
+            lexer.Load(input);
+
+            var options = CustomOptions.None();
+            options.PerformArithmetic = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(expected));
+        }
+
+        [Test, Sequential]
         public void CheckArithmeticWithTrigFunctions(
             [Values("float f = sin(3.141);",
                     "float f = cos(0.5);",

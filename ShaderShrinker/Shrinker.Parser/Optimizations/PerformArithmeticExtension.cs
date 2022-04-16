@@ -195,6 +195,45 @@ namespace Shrinker.Parser.Optimizations
                     didChange = true;
                 }
 
+                // dot(vecN(nums), vecN(nums)) => <the result>
+                foreach (var dotNode in functionCalls
+                    .Where(o => o.Name == "dot" && o.Params.Children.Any(n => (n.Token as TypeToken)?.IsVector() == true))
+                    .ToList())
+                {
+                    var dotParams = dotNode.Params.GetCsv().ToList();
+                    var vectors = dotParams.Select(o => o.First()).Where(o => (o.Token as TypeToken)?.IsVector() == true).ToList();
+                    var nums = vectors.Select(GetVectorNumericCsv).ToList();
+                    if (nums.All(o => o == null))
+                        continue; // Neither arg is a simple numeric vector.
+
+                    if (nums.Count(o => o != null) == 2)
+                    {
+                        // Both args are vectors and simple numeric - We can calculate the result.
+                        var sum = nums[0].Select((t, i) => t * nums[1][i]).Sum();
+                        dotNode.ReplaceWith(new GenericSyntaxNode(FloatToken.From(sum, MaxDp)));
+                        didChange = true;
+                        continue;
+                    }
+
+                    // Do any of the vectors have only a single '1' component?
+                    var vectorWithAOne = vectors.FirstOrDefault(o => IsSingleElementOne(GetVectorNumericCsv(o)));
+                    if (vectorWithAOne == null)
+                        continue; // Nope.
+
+                    // Yes - The 'other' param just needs a .x/.y/.z suffix.
+                    var otherParam = dotParams.Single(o => o[0] != vectorWithAOne);
+
+                    // But first check it a single variable...
+                    if (otherParam.Count != 1 || otherParam.Single() is not GenericSyntaxNode node)
+                        continue;
+                    
+                    // Replace the dot().
+                    var oneIndex = GetVectorNumericCsv(vectorWithAOne).IndexOf(1.0);
+                    var newNode = new GenericSyntaxNode($"{node.Token.Content}.{"xyzw"[oneIndex]}");
+                    dotNode.ReplaceWith(newNode);
+                    didChange = true;
+                }
+
                 // Constant math/trig functions => <the result>
                 var mathOp = new List<Tuple<string, Func<double, double>>>
                 {
@@ -429,6 +468,11 @@ namespace Shrinker.Parser.Optimizations
                 nums.Add(nums.Last());
             return nums;
         }
+
+        private static bool IsSingleElementOne(IList<double> values) =>
+            values != null &&
+            values.All(o => o is 0.0 or 1.0) &&
+            Math.Abs(values.Count(o => Math.Abs(o - 1.0) < 0.00001) - 1.0) < 0.00001;
 
         private static bool IsSafeToPerformMath(SyntaxNode lhsNumNode, SymbolOperatorToken symbol, SyntaxNode rhsNumNode)
         {
