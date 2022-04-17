@@ -178,20 +178,7 @@ namespace Shrinker.Parser.Optimizations
                         continue;
 
                     var mag = Math.Sqrt(nums.Sum(o => o * o));
-
-                    // Squash vecN(n, n, n, ...) down to vecN(n)
-                    if (nums.Count > 1 && nums.Distinct().Count() == 1)
-                        nums = new List<double> { nums.First() };
-
-                    var newVectorNumNodes = nums.SelectMany(o => new[]
-                    {
-                        new GenericSyntaxNode(new CommaToken()),
-                        new GenericSyntaxNode(FloatToken.From(o / mag, MaxDp).AsIntIfPossible())
-                    }).Skip(1);
-
-                    var newVectorBrackets = new RoundBracketSyntaxNode(newVectorNumNodes);
-                    var newVectorNode = new GenericSyntaxNode(normalizeNode.Params.Children.First().Token.Content);
-                    normalizeNode.ReplaceWith(newVectorNode).InsertNextSibling(newVectorBrackets);
+                    ReplaceNodeWithVector(normalizeNode, nums.Select(o => o / mag).ToList());
                     didChange = true;
                 }
 
@@ -231,6 +218,33 @@ namespace Shrinker.Parser.Optimizations
                     var oneIndex = GetVectorNumericCsv(vectorWithAOne).IndexOf(1.0);
                     var newNode = new GenericSyntaxNode($"{node.Token.Content}.{"xyzw"[oneIndex]}");
                     dotNode.ReplaceWith(newNode);
+                    didChange = true;
+                }
+
+                // cross(vecN, vecN) => vecN(...)
+                foreach (var crossNode in functionCalls
+                             .Where(o => o.Name == "cross" && o.Params.Children.Count(n => (n.Token as TypeToken)?.IsVector() == true) == 2)
+                             .ToList())
+                {
+                    var crossParams = crossNode.Params.GetCsv().ToList();
+                    var vectors = crossParams.Select(o => o.First()).Where(o => (o.Token as TypeToken)?.IsVector() == true).ToList();
+                    var nums = vectors.Select(GetVectorNumericCsv).ToList();
+
+                    if (nums.Count(o => o != null) != 2)
+                        continue; // Not a cross product of two 'simple' numeric vectors.
+
+                    if (nums.Any(o => o.Count != 3))
+                        continue; // Not a pair of 3D vectors.
+
+                    // Both args are vectors and simple numeric - We can calculate the result.
+                    ReplaceNodeWithVector(
+                                          crossNode,
+                                          new[]
+                                          {
+                                              nums[0][1] * nums[1][2] - nums[1][1] * nums[0][2],
+                                              nums[1][0] * nums[0][2] - nums[0][0] * nums[1][2],
+                                              nums[0][0] * nums[1][1] - nums[1][0] * nums[0][1]
+                                          });
                     didChange = true;
                 }
 
@@ -438,6 +452,25 @@ namespace Shrinker.Parser.Optimizations
             }
 
             return repeatSimplifications;
+        }
+
+        private static void ReplaceNodeWithVector(SyntaxNode node, ICollection<double> vectorElements)
+        {
+            // Squash vecN(n, n, n, ...) down to vecN(n)?
+            var nums = vectorElements.ToList();
+            if (nums.Count > 1 && nums.Distinct().Count() == 1)
+                nums = new List<double> { nums.First() };
+
+            var bracketContent = nums.SelectMany(
+                                                 o => new[]
+                                                 {
+                                                     new GenericSyntaxNode(new CommaToken()),
+                                                     new GenericSyntaxNode(FloatToken.From(o, MaxDp).AsIntIfPossible())
+                                                 }).Skip(1);
+
+            node
+                .ReplaceWith(new GenericSyntaxNode(new TypeToken($"vec{vectorElements.Count}")))
+                .InsertNextSibling(new RoundBracketSyntaxNode(bracketContent));
         }
 
         private static List<double> GetVectorNumericCsv(SyntaxNode vectorNode)

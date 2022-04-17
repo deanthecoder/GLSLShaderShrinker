@@ -533,7 +533,7 @@ namespace Shrinker.Parser.SyntaxNodes
                 // Create declaration node.
                 var terminatorNode = namesAndValues.Last().Last().Next;
                 var declNode = new VariableDeclarationSyntaxNode(typeNode);
-                var assignments = namesAndValues.Select(o => new VariableAssignmentSyntaxNode(new GenericSyntaxNode(o.First().Token.Content), o.Count > 1 ? o.Skip(1).ToList() : null)).OfType<SyntaxNode>().ToArray();
+                var assignments = namesAndValues.Select(o => new VariableAssignmentSyntaxNode(new GenericSyntaxNode(o.First().Token.Clone()), o.Count > 1 ? o.Skip(1).ToList() : null)).OfType<SyntaxNode>().ToArray();
                 declNode.Adopt(assignments);
 
                 // Replace original nodes with the new versions.

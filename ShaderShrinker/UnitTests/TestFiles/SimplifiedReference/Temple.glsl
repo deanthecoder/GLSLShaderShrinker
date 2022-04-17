@@ -1,4 +1,4 @@
-// Processed by 'GLSL Shader Shrinker' (Shrunk by 412 characters)
+// Processed by 'GLSL Shader Shrinker' (Shrunk by 414 characters)
 // (https://github.com/deanthecoder/GLSLShaderShrinker)
 
 #define SKYCOL	vec3(.6, .8, .9)
@@ -142,14 +142,13 @@ vec3 vignette(vec3 col, vec2 fragCoord) {
 }
 
 void mainImage(out vec4 fragColor, vec2 fragCoord) {
+	const vec3 forward = vec3(-.59359, -.31163, .74198),
+	           sunPos = vec3(42.563, 68.101, 59.588);
 	vec2 hit = vec2(0),
 	     uv = (fragCoord - .5 * iResolution.xy) / iResolution.y;
 	vec3 p,
-	     forward = vec3(-.59359, -.31163, .74198),
 	     right = normalize(cross(vec3(0, 1, 0), forward)),
 	     rayDir = normalize(forward + uv.x * right + uv.y * cross(forward, right)),
-	     sunPosUnit = vec3(.42563, .68101, .59588),
-	     sunPos = sunPosUnit * 1e2,
 	     col = vec3(0);
 	float d = 0.;
 	for (int steps = min(iFrame, 0); steps < 200; steps++) {
@@ -187,8 +186,8 @@ void mainImage(out vec4 fragColor, vec2 fragCoord) {
 			mat *= 1. * (1. + smoothstep(5., 0., terrainDist));
 		}
 
-		sun = max(0., dot(sunPosUnit, n)) * 6.;
-		back = .2 * max(0., dot(sunPosUnit * vec3(-1, 0, -1), n));
+		sun = max(0., dot(vec3(.42563, .68101, .59588), n)) * 6.;
+		back = .2 * max(0., dot(vec3(-.42563, 0, -.59588), n));
 		sky = (.6 + .5 * n.y) * .05;
 		col = mat * sun * vec3(1.64, 1.27, .99) * sha;
 		col += mat * back * vec3(1.64, 1.27, .99) * occ;

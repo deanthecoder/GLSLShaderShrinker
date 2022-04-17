@@ -1,4 +1,4 @@
-// Processed by 'GLSL Shader Shrinker' (Shrunk by 1,417 characters)
+// Processed by 'GLSL Shader Shrinker' (Shrunk by 1,390 characters)
 // (https://github.com/deanthecoder/GLSLShaderShrinker)
 
 #define v3	vec3
@@ -149,14 +149,13 @@ vec3 ve(v3 m, v2 w) {
 }
 
 void mainImage(out vec4 v, v2 w) {
+	const v3 u = v3(-.59359, -.31163, .74198),
+	         Y = v3(42.563, 68.101, 59.588);
 	v2 z = v2(0),
 	   UV = (w - .5 * iR.xy) / iR.y;
 	v3 p,
-	   u = v3(-.59359, -.31163, .74198),
 	   M = NM(cross(v3(0, 1, 0), u)),
 	   K = NM(u + UV.x * M + UV.y * cross(u, M)),
-	   Z = v3(.42563, .68101, .59588),
-	   Y = Z * 1e2,
 	   m = v3(0);
 	_f d = 0.;
 	for (int steps = min(iFrame, 0); steps < 200; steps++) {
@@ -189,13 +188,13 @@ void mainImage(out vec4 v, v2 w) {
 		else if (z.y < 3.5) {
 			C = v3(.002, .02, .04);
 			U = k(p, Y, 1.);
-			_f tt = S(p);
-			C *= 1. * (1. + SS(30., 0., tt));
-			C *= 1. * (1. + SS(5., 0., tt));
+			_f Z = S(p);
+			C *= 1. * (1. + SS(30., 0., Z));
+			C *= 1. * (1. + SS(5., 0., Z));
 		}
 
-		X = max(0., dot(Z, n)) * 6.;
-		g = .2 * max(0., dot(Z * v3(-1, 0, -1), n));
+		X = max(0., dot(v3(.42563, .68101, .59588), n)) * 6.;
+		g = .2 * max(0., dot(v3(-.42563, 0, -.59588), n));
 		V = (.6 + .5 * n.y) * .05;
 		m = C * X * v3(1.64, 1.27, .99) * U;
 		m += C * g * v3(1.64, 1.27, .99) * H;
