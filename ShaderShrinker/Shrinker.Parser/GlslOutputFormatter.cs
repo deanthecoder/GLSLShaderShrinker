@@ -157,6 +157,8 @@ namespace Shrinker.Parser
 
                                 if (o.Next is VariableAssignmentSyntaxNode or FunctionCallSyntaxNode or VariableDeclarationSyntaxNode)
                                     sb.Append(' ');
+                                else if ((o.Next as GenericSyntaxNode)?.Token is INumberToken or TypeToken)
+                                    sb.Append(' ');
                                 break;
 
                             case ConstToken:
