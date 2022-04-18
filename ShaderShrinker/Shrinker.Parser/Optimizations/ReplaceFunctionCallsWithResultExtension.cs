@@ -50,6 +50,9 @@ namespace Shrinker.Parser.Optimizations
                         }
 
                         var typeNode = (GenericSyntaxNode)callee.Params.Children[i++].Clone();
+                        if (typeNode?.Token is not TypeToken)
+                            continue; // Unknown type - Skip.
+
                         var nameNode = (GenericSyntaxNode)callee.Params.Children[i++].Clone();
 
                         var declNode = new VariableDeclarationSyntaxNode(typeNode);
