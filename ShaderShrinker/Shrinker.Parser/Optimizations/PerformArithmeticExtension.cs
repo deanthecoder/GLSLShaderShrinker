@@ -388,6 +388,8 @@ namespace Shrinker.Parser.Optimizations
                             // Ensure both brackets have the same number of elements.
                             var lhsCsv = brackets.GetCsv().ToList();
                             var rhsCsv = rhsVectorBrackets.GetCsv().ToList();
+                            if (lhsCsv.First().Count != 1 || rhsCsv.First().Count != 1)
+                                continue; // The element being cloned is complete (multiple tokens) - Duplicating will add complexity.
                             while (lhsCsv.Count < rhsCsv.Count)
                                 lhsCsv.Add(new[] { lhsCsv.First().Single().Clone() });
                             while (rhsCsv.Count < lhsCsv.Count)

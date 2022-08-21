@@ -463,7 +463,8 @@ namespace UnitTests
                     "vec2 f = vec2(3) + vec2(4, 5);",
                     "vec2 v = vec2(1, 2), f = v * vec2(1.1, 2.2) + vec2(6, 7);",
                     "vec2 v = vec2(1, 2), f = vec2(1.1, 2.2) + vec2(6, 7) * v;",
-                    "vec2 f = vec2(3, 4) + vec2(1. * 2., 3);")] string code,
+                    "vec2 f = vec2(3, 4) + vec2(1. * 2., 3);",
+                    "vec3 v = vec3(.6, .3, .1) - vec3(.25 * f(2.));")] string code,
             [Values("vec2 f = vec2(2.1, 4.2);",
                     "vec2 f = vec2(8.1, 11.2);",
                     "vec2 f = vec2(7.1, 9.2);",
@@ -483,7 +484,8 @@ namespace UnitTests
                     "vec2 f = vec2(7, 8);",
                     "vec2 v = vec2(1, 2), f = v * vec2(1.1, 2.2) + vec2(6, 7);",
                     "vec2 v = vec2(1, 2), f = vec2(1.1, 2.2) + vec2(6, 7) * v;",
-                    "vec2 f = vec2(5, 7);")] string expected)
+                    "vec2 f = vec2(5, 7);",
+                    "vec3 v = vec3(.6, .3, .1) - vec3(.25 * f(2.));")] string expected)
         {
             var lexer = new Lexer();
             lexer.Load(code);
@@ -496,7 +498,5 @@ namespace UnitTests
 
             Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo(expected));
         }
-
-        // todo - normalize(vec3(-20, -10.5, 25))
     }
 }
