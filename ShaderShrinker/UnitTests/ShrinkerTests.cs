@@ -345,6 +345,21 @@ namespace UnitTests
         }
 
         [Test]
+        public void CheckDeclarationIsNotJoinedWithDefinitionFromFunctionCallOutParam()
+        {
+            var lexer = new Lexer();
+            lexer.Load("void a(out vec3 v) { v = vec3(1); } void f() { int a; vec3 b = vec3(0); b += g(a); }");
+
+            var options = CustomOptions.None();
+            options.JoinVariableDeclarationsWithAssignments = true;
+            var rootNode = new Parser(lexer)
+                .Parse()
+                .Simplify(options);
+
+            Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo("void a(out vec3 v) { v = vec3(1); } void f() { int a; vec3 b = vec3(0); b += g(a); }"));
+        }
+
+        [Test]
         public void CheckDeclarationIsNotMovedIfAssignedInBracedCodeBranch()
         {
             var lexer = new Lexer();
@@ -417,8 +432,8 @@ namespace UnitTests
                 .Simplify(options);
 
             Assert.That(rootNode.ToCode().ToSimple(), Is.EqualTo("void f() { #ifdef AA { vec2 v = vec2(1); #else vec2 v = vec2(2); #endif #ifdef AA } #endif }"));
-        }
-
+        }      
+        
         [Test, Sequential]
         public void CheckSimplifyingFloats(
             [Values("10.0", "1.1", "0.10", "0.0000", "-0.09", "100.0", "100.1", "1100000.", "1.23f", "-0.1f", ".0f", "0.f", "10.00F", "102.", "001.1", "3.141592653589793238462643383279502884197", "-3.141592653589793238462643383279502884197", "1.541182543454656e-4", "1e10", "0011.0", "-0011.0", "00.0", "0.00001", "0.00062")] string code,

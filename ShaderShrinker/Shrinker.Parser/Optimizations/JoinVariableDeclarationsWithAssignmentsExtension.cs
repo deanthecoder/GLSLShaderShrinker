@@ -146,9 +146,14 @@ namespace Shrinker.Parser.Optimizations
 
                                       // Or separated only by declarations all assigned in the single next statement?
                                       // (Only possible if the next statement is a multi-param function with out params.)
-                                      if (nearestUseNode is FunctionCallSyntaxNode &&
-                                          declWithNoDefs.NextSiblings.TakeWhile(o => o != nearestUseNode).All(o => o is VariableDeclarationSyntaxNode))
-                                          break;
+                                      if (nearestUseNode is FunctionCallSyntaxNode)
+                                      {
+                                          var nodes = declWithNoDefs.NextSiblings.TakeWhile(o => o != nearestUseNode).ToList();
+                                          if (nodes.All(o => o is VariableDeclarationSyntaxNode))
+                                              break;
+                                          if (nodes.Any(o => o.Token is SymbolOperatorToken))
+                                              break;
+                                      }
 
                                       // Move declaration to before definition.
                                       declWithNoDefs.Remove();
@@ -158,7 +163,7 @@ namespace Shrinker.Parser.Optimizations
                                   return true;
                               });
 
-            // Declare variables when first assigned, if it would reduce code size.
+            // Declare variables when first assigned if it would reduce code size.
             // (I.e. If Variable name is longer than the type name)
             foreach (var functionNode in rootNode.FunctionDefinitions())
             {
