@@ -182,22 +182,36 @@ namespace Shrinker.Parser.Optimizations
                     didChange = true;
                 }
 
-                // dot(vecN(nums), vecN(nums)) => <the result>
-                foreach (var dotNode in functionCalls
-                    .Where(o => o.Name == "dot" && o.Params.Children.Any(n => (n.Token as TypeToken)?.IsVector() == true))
+                // <func>(vecN(nums), vecN(nums)) => <the result>
+                foreach (var functionNode in functionCalls
+                    .Where(o => o.Params.Children.Any(n => (n.Token as TypeToken)?.IsVector() == true))
                     .ToList())
                 {
-                    var dotParams = dotNode.Params.GetCsv().ToList();
+                    var dotParams = functionNode.Params.GetCsv().ToList();
                     var vectors = dotParams.Select(o => o.First()).Where(o => (o.Token as TypeToken)?.IsVector() == true).ToList();
                     var nums = vectors.Select(GetVectorNumericCsv).ToList();
                     if (nums.All(o => o == null))
                         continue; // Neither arg is a simple numeric vector.
 
-                    if (nums.Count(o => o != null) == 2)
+                    // Are both args vectors and simple numeric?
+                    var isSimpleNumeric = nums.Count(o => o != null) == 2;
+                    if (isSimpleNumeric && functionNode.Name == "pow")
+                    {
+                        // pow(vecN(nums), vecN(nums)) => <the result>
+                        ReplaceNodeWithVector(functionNode, nums[0].Select((_, i) => Math.Pow(nums[0][i], nums[1][i])).ToList());
+                        didChange = true;
+                        continue;
+                    }
+
+                    // dot(vecN(nums), vecN(nums)) => <the result>
+                    if (functionNode.Name != "dot")
+                        continue;
+
+                    if (isSimpleNumeric)
                     {
                         // Both args are vectors and simple numeric - We can calculate the result.
-                        var sum = nums[0].Select((t, i) => t * nums[1][i]).Sum();
-                        dotNode.ReplaceWith(new GenericSyntaxNode(FloatToken.From(sum, MaxDp)));
+                        var result = nums[0].Select((t, i) => t * nums[1][i]).Sum();
+                        functionNode.ReplaceWith(new GenericSyntaxNode(FloatToken.From(result, MaxDp)));
                         didChange = true;
                         continue;
                     }
@@ -217,7 +231,7 @@ namespace Shrinker.Parser.Optimizations
                     // Replace the dot().
                     var oneIndex = GetVectorNumericCsv(vectorWithAOne).IndexOf(1.0);
                     var newNode = new GenericSyntaxNode($"{node.Token.Content}.{"xyzw"[oneIndex]}");
-                    dotNode.ReplaceWith(newNode);
+                    functionNode.ReplaceWith(newNode);
                     didChange = true;
                 }
 

@@ -60,12 +60,14 @@ namespace UnitTests
                     "float f = pow(2.0, pow(2., 2.));",
                     "float f; f = pow(2.0, pow(2., 2.));",
                     "float f = pow(-1.5, 2.0);",
-                    "float f = pow(1.5, -2.0);")] string code,
+                    "float f = pow(1.5, -2.0);",
+                    "vec2 v = pow(vec2(2, 3), vec2(4, 5));")] string code,
             [Values("float f = 16.;",
                     "float f = 16.;",
                     "float f; f = 16.;",
                     "float f = pow(-1.5, 2.0);",
-                    "float f = pow(1.5, -2.0);")] string expected)
+                    "float f = pow(1.5, -2.0);",
+                    "vec2 v = vec2(16, 243);")] string expected)
         {
             var lexer = new Lexer();
             lexer.Load(code);

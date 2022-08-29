@@ -21,7 +21,7 @@ namespace Shrinker.Parser.SyntaxNodes
     {
         public string Name { get; private set; }
 
-        public RoundBracketSyntaxNode Params => (RoundBracketSyntaxNode)Children[0];
+        public RoundBracketSyntaxNode Params => Children.Any() ? (RoundBracketSyntaxNode)Children[0] : new RoundBracketSyntaxNode();
 
         public FunctionCallSyntaxNode(GenericSyntaxNode nameNode, RoundBracketSyntaxNode brackets) : this(nameNode?.Token?.Content)
         {
