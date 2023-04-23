@@ -8,8 +8,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\ShaderShrinker\Shrinker.Lexer\Shrinker.Lexer.csproj"/>
-        <ProjectReference Include="..\ShaderShrinker\Shrinker.Parser\Shrinker.Parser.csproj"/>
+        <ProjectReference Include="..\ShaderShrinker\Shrinker.Lexer\Shrinker.Lexer.csproj" />
+        <ProjectReference Include="..\ShaderShrinker\Shrinker.Parser\Shrinker.Parser.csproj" />
     </ItemGroup>
 
 </Project>

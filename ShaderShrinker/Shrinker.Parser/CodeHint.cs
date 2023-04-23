@@ -30,7 +30,7 @@ namespace Shrinker.Parser
                 return false;
             if (ReferenceEquals(this, obj))
                 return true;
-            if (obj.GetType() != this.GetType())
+            if (obj.GetType() != GetType())
                 return false;
             var other = (CodeHint)obj;
             return Item == other.Item && Suggestion == other.Suggestion;

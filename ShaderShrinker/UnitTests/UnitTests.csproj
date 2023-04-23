@@ -101,6 +101,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Transpiler\Transpiler.csproj" />
     <ProjectReference Include="..\Shrinker.Lexer\Shrinker.Lexer.csproj" />
     <ProjectReference Include="..\Shrinker.Parser\Shrinker.Parser.csproj" />
   </ItemGroup>

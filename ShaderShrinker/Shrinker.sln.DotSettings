@@ -319,12 +319,12 @@
 </s:String>
 	<s:Boolean x:Key="/Default/CodeStyle/CSharpUsing/QualifiedUsingAtNestedScope/@EntryValue">True</s:Boolean>
 	<s:String x:Key="/Default/CodeStyle/FileHeader/FileHeaderText/@EntryValue">-----------------------------------------------------------------------&#xD;
- &lt;copyright file="$FILENAME$" company="Global Graphics Software Ltd"&gt;&#xD;
-     Copyright (c) $CREATED_YEAR$ Global Graphics Software Ltd. All rights reserved.&#xD;
+ &lt;copyright file="$FILENAME$" company="Dean Edis"&gt;&#xD;
+     Copyright (c) $CREATED_YEAR$ Dean Edis. All rights reserved.&#xD;
  &lt;/copyright&gt;&#xD;
  &lt;summary&gt;&#xD;
  This example is provided on an "as is" basis and without warranty of any kind.&#xD;
- Global Graphics Software Ltd. does not warrant or make any representations regarding the use or&#xD;
+ Dean Edis. does not warrant or make any representations regarding the use or&#xD;
  results of use of this example.&#xD;
  &lt;/summary&gt;&#xD;
 -----------------------------------------------------------------------&#xD;
@@ -549,12 +549,12 @@ public void $MethodName$([Values($Values$)] $type$ $parameter$)&#xD;
 	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F5286FD2F410684DB6876C09DFCD0A4A/Scope/=E8F0594528C33E45BBFEC6CFE851095D/Type/@EntryValue">InCSharpProjectFile</s:String>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F5286FD2F410684DB6876C09DFCD0A4A/ShortenQualifiedReferences/@EntryValue">True</s:Boolean>
 	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F5286FD2F410684DB6876C09DFCD0A4A/Text/@EntryValue">//-----------------------------------------------------------------------&#xD;
-// &lt;copyright file="$filename$" company="Global Graphics Software Ltd"&gt;&#xD;
-//     Copyright (c) $YEAR$ Global Graphics Software Ltd. All rights reserved.&#xD;
+// &lt;copyright file="$filename$" company="Dean Edis"&gt;&#xD;
+//     Copyright (c) $YEAR$ Dean Edis. All rights reserved.&#xD;
 // &lt;/copyright&gt;&#xD;
 // &lt;summary&gt;&#xD;
 // This example is provided on an "as is" basis and without warranty of any kind.&#xD;
-// Global Graphics Software Ltd. does not warrant or make any representations regarding the use or&#xD;
+// Dean Edis. does not warrant or make any representations regarding the use or&#xD;
 // results of use of this example.&#xD;
 // &lt;/summary&gt;&#xD;
 //-----------------------------------------------------------------------&#xD;
@@ -597,7 +597,7 @@ namespace $namespace$&#xD;
 	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=FE224B272B5ADC43810301F202610DE7/Scope/=E8F0594528C33E45BBFEC6CFE851095D/Type/@EntryValue">InCSharpProjectFile</s:String>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=FE224B272B5ADC43810301F202610DE7/ShortenQualifiedReferences/@EntryValue">True</s:Boolean>
 	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=FE224B272B5ADC43810301F202610DE7/Text/@EntryValue">//-----------------------------------------------------------------------&#xD;
-// &lt;copyright file="$FILENAME$" company="Global Graphics Software Ltd"&gt;&#xD;
+// &lt;copyright file="$FILENAME$" company="Dean Edis"&gt;&#xD;
 //     Copyright (c) $YEAR$ Global Graphics. All rights reserved.&#xD;
 // &lt;/copyright&gt;&#xD;
 //-----------------------------------------------------------------------&#xD;

@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Shrinker.Parser.SyntaxNodes;
+
 // ReSharper disable StringLiteralTypo
 
 namespace Shrinker.Parser.Optimizations
