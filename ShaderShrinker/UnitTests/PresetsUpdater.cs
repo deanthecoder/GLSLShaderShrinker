@@ -42,6 +42,7 @@ namespace UnitTests
         {
             var golfOptions = CustomOptions.SetAllOptions(true);
             golfOptions.KeepHeaderComments = false;
+            golfOptions.TranspileToCSharp = false;
             return golfOptions;
         }
 

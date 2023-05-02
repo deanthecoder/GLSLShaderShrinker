@@ -5,11 +5,20 @@
         <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <IsPackable>false</IsPackable>
+        <Title>GLSL Renderer</Title>
+        <Authors>Dean Edis</Authors>
+        <Company>Dean Edis (DeanTheCoder)</Company>
+        <Product>GLSL Renderer</Product>
     </PropertyGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\ShaderShrinker\Shrinker.Lexer\Shrinker.Lexer.csproj" />
         <ProjectReference Include="..\ShaderShrinker\Shrinker.Parser\Shrinker.Parser.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     </ItemGroup>
 
 </Project>

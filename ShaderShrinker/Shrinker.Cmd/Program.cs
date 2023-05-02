@@ -9,6 +9,8 @@ namespace Shrinker.Cmd
     {
         static void Main(string[] args)
         {
+            var transpileToCSharp = args.Any(o => o.Equals("-csharp", StringComparison.OrdinalIgnoreCase));
+            
             var glsl = ClipboardService.GetText();
             if (string.IsNullOrEmpty(glsl))
             {
@@ -30,13 +32,22 @@ namespace Shrinker.Cmd
                 var rootNode = parser.Parse();
 
                 Console.WriteLine("Simplifying...");
-                var options = CustomOptions.All();
-                options.CombineConsecutiveAssignments = false;
-                options.RemoveComments = false;
-                rootNode.Simplify(options);
+                CustomOptions options;
+                if (transpileToCSharp)
+                {
+                    options = CustomOptions.TranspileOptions();
+                }
+                else
+                {
+                    options = CustomOptions.All();
+                    options.CombineConsecutiveAssignments = false;
+                    options.RemoveComments = false;
+                }
                 
-                Console.WriteLine("Creating GLSL...");
-                var newGlsl = rootNode.ToCode();
+                rootNode.Simplify(options);                    
+                
+                Console.WriteLine($"Creating {(transpileToCSharp ? "CSharp" : "GLSL")}...");
+                var newGlsl = rootNode.ToCode(options);
                 ClipboardService.SetText(newGlsl);
                 
                 Console.WriteLine("Success.");

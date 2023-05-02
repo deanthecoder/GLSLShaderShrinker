@@ -17,14 +17,14 @@ namespace Shrinker.Parser.SyntaxNodes
 {
     public class PragmaDefineSyntaxNode : SyntaxNode
     {
-        private bool m_hasParams;
-        private bool m_hasValues;
+        public bool HasParams { get; private init; }
+        public bool HasValues { get; private init; }
 
         public string Name => Children[0].Token.Content;
 
-        public RoundBracketSyntaxNode Params => m_hasParams ? (RoundBracketSyntaxNode)Children[1] : null;
+        public RoundBracketSyntaxNode Params => HasParams ? (RoundBracketSyntaxNode)Children[1] : null;
 
-        public IList<SyntaxNode> ValueNodes => m_hasValues ? Children.Skip(m_hasParams ? 2 : 1).ToList() : null;
+        public IList<SyntaxNode> ValueNodes => HasValues ? Children.Skip(HasParams ? 2 : 1).ToList() : null;
 
         public PragmaDefineSyntaxNode(GenericSyntaxNode nameNode, RoundBracketSyntaxNode paramsNode = null, IList<SyntaxNode> valueNodes = null) : base((AlphaNumToken)nameNode?.Token)
         {
@@ -32,13 +32,13 @@ namespace Shrinker.Parser.SyntaxNodes
 
             if (paramsNode != null)
             {
-                m_hasParams = true;
+                HasParams = true;
                 Adopt(paramsNode);
             }
 
             if (valueNodes != null)
             {
-                m_hasValues = true;
+                HasValues = true;
                 Adopt(valueNodes.ToArray());
             }
         }
@@ -53,8 +53,8 @@ namespace Shrinker.Parser.SyntaxNodes
         protected override SyntaxNode CreateSelf() =>
             new PragmaDefineSyntaxNode(Token)
             {
-                m_hasParams = m_hasParams,
-                m_hasValues = m_hasValues
+                HasParams = HasParams,
+                HasValues = HasValues
             };
     }
 }

@@ -49,6 +49,7 @@ namespace Shrinker.Parser
         public bool MoveConstantParametersIntoCalledFunctions { get; set; }
         public bool GolfNames { get; set; }
         public bool GolfDefineCommonTerms { get; set; }
+        public bool TranspileToCSharp { get; set; }
 
         private CustomOptions()
         {
@@ -60,11 +61,20 @@ namespace Shrinker.Parser
             options.KeepHeaderComments = false;
             options.GolfNames = false;
             options.GolfDefineCommonTerms = false;
+            options.TranspileToCSharp = false;
+            return options;
+        }
+        
+        public static CustomOptions TranspileOptions()
+        {
+            var options = All();
+            options.RemoveUnusedVariables = false;
+            options.TranspileToCSharp = true;
             return options;
         }
 
         public static CustomOptions None() => SetAllOptions(false);
-
+        
         public static CustomOptions SetAllOptions(bool value)
         {
             var options = new CustomOptions();

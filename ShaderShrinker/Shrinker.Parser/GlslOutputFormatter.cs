@@ -22,13 +22,22 @@ namespace Shrinker.Parser
     /// </summary>
     public static class GlslOutputFormatter
     {
-        public static string ToCode(this SyntaxNode rootNode)
+        public static string ToCode(this SyntaxNode rootNode, CustomOptions customOptions = null)
         {
             if (rootNode == null)
                 throw new ArgumentNullException(nameof(rootNode));
 
             var sb = new StringBuilder();
-            AppendCode(sb, rootNode);
+            AppendCode(sb, rootNode, customOptions);
+            
+            if (customOptions?.TranspileToCSharp == true)
+            {
+                // 'const' not needed in C#.
+                sb.Replace("const ", null);
+                
+                // 'inout' -> 'ref'
+                sb.Replace("inout ", "ref ");
+            }
 
             // Strip excessive newlines.
             var lines = sb.Replace("\r\n", "\n").ToString().Split('\n').Select(o => o.TrimEnd()).ToList();
@@ -65,7 +74,7 @@ namespace Shrinker.Parser
             return string.Join("\n", lines).TrimEnd();
         }
 
-        public static void AppendCode(StringBuilder sb, SyntaxNode rootNode)
+        internal static void AppendCode(StringBuilder sb, SyntaxNode rootNode, CustomOptions customOptions)
         {
             switch (rootNode)
             {
@@ -74,7 +83,7 @@ namespace Shrinker.Parser
                     foreach (var child in o.Children)
                     {
                         nodeBuilder.Clear();
-                        AppendCode(nodeBuilder, child);
+                        AppendCode(nodeBuilder, child, customOptions);
 
                         if (child is not CommentSyntaxNodeBase)
                         {
@@ -135,17 +144,34 @@ namespace Shrinker.Parser
                                 break;
 
                             case TypeToken t:
+                                var typeRequiresNewOperator =
+                                    customOptions?.TranspileToCSharp == true &&
+                                    !t.IsGlslType &&
+                                    o.Parent?.Parent is not FunctionDefinitionSyntaxNode;
+                                if (typeRequiresNewOperator)
+                                    sb.Append("new ");
+
                                 sb.Append(t.Content);
                                 if (o.Next is not RoundBracketSyntaxNode && o.Next is not SquareBracketSyntaxNode)
                                     sb.Append(' ');
                                 break;
 
                             case MiscCharacterToken:
-                            case FloatToken:
                             case IntToken:
                             case DotToken:
                             case LineEndToken:
                                 sb.Append(o.Token.Content);
+                                break;
+
+                            case FloatToken:
+                                sb.Append(o.Token.Content);
+                                if (customOptions?.TranspileToCSharp == true)
+                                {
+                                    if (sb[^1] == '.')
+                                        sb.Append("0f");
+                                    else
+                                        sb.Append('f');
+                                }
                                 break;
 
                             case AlphaNumToken:
@@ -180,12 +206,12 @@ namespace Shrinker.Parser
                     sb.Append($"#define {o.Name}");
 
                     if (o.Params != null)
-                        AppendCode(sb, o.Params);
+                        AppendCode(sb, o.Params, customOptions);
 
                     if (o.ValueNodes?.Any() == true)
                     {
                         var valueString = new StringBuilder();
-                        o.ValueNodes.ToList().ForEach(child => AppendCode(valueString, child));
+                        o.ValueNodes.ToList().ForEach(child => AppendCode(valueString, child, customOptions));
                         valueString.Replace('\n', ' ').Replace('\r', ' ').Replace("  ", " ");
                         sb.Append($"\t{valueString.ToString().Trim()}");
                     }
@@ -202,7 +228,7 @@ namespace Shrinker.Parser
 
                 case SquareBracketSyntaxNode o:
                     sb.Append('[');
-                    o.Children.ToList().ForEach(child => AppendCode(sb, child));
+                    o.Children.ToList().ForEach(child => AppendCode(sb, child, customOptions));
                     sb.Append(']');
                     if (o.Next is VariableAssignmentSyntaxNode)
                         sb.Append(' ');
@@ -210,7 +236,7 @@ namespace Shrinker.Parser
 
                 case RoundBracketSyntaxNode o:
                     sb.Append('(');
-                    o.Children.ToList().ForEach(child => AppendCode(sb, child));
+                    o.Children.ToList().ForEach(child => AppendCode(sb, child, customOptions));
                     sb.Append(')');
                     if (o.Previous?.Token is KeywordToken)
                     {
@@ -225,7 +251,7 @@ namespace Shrinker.Parser
                 case BraceSyntaxNode o:
                 {
                     var subExpr = new StringBuilder();
-                    o.Children.ToList().ForEach(child => AppendCode(subExpr, child));
+                    o.Children.ToList().ForEach(child => AppendCode(subExpr, child, customOptions));
                     var s = subExpr.ToString().Trim();
 
                     var strings = s.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
@@ -248,7 +274,7 @@ namespace Shrinker.Parser
                 case ReturnSyntaxNode o:
                 {
                     var subExpr = new StringBuilder();
-                    o.Children.ToList().ForEach(child => AppendCode(subExpr, child));
+                    o.Children.ToList().ForEach(child => AppendCode(subExpr, child, customOptions));
                     var s = subExpr.ToString().Trim();
 
                     sb.Append(string.IsNullOrEmpty(s) ? o.Name : $"{o.Name} {s}");
@@ -256,7 +282,7 @@ namespace Shrinker.Parser
                 }
 
                 case GroupSyntaxNode o:
-                    o.Children.ToList().ForEach(child => AppendCode(sb, child));
+                    o.Children.ToList().ForEach(child => AppendCode(sb, child, customOptions));
                     break;
 
                 case VariableDeclarationSyntaxNode o:
@@ -278,8 +304,8 @@ namespace Shrinker.Parser
 
                             sb.Append(childDefinition.HasValue ? $",\n{new string('\t', lineTabs)}{new string(' ', o.VariableType.Content.Length + 1)}" : ", ");
                         }
-
-                        AppendCode(sb, childDefinition);
+                        
+                        AppendCode(sb, childDefinition, customOptions);
 
                         isFirstChild = false;
                     }
@@ -301,7 +327,7 @@ namespace Shrinker.Parser
                         sb.Append(o.FullName);
 
                     var rhs = new StringBuilder();
-                    o.ValueNodes.ToList().ForEach(child => AppendCode(rhs, child));
+                    o.ValueNodes.ToList().ForEach(child => AppendCode(rhs, child, customOptions));
                     if (rhs.Length > 0)
                         sb.Append($" = {rhs}");
 
@@ -319,17 +345,21 @@ namespace Shrinker.Parser
 
                 case StructDefinitionSyntaxNode o:
                     sb.AppendLine($"struct {o.Name} {{");
-                    o.Braces.Children.ToList().ForEach(child => AppendCode(sb, child));
+                    if (customOptions?.TranspileToCSharp == true)
+                        StructDefinitionSyntaxNode.WriteConstructor(sb, o);
+                    else
+                        o.Braces.Children.ToList().ForEach(child => AppendCode(sb, child, customOptions));
+
                     sb.AppendLine("};\n");
                     break;
 
                 case IfSyntaxNode o:
                     sb.Append("if ");
-                    AppendCode(sb, o.Conditions);
+                    AppendCode(sb, o.Conditions, customOptions);
                     sb.Append(' ');
 
                     var braceCode = new StringBuilder();
-                    AppendCode(braceCode, o.TrueBranch);
+                    AppendCode(braceCode, o.TrueBranch, customOptions);
                     var trueBranch = braceCode.ToString();
                     if (o.TrueBranch.Children.FirstOrDefault() is not IfSyntaxNode || o.FalseBranch == null)
                         trueBranch = trueBranch.AllowBraceRemoval();
@@ -341,9 +371,9 @@ namespace Shrinker.Parser
                         braceCode.Clear();
 
                         if (o.FalseBranch.Children.Count == 1 && o.FalseBranch.Children.Single() is IfSyntaxNode subIfNode)
-                            AppendCode(braceCode, subIfNode);
+                            AppendCode(braceCode, subIfNode, customOptions);
                         else
-                            AppendCode(braceCode, o.FalseBranch);
+                            AppendCode(braceCode, o.FalseBranch, customOptions);
 
                         sb.AppendLine(braceCode.ToString().AllowBraceRemoval());
                     }
@@ -355,10 +385,10 @@ namespace Shrinker.Parser
 
                 case SwitchSyntaxNode o:
                     sb.Append("switch ");
-                    AppendCode(sb, o.Condition);
+                    AppendCode(sb, o.Condition, customOptions);
                     sb.Append(' ');
                     var caseCode = new StringBuilder();
-                    AppendCode(caseCode, o.Cases);
+                    AppendCode(caseCode, o.Cases, customOptions);
                     caseCode.Replace(" :", ":");
                     sb.AppendLine(caseCode.ToString());
                     break;
@@ -372,10 +402,10 @@ namespace Shrinker.Parser
                 case ForSyntaxNode o:
                     var indent = sb.GetColumn();
                     sb.Append("for ");
-                    AppendCode(sb, o.LoopSetup);
+                    AppendCode(sb, o.LoopSetup, customOptions);
 
                     var loopCode = new StringBuilder();
-                    AppendCode(loopCode, o.LoopCode);
+                    AppendCode(loopCode, o.LoopCode, customOptions);
                     var braceSection = loopCode.ToString().AllowBraceRemoval();
 
                     if (braceSection.StartsWith("{"))
@@ -399,7 +429,7 @@ namespace Shrinker.Parser
                 case FunctionDeclarationSyntaxNode o:
                     sb.Append($"{o.ReturnType} {o.Name}");
                     var paramStr = new StringBuilder();
-                    AppendCode(paramStr, o.Params);
+                    AppendCode(paramStr, o.Params, customOptions);
                     paramStr.Replace(" ,", ",");
                     paramStr.Replace(" )", ")");
                     sb.Append(paramStr);
@@ -408,15 +438,36 @@ namespace Shrinker.Parser
 
                 case FunctionDefinitionSyntaxNode o:
                     sb.Append($"{o.ReturnType} {o.Name}");
-                    AppendCode(sb, o.Params);
+                    AppendCode(sb, o.Params, customOptions);
                     sb.Append(' ');
-                    AppendCode(sb, o.Braces);
+                    
+                    var braces = o.Braces;
+
+                    if (customOptions?.TranspileToCSharp == true)
+                    {
+                        var typeTokens = o.Params.Children.Select(p => p.Token).OfType<TypeToken>().ToArray();
+                        if (typeTokens.Any(t => t.InOut is TypeToken.InOutType.None or TypeToken.InOutType.In))
+                        {
+                            for (var i = 0; i < typeTokens.Length; i++)
+                            {
+                                // We only need to clone 'in' params (To stop the function changing the caller's value).
+                                if (typeTokens[i].InOut != TypeToken.InOutType.None && typeTokens[i].InOut != TypeToken.InOutType.In)
+                                    continue;
+
+                                // Don't need to clone value types.
+                                if (typeTokens[i].IsVector() || typeTokens[i].IsMatrix() || typeTokens[i].IsStruct())
+                                    braces.InsertChild(0, new GenericSyntaxNode($"Clone(ref {o.ParamNames[i].Name});")); // todo - only clone if field set.
+                            }
+                        }
+                    }
+                    
+                    AppendCode(sb, braces, customOptions);
                     sb.AppendLine();
                     break;
                 
                 case FunctionCallSyntaxNode o:
                     sb.Append(o.Name);
-                    AppendCode(sb, o.Params);
+                    AppendCode(sb, o.Params, customOptions);
                     break;
                 
                 case CommentSyntaxNodeBase o:
@@ -443,8 +494,22 @@ namespace Shrinker.Parser
                     break;
 
                 default:
-                    throw new InvalidOperationException($"Unsupported SyntaxNode: {rootNode.GetType()}");
+                    var tail = TailString(sb);
+                    if (rootNode == null)
+                        throw new InvalidOperationException($"Output formatter failed - SyntaxNode is null.\nTail:\n{tail}");
+                    throw new InvalidOperationException($"Output formatter failed - Unsupported SyntaxNode: {rootNode.GetType()}\nTail:\n{tail}");
             }
+        }
+
+        private static string TailString(StringBuilder sb)
+        {
+            if (sb.Length > 128)
+            {
+                sb.Insert(0, "...");
+                sb.Remove(0, sb.Length - 128);
+            }
+            
+            return sb.ToString();
         }
     }
 }

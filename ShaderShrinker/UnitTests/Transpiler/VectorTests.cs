@@ -9,8 +9,8 @@
 //  </summary>
 // -----------------------------------------------------------------------
 
+using GLSLRenderer;
 using NUnit.Framework;
-using Transpiler;
 
 namespace UnitTests.Transpiler;
 
@@ -150,22 +150,34 @@ public class TranspilerTests
         Assert.That((new vec2(1, 2) / new vec2(2, 8)).Components, Is.EqualTo(new[] { 0.5f, 0.25f }));
         Assert.That((2.0f / new vec2(1, 2)).Components, Is.EqualTo(new[] { 2.0f, 1.0f }));
     }
+    
+    [Test]
+    public void CheckVectorNegation()
+    {
+        var negated = -new vec2(1, 2);
+        Assert.That(negated.Components, Is.EqualTo(new[] { -1.0f, -2.0f }));
+    }
 
     [Test]
     public void CheckConstructionMethods()
     {
-        Assert.That(Program.vec2(1, 2).Components, Is.EqualTo(new[] { 1.0f, 2.0f }));
-        Assert.That(Program.vec2(1, 2, 3).Components, Is.EqualTo(new[] { 1.0f, 2.0f }));
-        Assert.That(Program.vec2(new vec2(1, 2), 3).Components, Is.EqualTo(new[] { 1.0f, 2.0f }));
-        Assert.That(Program.vec2(1, new vec2(2, 3)).Components, Is.EqualTo(new[] { 1.0f, 2.0f }));
+        Assert.That(GLSLProgBase.vec2(1, 2).Components, Is.EqualTo(new[] { 1.0f, 2.0f }));
+        Assert.That(GLSLProgBase.vec2(1, 2, 3).Components, Is.EqualTo(new[] { 1.0f, 2.0f }));
+        Assert.That(GLSLProgBase.vec2(new vec2(1, 2), 3).Components, Is.EqualTo(new[] { 1.0f, 2.0f }));
+        Assert.That(GLSLProgBase.vec2(1, new vec2(2, 3)).Components, Is.EqualTo(new[] { 1.0f, 2.0f }));
 
-        Assert.That(Program.vec3(1, 2, 3, 4).Components, Is.EqualTo(new[] { 1.0f, 2.0f, 3.0f }));
-        Assert.That(Program.vec3(1, 2, 3, 4, 5).Components, Is.EqualTo(new[] { 1.0f, 2.0f, 3.0f }));
-        Assert.That(Program.vec3(new vec2(1, 2), new vec2(3, 4)).Components, Is.EqualTo(new[] { 1.0f, 2.0f, 3.0f }));
+        Assert.That(GLSLProgBase.vec3(1, 2, 3, 4).Components, Is.EqualTo(new[] { 1.0f, 2.0f, 3.0f }));
+        Assert.That(GLSLProgBase.vec3(1, 2, 3, 4, 5).Components, Is.EqualTo(new[] { 1.0f, 2.0f, 3.0f }));
+        Assert.That(GLSLProgBase.vec3(new vec2(1, 2), new vec2(3, 4)).Components, Is.EqualTo(new[] { 1.0f, 2.0f, 3.0f }));
+        Assert.That(GLSLProgBase.vec3(1, new vec2(2, 3)).Components, Is.EqualTo(new[] { 1.0f, 2.0f, 3.0f }));
+        Assert.That(GLSLProgBase.vec3(new vec2(1, 2), 3).Components, Is.EqualTo(new[] { 1.0f, 2.0f, 3.0f }));
 
-        Assert.That(Program.vec4(1, 2, 3, 4).Components, Is.EqualTo(new[] { 1.0f, 2.0f, 3.0f, 4.0f }));
-        Assert.That(Program.vec4(1, 2, 3, 4, 5).Components, Is.EqualTo(new[] { 1.0f, 2.0f, 3.0f, 4.0f }));
-        Assert.That(Program.vec4(new vec2(1, 2), new vec2(3, 4)).Components, Is.EqualTo(new[] { 1.0f, 2.0f, 3.0f, 4.0f }));
+        Assert.That(GLSLProgBase.vec4(1, 2, 3, 4).Components, Is.EqualTo(new[] { 1.0f, 2.0f, 3.0f, 4.0f }));
+        Assert.That(GLSLProgBase.vec4(1, 2, 3, 4, 5).Components, Is.EqualTo(new[] { 1.0f, 2.0f, 3.0f, 4.0f }));
+        Assert.That(GLSLProgBase.vec4(new vec2(1, 2), new vec2(3, 4)).Components, Is.EqualTo(new[] { 1.0f, 2.0f, 3.0f, 4.0f }));
+        Assert.That(GLSLProgBase.vec4(new vec2(1, 2), 3, 4).Components, Is.EqualTo(new[] { 1.0f, 2.0f, 3.0f, 4.0f }));
+        Assert.That(GLSLProgBase.vec4(1, 2, new vec2(3, 4)).Components, Is.EqualTo(new[] { 1.0f, 2.0f, 3.0f, 4.0f }));
+        Assert.That(GLSLProgBase.vec4(1, new vec2(2, 3), 4).Components, Is.EqualTo(new[] { 1.0f, 2.0f, 3.0f, 4.0f }));
     }
 
     [Test]
@@ -177,5 +189,44 @@ public class TranspilerTests
         
         Assert.That(new vec2(1, 2), Is.Not.EqualTo(new vec3(1, 2, 3)));
         Assert.That(new vec2(2, 1), Is.Not.EqualTo(new vec3(1, 2)));
+    }
+
+    [Test]
+    public void CheckCloningVec2()
+    {
+        var v = new vec2(1, 2);
+        Assert.That(v.Clone(), Is.Not.SameAs(v));
+        Assert.That(v.Clone(), Is.EqualTo(v));
+
+        new vec2(v).x++;
+        Assert.That(v.x, Is.EqualTo(1.0f));
+        v.Clone().x++;
+        Assert.That(v.x, Is.EqualTo(1.0f));
+    }
+
+    [Test]
+    public void CheckCloningVec3()
+    {
+        var v = new vec3(1, 2, 3);
+        Assert.That(v.Clone(), Is.Not.SameAs(v));
+        Assert.That(v.Clone(), Is.EqualTo(v));
+
+        new vec3(v).x++;
+        Assert.That(v.x, Is.EqualTo(1.0f));
+        v.Clone().x++;
+        Assert.That(v.x, Is.EqualTo(1.0f));
+    }
+    
+    [Test]
+    public void CheckCloningVec4()
+    {
+        var v = new vec3(1, 2, 3, 4);
+        Assert.That(v.Clone(), Is.Not.SameAs(v));
+        Assert.That(v.Clone(), Is.EqualTo(v));
+
+        new vec4(v).x++;
+        Assert.That(v.x, Is.EqualTo(1.0f));
+        v.Clone().x++;
+        Assert.That(v.x, Is.EqualTo(1.0f));
     }
 }

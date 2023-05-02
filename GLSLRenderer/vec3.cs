@@ -9,14 +9,17 @@
 //  </summary>
 // -----------------------------------------------------------------------
 
-using System.Diagnostics;
+namespace GLSLRenderer;
 
-namespace Transpiler;
-
+// ReSharper disable once InconsistentNaming
 public class vec3 : VectorBase
 {
     public vec3(VectorBase v)
         : this(v.Components)
+    {
+    }
+
+    public vec3(VectorBase v, params float[] f) : this(v.Components.Concat(f).ToArray())
     {
     }
 
@@ -35,6 +38,8 @@ public class vec3 : VectorBase
     {
     }
 
+    public static vec3 operator -(vec3 v) => new(-v.x, -v.y, -v.z);
+
     public static vec3 operator -(vec3 v1, vec3 v2) => new(v1.Sub(v2));
     public static vec3 operator -(float v1, vec3 v2) => new(new vec3(v1).Sub(v2));
     public static vec3 operator -(vec3 v1, float v2) => new(v1.Sub(v2));
@@ -48,5 +53,5 @@ public class vec3 : VectorBase
     public static vec3 operator *(float v1, vec3 v2) => new(new vec3(v1).Mul(v2));
     public static vec3 operator *(vec3 v1, float v2) => new(v1.Mul(v2));
     
-    public override object Clone() => new vec3(Components);
+    public vec3 Clone() => new vec3(Components);
 }

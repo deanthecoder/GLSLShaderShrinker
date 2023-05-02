@@ -11,7 +11,7 @@
 
 // ReSharper disable InconsistentNaming
 // ReSharper disable IdentifierTypo
-namespace Transpiler;
+namespace GLSLRenderer;
 
 public partial class VectorBase
 {

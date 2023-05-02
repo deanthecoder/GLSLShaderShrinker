@@ -11,21 +11,21 @@
 
 using System.Text;
 
-namespace Transpiler;
+namespace GLSLRenderer;
 
-public class MatN<T> where T : VectorBase, ICloneable
+public class MatN<T> where T : VectorBase, new()
 {
-    private readonly T[] m_columns;
+    protected readonly T[] m_columns;
 
     protected MatN(params T[] columns)
     {
-        m_columns = columns.Select(o => (T)o.Clone()).ToArray();
+        m_columns = columns.Select(o => new T { Components = o.Components.ToArray() }).ToArray();
     }
     
     public T this[int i]
     {
         get => m_columns[i];
-        set => m_columns[i] = (T)value.Clone();
+        set => m_columns[i] = new T { Components = value.Components.ToArray() };
     }
     
     // Overloads.

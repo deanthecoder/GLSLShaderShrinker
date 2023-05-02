@@ -9,11 +9,13 @@
 //  </summary>
 // -----------------------------------------------------------------------
 
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 
-namespace Transpiler;
+namespace GLSLRenderer;
 
-public partial class VectorBase : ICloneable
+[SuppressMessage("ReSharper", "InconsistentNaming")]
+public partial class VectorBase
 {
     private readonly int m_count;
 
@@ -30,7 +32,7 @@ public partial class VectorBase : ICloneable
                 Components[i] = components[0];
         }
         else if (components.Length == count)
-            Components = components;
+            Components = components.ToArray();
         else
             Components = components.Take(count).ToArray();
     }
@@ -166,12 +168,10 @@ public partial class VectorBase : ICloneable
             components[i] *= v.Components[i];
         return new(m_count, components);
     }
-
+    
     // Overloads.
     public override string ToString() =>
         $"({Components.Select(o => o.ToString(CultureInfo.InvariantCulture)).Aggregate((s1, s2) => $"{s1},{s2}")})";
-
-    public virtual object Clone() => throw new NotImplementedException();
 
     public override bool Equals(object? obj)
     {

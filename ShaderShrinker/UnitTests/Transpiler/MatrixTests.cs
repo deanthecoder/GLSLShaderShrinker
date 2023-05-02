@@ -9,8 +9,8 @@
 //  </summary>
 // -----------------------------------------------------------------------
 
+using GLSLRenderer;
 using NUnit.Framework;
-using Transpiler;
 
 namespace UnitTests.Transpiler;
 
@@ -53,5 +53,13 @@ public class MatrixTests
         Assert.That(m, Is.EqualTo(new mat2(1, 3, 2, 4)));
         
         Assert.That(new mat2(1, 2, 3, 4), Is.Not.EqualTo(m));
+    }
+    
+    [Test]
+    public void CheckCloningMat2()
+    {
+        var m = new mat2(1, 2, 3, 4);
+        Assert.That(m.Clone(), Is.Not.SameAs(m));
+        Assert.That(m.Clone(), Is.EqualTo(m));
     }
 }

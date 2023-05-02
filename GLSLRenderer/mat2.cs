@@ -9,8 +9,9 @@
 //  </summary>
 // -----------------------------------------------------------------------
 
-namespace Transpiler;
+namespace GLSLRenderer;
 
+// ReSharper disable once InconsistentNaming
 public class mat2 : MatN<vec2>
 {
     public mat2()
@@ -32,4 +33,6 @@ public class mat2 : MatN<vec2>
         : this(c1.x, c1.y, c2.x, c2.y)
     {
     }
+
+    public mat2 Clone() => new(m_columns.SelectMany(o => o.Components).ToArray());
 }

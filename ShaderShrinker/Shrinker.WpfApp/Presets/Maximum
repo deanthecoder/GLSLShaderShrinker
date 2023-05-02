@@ -24,5 +24,6 @@
   "ReplaceFunctionCallsWithResult": true,
   "MoveConstantParametersIntoCalledFunctions": true,
   "GolfNames": false,
-  "GolfDefineCommonTerms": false
+  "GolfDefineCommonTerms": false,
+  "TranspileToCSharp": false
 }
