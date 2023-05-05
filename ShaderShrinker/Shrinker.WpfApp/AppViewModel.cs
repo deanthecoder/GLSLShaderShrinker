@@ -14,7 +14,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Net;
+using System.Net.Http;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -249,7 +249,7 @@ namespace Shrinker.WpfApp
             LoadGlslFromStringAsync(File.ReadAllText(dialog.FileName));
         }
 
-        private void LoadGlslFromShadertoy(object obj)
+        private async void LoadGlslFromShadertoy(object obj)
         {
             var id = ShadertoyShaderId?.Trim();
             if (id != null)
@@ -265,9 +265,10 @@ namespace Shrinker.WpfApp
             try
             {
                 using (new BusyCursor())
-                using (var wc = new WebClient())
+                using (var client = new HttpClient())
                 {
-                    var json = wc.DownloadString($"https://www.shadertoy.com/api/v1/shaders/{id}?key=BtntM4");
+                    var response = await client.GetAsync($"https://www.shadertoy.com/api/v1/shaders/{id}?key=BtntM4");
+                    var json = await response.Content.ReadAsStringAsync();
 
                     var shaderData = JsonConvert.DeserializeObject<Root>(json);
                     var shaderCode = shaderData?.Shader?.renderpass.LastOrDefault()?.code;
