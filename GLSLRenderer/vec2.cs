@@ -43,9 +43,9 @@ public class vec2 : VectorBase
     public static vec2 operator -(vec2 v1, vec2 v2) => new(v1.Sub(v2));
     public static vec2 operator -(float v1, vec2 v2) => new(new vec2(v1).Sub(v2));
     public static vec2 operator -(vec2 v1, float v2) => new(v1.Sub(v2));
-    public static vec2 operator +(vec2 v1, vec2 v2) => new(v1.Add(v2));
-    public static vec2 operator +(float v1, vec2 v2) => new(new vec2(v1).Add(v2));
-    public static vec2 operator +(vec2 v1, float v2) => new(v1.Add(v2));
+    public static vec2 operator +(vec2 v1, vec2 v2) => new(v1.x + v2.x, v1.y + v2.y);
+    public static vec2 operator +(float v1, vec2 v2) => v2 + v1;
+    public static vec2 operator +(vec2 v1, float v2) => new(v1.x + v2, v1.y + v2);
     public static vec2 operator /(vec2 v1, vec2 v2) => new(v1.Div(v2));
     public static vec2 operator /(float v1, vec2 v2) => new(new vec2(v1).Div(v2));
     public static vec2 operator /(vec2 v1, float v2) => new(v1.Div(v2));
@@ -58,5 +58,5 @@ public class vec2 : VectorBase
             v.x * m[1].x + v.y * m[1].y
            );
 
-    public vec2 Clone() => new vec2(Components);
+    public vec2 Clone() => new(Components);
 }

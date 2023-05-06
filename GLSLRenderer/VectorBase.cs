@@ -24,17 +24,20 @@ public partial class VectorBase
     protected VectorBase(int count, params float[] components)
     {
         m_count = count;
+        Components = new float[count];
+        
         if (components.Length == 1 && count > 0)
         {
             // Repeat single value to fill vector.
-            Components = new float[count];
-            for (var i = 0; i < Components.Length; i++)
+            for (var i = 0; i < count; i++)
                 Components[i] = components[0];
         }
-        else if (components.Length == count)
-            Components = components.ToArray();
         else
-            Components = components.Take(count).ToArray();
+        {
+            var min = Math.Min(count, components.Length);
+            for (var i = 0; i < min; i++)
+                Components[i] = components[i];
+        }
     }
 
     public float[] Components { get; init; }
@@ -119,16 +122,6 @@ public partial class VectorBase
     }
 
     // Operators.
-    protected VectorBase Add(float v) =>
-        new(m_count, Components.Select(o => o + v).ToArray());
-    public VectorBase Add(VectorBase v)
-    {
-        var components = Components.ToArray();
-        for (var i = 0; i < components.Length; i++)
-            components[i] += v.Components[i];
-        return new(m_count, components);
-    }
-    
     public VectorBase Sub(float v) =>
         new(m_count, Components.Select(o => o - v).ToArray());
     public VectorBase Sub(VectorBase v)
@@ -183,6 +176,14 @@ public partial class VectorBase
             return false;
         return Components.SequenceEqual(((VectorBase)obj).Components);
     }
+
+    public static bool operator ==(VectorBase a, VectorBase b)
+    {
+        const float precision = 1e-6f;
+        return Math.Abs(a.x - b.x) < precision && Math.Abs(a.y - b.y) < precision;
+    }
+
+    public static bool operator !=(VectorBase a, VectorBase b) => !(a == b);
 
     public override int GetHashCode() => Components.GetHashCode();
 }

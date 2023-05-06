@@ -13,8 +13,8 @@ namespace GLSLRenderer;
 
 public partial class GLSLProg
 {
-    public GLSLProg(vec2 resolution)
-        : base(resolution, 20.0f)
+    public GLSLProg(vec2 resolution, float time)
+        : base(resolution, time)
     {
     }	
 }

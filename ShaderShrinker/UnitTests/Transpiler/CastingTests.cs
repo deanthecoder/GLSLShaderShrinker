@@ -31,7 +31,7 @@ public class CastingTests
             .Parse()
             .Simplify(options);
 
-        Assert.That(rootNode.ToCode(options).ToSimple(), Is.EqualTo("float g() { return 1.230f; } int f() { return toInt(1.20f * (1.0f + 2.0f) / g()); }"));
+        Assert.That(rootNode.ToCode(options).ToSimple(), Is.EqualTo("float g() { return 1.23f; } int f() { return toInt(1.2f * (1.0f + 2.0f) / g()); }"));
     }
     
     [Test]

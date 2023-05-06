@@ -6,11 +6,6 @@ using System.Text;
 
 namespace GLSLRenderer;
 
-// todo - allow non static methods (by adding Shader class)
-// todo - uses of struct (Hit(...)) need 'new' prefix.
-// todo - structs need constructor to init all fields.
-// todo - unassigned declarations of objects (vecN, struct, matN) should have '= new()'
-
 public static class Program
 {
 	public static void Main(string[] args)
