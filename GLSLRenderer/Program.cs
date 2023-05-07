@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Reflection;
-using System.Text;
+using ImageMagick;
 
 // ReSharper disable InconsistentNaming
 
@@ -8,56 +8,82 @@ namespace GLSLRenderer;
 
 public static class Program
 {
-	public static void Main(string[] args)
-	{
-		var iResolution = GLSLProgBase.vec2(160, 90) * 1.0f;
-		var mainImageMethod = typeof(GLSLProg).GetMethod("mainImage", BindingFlags.NonPublic | BindingFlags.Instance);
-
-		Console.WriteLine($"Generating image {iResolution}...");
-		var totalPixels = (int)iResolution.x * (int)iResolution.y;
-		vec4[] pixels = new vec4[totalPixels];
-
-		// Measure the start time.
-		var stopwatch = new Stopwatch();
-		stopwatch.Start();
-
-		var glslProg = new GLSLProg(iResolution);
-		Parallel.For(0, totalPixels, index =>
-		{
-			var x = index % (int)iResolution.x;
-			var y = (int)iResolution.y - index / (int)iResolution.x - 1;
-			object[] parameters = { null!, new vec2(x, y) };
-			mainImageMethod!.Invoke(glslProg, parameters);
-			pixels[index] = (vec4)parameters[0];
-		});
-
-		// Calculate the elapsed time.
-		stopwatch.Stop();
-		Console.WriteLine($"Image generation took {stopwatch.Elapsed.TotalSeconds:F1}s");
-
-		Console.WriteLine("Writing image...");
-		WritePPM("/Users/Dean/Desktop/output.ppm", pixels, (int)glslProg.iResolution.x, (int)glslProg.iResolution.y);
-		Console.WriteLine("Done.");
-	}
-    
-    private static void WritePPM(string filePath, vec4[] pixels, int width, int height)
+    public static void Main(string[] args)
     {
-	    using var stream = new FileStream(filePath, FileMode.Create);
+        var iResolution = new vec2(160, 90) * 4.0f;
+        const float startTime = 10.0f;
+        const float endTime = 29.0f;
+        const float fps = 4.0f;
+        
+        var mainImageMethod = typeof(GLSLProg).GetMethod("mainImage", BindingFlags.NonPublic | BindingFlags.Instance);
+        if (mainImageMethod == null)
+        {
+            Console.WriteLine("Error - Unable to locate mainImage(...)");
+            return;
+        }
 
-	    // Write the PPM header
-	    var header = Encoding.ASCII.GetBytes($"P6\n{width} {height}\n255\n");
-	    stream.Write(header, 0, header.Length);
+        Console.WriteLine($"Generating {iResolution.x:F0}x{iResolution.y:F0}@{fps:F0} fps.");
+        var pixels = new vec4[(int)iResolution.x * (int)iResolution.y];
+        var images = new List<MagickImage>();
 
-	    // Write the pixel data
-	    var pixelData = new byte[3];
-	    foreach (var pixel in pixels)
-	    {
-		    var rgb = GLSLProgBase.clamp(pixel.rgb, GLSLProgBase.vec3(0.0f), GLSLProgBase.vec3(1.0f)) * 255.0f;
-		    pixelData[0] = (byte)rgb.x;
-		    pixelData[1] = (byte)rgb.y;
-		    pixelData[2] = (byte)rgb.z;
+        for (var iTime = startTime; iTime <= endTime; iTime += 1.0f / fps)
+        {
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            
+            Console.Write($"Rendering (iTime = {iTime})...");
+            var glslProg = new GLSLProg(iResolution, iTime);
+            Parallel.For(0, pixels.Length, index =>
+            {
+                var x = index % (int)iResolution.x;
+                var y = (int)iResolution.y - index / (int)iResolution.x - 1;
+                object[] parameters = { null!, new vec2(x, y) };
+                mainImageMethod.Invoke(glslProg, parameters);
+                pixels[index] = (vec4)parameters[0];
+            });
+            
+            Console.WriteLine($" {stopwatch.Elapsed.TotalSeconds:F1}s");
 
-		    stream.Write(pixelData, 0, pixelData.Length);
-	    }
+            images.Add(PixelsToMagickImage(pixels, iResolution, fps));
+        }
+
+        var imagePath = "/Users/Dean/Desktop/output.gif";
+        Console.Write($"Writing {imagePath}...");
+        CreateAnimatedGif(imagePath, images);
+        Console.WriteLine(" Done.");
+    }
+
+    private static MagickImage PixelsToMagickImage(vec4[] pixels, vec2 iResolution, float fps)
+    {
+        var width = (int)iResolution.x;
+        var height = (int)iResolution.y;
+        
+        var image = new MagickImage(MagickColors.Transparent, width, height)
+        {
+            Format = MagickFormat.Rgb,
+            AnimationDelay = (int)(100.0f / fps)
+        };
+        
+        var pixelsData = new byte[width * height * 3];
+        for (var y = 0; y < height; y++)
+        {
+            for (var x = 0; x < width; x++)
+            {
+                var rgb = GLSLProgBase.clamp(pixels[x + y * width].rgb, new vec3(0), new vec3(1)) * 255.0f;
+                var dataIndex = (x + y * width) * 3;
+                pixelsData[dataIndex] = (byte)rgb.x;
+                pixelsData[dataIndex + 1] = (byte)rgb.y;
+                pixelsData[dataIndex + 2] = (byte)rgb.z;
+            }
+        }
+
+        image.Read(pixelsData);
+        return image;
+    }
+
+    private static void CreateAnimatedGif(string filePath, IEnumerable<MagickImage> images)
+    {
+        using var collection = new MagickImageCollection(images);
+        collection.Write(filePath);
     }
 }
