@@ -26,6 +26,47 @@ public static class TranspileToCSharpExtension
         RemoveVrEntryPoint(rootNode);
         ApplyRefKeywordToInOutFunctionCallParams(rootNode);
         InlineMacrosThatLooksLikeFunctions(rootNode);
+        CloneDuringVariableAssignments(rootNode);
+    }
+
+    /// <summary>
+    /// 'vec2 v2 = v1' will clone in GLSL but not in C#, so we need an explicit '.Clone()' call.
+    /// </summary>
+    private static void CloneDuringVariableAssignments(SyntaxNode rootNode)
+    {
+        var assignments = rootNode.TheTree
+            .OfType<VariableAssignmentSyntaxNode>()
+            .Where(
+                   o => o.ValueNodes.Count() == 1 &&
+                        o.ValueNodes.Single() is GenericSyntaxNode { Token: AlphaNumToken })
+            .Select(o => (GenericSyntaxNode)o.ValueNodes.Single())
+            .ToArray();
+        foreach (var rhs in assignments)
+        {
+            var rhsDeclType = rhs.FindVarDeclaration()?.VariableType;
+            if (rhsDeclType == null)
+            {
+                // Couldn't find it - Perhaps it's a function parameter?
+                var funcDef = rhs.FindAncestor<FunctionDefinitionSyntaxNode>();
+                if (funcDef != null)
+                {
+                    var paramMatch = funcDef.Params.GetCsv().FirstOrDefault(o => o.Any(t => t.Token?.Content == rhs.Token.Content));
+                    rhsDeclType = paramMatch?.Select(o => o.Token).OfType<TypeToken>().FirstOrDefault();
+                }
+
+                if (rhsDeclType == null)
+                {
+                    // Don't know that the type is, so can't safely 'clone'.
+                    continue;
+                }
+            }
+
+            if (rhsDeclType.IsVector() || rhsDeclType.IsMatrix() || rhsDeclType.IsStruct())
+            {
+                // Replace the rhs with a clone.
+                rhs.ReplaceWith(new GenericSyntaxNode($"{rhs.Token.Content}.Clone()"));
+            }
+        }
     }
 
     private static void InlineMacrosThatLooksLikeFunctions(SyntaxNode rootNode)
@@ -94,7 +135,7 @@ public static class TranspileToCSharpExtension
             var i = 0;
             foreach (var paramNodes in callee.Params.GetCsv())
             {
-                if (paramNodes.Any(o => o.Token is TypeToken t && t.InOut == TypeToken.InOutType.InOut))
+                if (paramNodes.Any(o => o.Token is TypeToken { InOut: TypeToken.InOutType.InOut }))
                     outParamIndices.Add(i);
                 i++;
             }
@@ -154,8 +195,7 @@ public static class TranspileToCSharpExtension
         rootNode.TheTree
             .OfType<GenericSyntaxNode>()
             .Where(
-                   o => o.Token is TypeToken typeToken &&
-                        typeToken.IsGlslType &&
+                   o => o.Token is TypeToken { IsGlslType: true } typeToken &&
                         typeToken.IsAnyOf("int", "float"))
             .Where(o => o.Next is RoundBracketSyntaxNode)
             .ToList()

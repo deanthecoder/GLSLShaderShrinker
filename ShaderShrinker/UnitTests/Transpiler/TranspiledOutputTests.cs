@@ -31,4 +31,19 @@ public class TranspiledOutputTests
 
         Assert.That(rootNode.ToCode(options).ToSimple(), Is.Not.Empty);
     }
+    
+    [Test]
+    public void CheckDirectVectorAssignmentClonesSource()
+    {
+        var lexer = new Lexer();
+        lexer.Load("void f() { vec2 v1 = vec2(1); vec2 v2 = v1; }");
+
+        var options = CustomOptions.None();
+        options.TranspileToCSharp = true;
+        var rootNode = new Parser(lexer)
+            .Parse()
+            .Simplify(options);
+
+        Assert.That(rootNode.ToCode(options).ToSimple(), Does.Contain("vec2 v2 = v1.Clone();"));
+    }
 }

@@ -29,7 +29,7 @@ public static class Program
             return;
         }
 
-        Console.WriteLine($"Generating {iResolution.x:F0}x{iResolution.y:F0}@{fps:F0} fps.");
+        Console.WriteLine($"Generating {iResolution.x:F0}x{iResolution.y:F0} @ {fps:F0}fps.");
         var pixels = new vec4[(int)iResolution.x * (int)iResolution.y];
         var images = new List<MagickImage>();
 

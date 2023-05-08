@@ -169,7 +169,7 @@ namespace Shrinker.Parser
                                 {
                                     if (sb[^1] == '.')
                                         sb.Append("0f");
-                                    else
+                                    else if (sb[^1] != 'f')
                                         sb.Append('f');
                                 }
                                 break;
