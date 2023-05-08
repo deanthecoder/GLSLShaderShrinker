@@ -9,9 +9,19 @@ namespace GLSLRenderer;
 
 public static class Program
 {
-    // todo - arg to output png(s).
+    private static bool UserCancelled;
+    
     public static void Main(string[] args)
     {
+        // Register event handler for Ctrl+C
+        Console.CancelKeyPress += (_, eventArgs) =>
+        {
+            UserCancelled = true;
+            eventArgs.Cancel = true;
+            Console.WriteLine();
+            Console.WriteLine("User cancel requested.  Please wait...");
+        };
+
         Parser.Default.ParseArguments<CmdOptions>(args).WithParsed(RunShader);
     }
 
@@ -33,7 +43,7 @@ public static class Program
         var pixels = new vec4[(int)iResolution.x * (int)iResolution.y];
         var images = new List<MagickImage>();
 
-        for (var iTime = startTime; iTime <= endTime; iTime += 1.0f / fps)
+        for (var iTime = startTime; iTime <= endTime && !UserCancelled; iTime += 1.0f / fps)
         {
             var stopwatch = new Stopwatch();
             stopwatch.Start();
