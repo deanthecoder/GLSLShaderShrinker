@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Reflection;
+using CommandLine;
 using ImageMagick;
 
 // ReSharper disable InconsistentNaming
@@ -8,13 +9,19 @@ namespace GLSLRenderer;
 
 public static class Program
 {
+    // todo - arg to output png(s).
     public static void Main(string[] args)
     {
-        var iResolution = new vec2(160, 90) * 4.0f;
-        const float startTime = 10.0f;
-        const float endTime = 29.0f;
-        const float fps = 4.0f;
-        
+        Parser.Default.ParseArguments<CmdOptions>(args).WithParsed(RunShader);
+    }
+
+    private static void RunShader(CmdOptions options)
+    {
+        var iResolution = new vec2(options.Width, options.Height);
+        var startTime = options.StartTime;
+        var endTime = options.EndTime;
+        var fps = options.Fps;
+
         var mainImageMethod = typeof(GLSLProg).GetMethod("mainImage", BindingFlags.NonPublic | BindingFlags.Instance);
         if (mainImageMethod == null)
         {
@@ -30,26 +37,28 @@ public static class Program
         {
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            
+
             Console.Write($"Rendering (iTime = {iTime})...");
             var glslProg = new GLSLProg(iResolution, iTime);
-            Parallel.For(0, pixels.Length, index =>
-            {
-                var x = index % (int)iResolution.x;
-                var y = (int)iResolution.y - index / (int)iResolution.x - 1;
-                object[] parameters = { null!, new vec2(x, y) };
-                mainImageMethod.Invoke(glslProg, parameters);
-                pixels[index] = (vec4)parameters[0];
-            });
-            
+            Parallel.For(
+                         0,
+                         pixels.Length,
+                         index =>
+                         {
+                             var x = index % (int)iResolution.x;
+                             var y = (int)iResolution.y - index / (int)iResolution.x - 1;
+                             object[] parameters = { null!, new vec2(x, y) };
+                             mainImageMethod.Invoke(glslProg, parameters);
+                             pixels[index] = (vec4)parameters[0];
+                         });
+
             Console.WriteLine($" {stopwatch.Elapsed.TotalSeconds:F1}s");
 
             images.Add(PixelsToMagickImage(pixels, iResolution, fps));
         }
 
-        var imagePath = "/Users/Dean/Desktop/output.gif";
-        Console.Write($"Writing {imagePath}...");
-        CreateAnimatedGif(imagePath, images);
+        Console.Write($"Writing {options.OutputPath}...");
+        CreateAnimatedGif(options.OutputPath, images);
         Console.WriteLine(" Done.");
     }
 
@@ -57,13 +66,13 @@ public static class Program
     {
         var width = (int)iResolution.x;
         var height = (int)iResolution.y;
-        
+
         var image = new MagickImage(MagickColors.Transparent, width, height)
         {
             Format = MagickFormat.Rgb,
             AnimationDelay = (int)(100.0f / fps)
         };
-        
+
         var pixelsData = new byte[width * height * 3];
         for (var y = 0; y < height; y++)
         {
