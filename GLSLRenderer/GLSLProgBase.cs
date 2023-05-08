@@ -87,14 +87,26 @@ public class GLSLProgBase
         where T : VectorBase, new() =>
         new()
             { Components = v.Components.Select(fract).ToArray() };
-    
-    public static float pow(float v1, float v2) => (float)Math.Pow(v1, v2);
+
+    public static float pow(float v1, float v2)
+    {
+        if (v1 < 0.0f)
+            throw new ArgumentOutOfRangeException(nameof(v1), v1, "The base of the pow() function must be a non-negative number.");
+        return (float)Math.Pow(v1, v2);
+    }
+
     public static T pow<T>(T v1, VectorBase v2)
         where T : VectorBase, new() =>
         new()
             { Components = v1.Components.Select((o, i) => pow(o, v2.Components[i])).ToArray() };
 
-    public static float sqrt(float v1) => (float)Math.Sqrt(v1);
+    public static float sqrt(float v1)
+    {
+        if (v1 < 0.0f)
+            throw new ArgumentOutOfRangeException(nameof(v1), v1, "The base of the sqrt() function must be a non-negative number.");
+        return (float)Math.Sqrt(v1);
+    }
+
     public static T sqrt<T>(T v1)
         where T : VectorBase, new() =>
         new()
