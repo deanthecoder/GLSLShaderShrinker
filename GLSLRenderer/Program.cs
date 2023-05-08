@@ -49,7 +49,6 @@ public static class Program
             stopwatch.Start();
 
             Console.Write($"Rendering (iTime = {iTime})...");
-            var glslProg = new GLSLProg(iResolution, iTime);
             Parallel.For(
                          0,
                          pixels.Length,
@@ -57,8 +56,9 @@ public static class Program
                          {
                              var x = index % (int)iResolution.x;
                              var y = (int)iResolution.y - index / (int)iResolution.x - 1;
+                             var glslProg = new GLSLProg(iResolution, iTime);
                              object[] parameters = { null!, new vec2(x, y) };
-                             mainImageMethod.Invoke(glslProg, parameters);
+                             mainImageMethod.Invoke(glslProg, parameters);  
                              pixels[index] = (vec4)parameters[0];
                          });
 
