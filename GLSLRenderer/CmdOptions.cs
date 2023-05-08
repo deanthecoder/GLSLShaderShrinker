@@ -21,7 +21,7 @@ public class CmdOptions
     [Option('s', "start", Default = 10.0f, HelpText = "Start time.")]
     public float StartTime { get; set; }
 
-    [Option('e', "end", Default = 12.0f, HelpText = "End time.")]
+    [Option('e', "end", Default = 10.0f, HelpText = "End time.")]
     public float EndTime { get; set; }
 
     [Option('f', "fps", Default = 1.0f, HelpText = "Frames per second.")]

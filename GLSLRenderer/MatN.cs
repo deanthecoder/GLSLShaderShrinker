@@ -22,7 +22,7 @@ public class MatN<T> where T : VectorBase, new()
         m_columns = columns.Select(o => new T { Components = o.Components.ToArray() }).ToArray();
     }
     
-    public T this[int i]
+    public T this[in int i]
     {
         get => m_columns[i];
         set => m_columns[i] = new T { Components = value.Components.ToArray() };

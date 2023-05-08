@@ -49,12 +49,12 @@ public class GLSLProgBase
     public static vec4 vec4(float a, VectorBase v1, float b) => new(new[] { a }.Concat(v1.Components).Append(b).ToArray());
     public static mat2 mat2(params float[] f) => new(f);
 
-    public static int toInt(float f) => (int)f;
-    public static float toFloat(int n) => n;
+    public static int toInt(in float f) => (int)f;
+    public static float toFloat(in int n) => n;
     
-    public static float abs(float v) => Math.Abs(v);
+    public static float abs(in float v) => Math.Abs(v);
 
-    public static T abs<T>(T v)
+    public static T abs<T>(in T v)
         where T : VectorBase, new()
     {
         var components = new float[v.Components.Length];
@@ -63,7 +63,7 @@ public class GLSLProgBase
         return new() { Components = components };
     }
 
-    public static float clamp(float v, float min, float max) =>
+    public static float clamp(in float v, in float min, in float max) =>
         Math.Clamp(v, min, max);
 
     public static T clamp<T>(T v, VectorBase min, VectorBase max)
@@ -81,6 +81,12 @@ public class GLSLProgBase
         where T : VectorBase, new() =>
         new()
             { Components = v.Components.Select(floor).ToArray() };
+
+    public static float round(float v) => floor(v + 0.5f);
+    public static T round<T>(T v)
+        where T : VectorBase, new() =>
+        new()
+            { Components = v.Components.Select(round).ToArray() };
 
     public static float fract(float v) => v - (float)Math.Floor(v);
     public static T fract<T>(T v)
@@ -112,7 +118,7 @@ public class GLSLProgBase
         new()
             { Components = v1.Components.Select(sqrt).ToArray() };
 
-    public static float dot(VectorBase v1, VectorBase v2)
+    public static float dot(in VectorBase v1, in VectorBase v2)
     {
         var s = 0.0f;
         for (var i = 0; i < v1.Components.Length; i++)
@@ -120,14 +126,14 @@ public class GLSLProgBase
         return s;
     }
 
-    public static vec3 cross(vec3 x, vec3 y) =>
+    public static vec3 cross(in vec3 x, in vec3 y) =>
         new(
             x.y * y.z - x.z * y.y,
             x.z * y.x - x.x * y.z,
             x.x * y.y - x.y * y.x
            );
 
-    public static T normalize<T>(T v)
+    public static T normalize<T>(in T v)
         where T : VectorBase, new()
     {
         var l = length(v);
@@ -137,12 +143,17 @@ public class GLSLProgBase
         };
     }
 
-    public static float length(float v) => abs(v);
+    public static float length(in float v) => abs(v);
 
-    public static float length(VectorBase v) =>
-        (float)Math.Sqrt(v.Components.Sum(o => o * o));
+    public static float length(in VectorBase v)
+    {
+        var sum = 0.0f;
+        for (var i = 0; i < v.Components.Length; i++)
+            sum += v[i] * v[i];
+        return (float)Math.Sqrt(sum);
+    }
 
-    public static float distance(VectorBase v1, VectorBase v2) => length(v2.Sub(v1));
+    public static float distance(in VectorBase v1, in VectorBase v2) => length(v2.Sub(v1));
 
     public static float exp(float f) => (float)Math.Exp(f);
 
@@ -221,6 +232,12 @@ public class GLSLProgBase
         where T : VectorBase, new() =>
         new() { Components = f.Components.Select(o => smoothstep(v1, v2, o)).ToArray() };
 
+    public static float step(float edge, float x) => x >= edge ? 1.0f : 0.0f;
+
+    public static T step<T>(T edge, T x)
+        where T : VectorBase, new() =>
+        new() { Components = edge.Components.Select((o, i) => step(o, x[i])).ToArray() };
+    
     public static float cos(float v) => (float)Math.Cos(v);
 
     public static T cos<T>(T v)
@@ -238,6 +255,18 @@ public class GLSLProgBase
     public static T tan<T>(T v)
         where T : VectorBase, new() =>
         new() { Components = v.Components.Select(tan).ToArray() };
+
+    public static float atan(float y, float x) => (float)Math.Atan2(y, x);
+
+    public static T atan<T>(T v1, T v2)
+        where T : VectorBase, new() =>
+        new() { Components = v1.Components.Select((o, i) => atan(o, v2[i])).ToArray() };
+
+    public static float atan(float yx) => (float)Math.Atan(yx);
+
+    public static T atan<T>(T v1)
+        where T : VectorBase, new() =>
+        new() { Components = v1.Components.Select(o => atan(o)).ToArray() };
     
     public static vec3 reflect(vec3 I, vec3 N) => I - 2.0f * N * dot(N, I);
     public static vec3 refract(vec3 I, vec3 N, float eta)

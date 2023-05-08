@@ -9,6 +9,7 @@
 //  </summary>
 // -----------------------------------------------------------------------
 
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 #pragma warning disable CS8600
 #pragma warning disable CS8603
@@ -20,7 +21,7 @@ public static class ObjectExtensions
     public static T DeepClone<T>(this T obj)
     {
         if (obj == null)
-            return default(T);
+            throw new ArgumentNullException(nameof(obj));
 
         var type = obj.GetType();
 
@@ -33,6 +34,11 @@ public static class ObjectExtensions
         if (type.IsValueType || type == typeof(string))
             return obj;
 
+        return DeepCloneFields(obj, type);
+    }
+
+    private static T DeepCloneFields<T>([DisallowNull] T obj, Type type)
+    {
         var clonedObject = (T)Activator.CreateInstance(type);
 
         foreach (var field in type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance))

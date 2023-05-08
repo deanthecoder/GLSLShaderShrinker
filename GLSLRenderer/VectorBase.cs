@@ -19,9 +19,18 @@ public partial class VectorBase
 {
     private readonly int m_count;
 
-    public static implicit operator VectorBase(float f) => new(1, f);
+    public static implicit operator VectorBase(in float f) => new(1, f);
 
-    protected VectorBase(int count, params float[] components)
+    /// <summary>
+    /// Constructor ONLY FOR USE when 'components' can be owned by this new object.
+    /// </summary>
+    private VectorBase(in float[] components)
+    {
+        m_count = components.Length;
+        Components = components;
+    }
+    
+    protected VectorBase(in int count, params float[] components)
     {
         m_count = count;
         Components = new float[count];
@@ -43,7 +52,7 @@ public partial class VectorBase
     public float[] Components { get; init; }
 
     // Accessors.
-    public float this[int index]
+    public float this[in int index]
     {
         get => Components[index];
         set => Components[index] = value;
@@ -122,44 +131,52 @@ public partial class VectorBase
     }
 
     // Operators.
-    public VectorBase Sub(float v) =>
-        new(m_count, Components.Select(o => o - v).ToArray());
-    public VectorBase Sub(VectorBase v)
+    public VectorBase Sub(in float v)
     {
-        var components = Components.ToArray();
+        var components = new float[m_count];
         for (var i = 0; i < components.Length; i++)
-            components[i] -= v.Components[i];
-        return new(m_count, components);
+            components[i] = this[i] - v;
+        return new(components);
+    }
+    
+    public VectorBase Sub(in VectorBase v)
+    {
+        var components = new float[m_count];
+        for (var i = 0; i < components.Length; i++)
+            components[i] = this[i] - v.Components[i];
+        return new(components);
     }
 
-    public VectorBase Div(float v)
+    public VectorBase Div(in float v)
     {
-        var components = Components.ToArray();
+        var components = new float[m_count];
         for (var i = 0; i < components.Length; i++)
-            components[i] /= v;
-        return new(m_count, components);
+            components[i] = this[i] / v;
+        return new(components);
     }
-    public VectorBase Div(VectorBase v)
+    
+    public VectorBase Div(in VectorBase v)
     {
-        var components = Components.ToArray();
+        var components = new float[m_count];
         for (var i = 0; i < components.Length; i++)
-            components[i] /= v.Components[i];
-        return new(m_count, components);
+            components[i] = this[i] / v.Components[i];
+        return new(components);
     }
 
-    public VectorBase Mul(float v)
+    public VectorBase Mul(in float v)
     {
-        var components = Components.ToArray();
+        var components = new float[m_count];
         for (var i = 0; i < components.Length; i++)
-            components[i] *= v;
-        return new(m_count, components);
+            components[i] = this[i] * v;
+        return new(components);
     }
-    public VectorBase Mul(VectorBase v)
+    
+    public VectorBase Mul(in VectorBase v)
     {
-        var components = Components.ToArray();
+        var components = new float[m_count];
         for (var i = 0; i < components.Length; i++)
-            components[i] *= v.Components[i];
-        return new(m_count, components);
+            components[i] = this[i] * v.Components[i];
+        return new(components);
     }
     
     // Overloads.
@@ -180,7 +197,13 @@ public partial class VectorBase
     public static bool operator ==(VectorBase a, VectorBase b)
     {
         const float precision = 1e-6f;
-        return Math.Abs(a.x - b.x) < precision && Math.Abs(a.y - b.y) < precision;
+        for (var i = 0; i < a.Components.Length; i++)
+        {
+            if (Math.Abs(a.x - b.x) > precision)
+                return false;
+        }
+        
+        return true;
     }
 
     public static bool operator !=(VectorBase a, VectorBase b) => !(a == b);
