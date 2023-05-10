@@ -1,15 +1,24 @@
 ﻿using System.Diagnostics;
+using System.Reflection;
+using System.Text;
+using CommandLine;
 using DiffEngine;
 using Shrinker.Parser;
 using TextCopy;
 
 namespace Shrinker.Cmd
 {
+    // todo - add command line args.
     internal static class Program
     {
         static void Main(string[] args)
         {
-            var transpileToCSharp = args.Any(o => o.Equals("-csharp", StringComparison.OrdinalIgnoreCase));
+            CommandLine.Parser.Default.ParseArguments<CmdOptions>(args).WithParsed(Shrink);
+        }
+        
+        static void Shrink(CmdOptions args)
+        {
+            var transpileToCSharp = !string.IsNullOrEmpty(args.CSharpOutputPath);
             
             var glsl = ClipboardService.GetText();
             if (string.IsNullOrEmpty(glsl))
@@ -48,10 +57,28 @@ namespace Shrinker.Cmd
                 
                 Console.WriteLine($"Creating {(transpileToCSharp ? "CSharp" : "GLSL")}...");
                 var newGlsl = rootNode.ToCode(options);
-                ClipboardService.SetText(newGlsl);
                 
                 Console.WriteLine("Success.");
 
+                if (transpileToCSharp)
+                {
+                    const string ResourceName = "Shrinker.Cmd.Templates.GLSLProg.template";
+                    using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(ResourceName);
+                    if (stream == null)
+                        throw new InvalidOperationException($"Missing C# resource template: {ResourceName}");
+
+                    Console.WriteLine($"Writing {args.CSharpOutputPath}...");
+                    using var reader = new StreamReader(stream);
+                    var text = new StringBuilder(reader.ReadToEnd());
+                    text.Replace("{code}", newGlsl);
+                    File.WriteAllText(args.CSharpOutputPath, text.ToString());
+                    return;
+                }
+
+                ClipboardService.SetText(newGlsl);
+                if (!args.Diff)
+                    return;
+                
                 var oldFile = CreateTempFileFromString(glsl, ".glsl");
                 var newFile = CreateTempFileFromString(newGlsl, ".glsl");
                 try
