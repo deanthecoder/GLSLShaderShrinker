@@ -29,6 +29,10 @@ public class GLSLProgBase
     public float iTime { get; }
     public int iFrame => (int)Math.Floor(iTime * 60.0);
     public static vec4 iMouse => new(320.0f, 180.0f, 0.0f, 0.0f);
+    public int iChannel0 => 0;
+    public int iChannel1 => 0;
+    public int iChannel2 => 0;
+    public int iChannel3 => 0;
 
     public static T Clone<T>(ref T o)
     {
@@ -283,4 +287,6 @@ public class GLSLProgBase
         where T : VectorBase, new() =>
         new()
             { Components = Enumerable.Repeat(0.5f, v.Components.Length).ToArray() };
+
+    public vec4 texture(int channel, vec2 uv, float bias = 0.0f) => new(0);
 }
