@@ -445,18 +445,55 @@ namespace Shrinker.Parser
 
                     if (customOptions?.TranspileToCSharp == true)
                     {
-                        var typeTokens = o.Params.Children.Select(p => p.Token).OfType<TypeToken>().ToArray();
-                        if (typeTokens.Any(t => t.InOut is TypeToken.InOutType.None or TypeToken.InOutType.In))
-                        {
-                            for (var i = 0; i < typeTokens.Length; i++)
-                            {
-                                // We only need to clone 'in' params (To stop the function changing the caller's value).
-                                if (typeTokens[i].InOut != TypeToken.InOutType.None && typeTokens[i].InOut != TypeToken.InOutType.In)
-                                    continue;
+                        //
+                        // We need to clone parameters if they are modified in the function
+                        // as C# passes by reference not value.
+                        //
 
-                                // Don't need to clone value types.
-                                if (typeTokens[i].IsVector() || typeTokens[i].IsMatrix() || typeTokens[i].IsStruct())
-                                    braces.InsertChild(0, new GenericSyntaxNode($"Clone(ref {o.ParamNames[i].Name});")); // todo - only clone if field set.
+                        var cloneParams = true;
+                        
+                        // A call to a function with an 'out' param might change things, so must clone.
+                        if (!o.TheTree.OfType<FunctionCallSyntaxNode>().Any(node => node.HasOutParam))
+                        {
+                            var paramNames = o.ParamNames.Select(node => node.Name).ToArray();
+                            var assignmentVarNames =
+                                o.TheTree
+                                    .OfType<VariableAssignmentSyntaxNode>()
+                                    .Select(s => new string(s.Name.TakeWhile(c => c != '.' && c != '[').ToArray()))
+                                    .ToArray();
+                            if (!assignmentVarNames.Any(s => paramNames.Contains(s)))
+                            {
+                                // No direct assignments at all, and no user functions calls,
+                                // so low chance of param changing.
+                                // Might be an *= operator though...
+                                var operatorAssignments =
+                                    o.TheTree
+                                        .Where(node => node.Token is SymbolOperatorToken t && t.Content.EndsWith('='));
+                                var operatorTargets =
+                                    operatorAssignments
+                                        .Select(node => (node.Previous as GenericSyntaxNode)?.Name)
+                                        .Where(varName => varName != null)
+                                        .ToArray();
+                                if (!operatorTargets.Any() || !operatorTargets.Any(varName => paramNames.Contains(varName)))
+                                    cloneParams = false;
+                            }
+                        }
+
+                        if (cloneParams)
+                        {
+                            var typeTokens = o.Params.Children.Select(p => p.Token).OfType<TypeToken>().ToArray();
+                            if (typeTokens.Any(t => t.InOut is TypeToken.InOutType.None or TypeToken.InOutType.In))
+                            {
+                                for (var i = 0; i < typeTokens.Length; i++)
+                                {
+                                    // We only need to clone 'in' params (To stop the function changing the caller's value).
+                                    if (typeTokens[i].InOut != TypeToken.InOutType.None && typeTokens[i].InOut != TypeToken.InOutType.In)
+                                        continue;
+
+                                    // Don't need to clone value types.
+                                    if (typeTokens[i].IsVector() || typeTokens[i].IsMatrix() || typeTokens[i].IsStruct())
+                                        braces.InsertChild(0, new GenericSyntaxNode($"Clone(ref {o.ParamNames[i].Name});")); // todo - only clone if field set.
+                                }
                             }
                         }
                     }

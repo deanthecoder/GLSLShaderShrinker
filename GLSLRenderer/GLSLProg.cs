@@ -39,18 +39,18 @@ struct Hit {
 
 void U(ref Hit h, float d, float id, vec3 p) { Clone(ref p);if (d < h.d) h = new Hit(d, id, p); }
 
-float max3(vec3 v) { Clone(ref v);return max(v.x, max(v.y, v.z)); }
+float max3(vec3 v) { return max(v.x, max(v.y, v.z)); }
 
-float dot3(vec3 v) { Clone(ref v);return dot(v, v); }
+float dot3(vec3 v) { return dot(v, v); }
 
-float sum2(vec2 v) { Clone(ref v);return dot(v, vec2(1)); }
+float sum2(vec2 v) { return dot(v, vec2(1)); }
 
-float sum3(vec3 v) { Clone(ref v);return dot(v, vec3(1)); }
+float sum3(vec3 v) { return dot(v, vec3(1)); }
 
-float mul2(vec2 v) { Clone(ref v);return v.x * v.y; }
+float mul2(vec2 v) { return v.x * v.y; }
 
 vec2 h22(vec2 p) {
-	Clone(ref p); vec3 v = fract(p.xyx * vec3(.1031f, .103f, .0973f));
+	vec3 v = fract(p.xyx * vec3(.1031f, .103f, .0973f));
 	v += dot(v, v.yzx + 333.33f);
 	return fract((v.xx + v.yz) * v.zy);
 }
@@ -61,7 +61,7 @@ float h31(vec3 p3) {
 	return fract(sum2(p3.xy) * p3.z);
 }
 
-float h21(vec2 p) { Clone(ref p);return h31(p.xyx); }
+float h21(vec2 p) { return h31(p.xyx); }
 
 float n31(vec3 p) {
 	Clone(ref p); vec3 s = vec3(7, 157, 113);
@@ -75,7 +75,7 @@ float n31(vec3 p) {
 }
 
 vec2 n331(vec3 p) {
-	Clone(ref p); vec2 s = vec2(20, 38);
+	vec2 s = vec2(20, 38);
 	vec2 ns = new();
 	for (int i = 0; i < 2; i++)
 		ns[i] = n31(p * s[i]);
@@ -138,12 +138,12 @@ float boxFrame(vec3 p) {
 }
 
 float tor(vec3 p) {
-	Clone(ref p); vec2 r = vec2(2, .2f);
+	vec2 r = vec2(2, .2f);
 	return length(vec2(length(p.xz) - r.x, p.y)) - r.y;
 }
 
 vec3 rayDir(vec3 ro, vec2 uv) {
-	Clone(ref uv); Clone(ref ro); vec3 f = normalize(vec3(0) - ro),
+	vec3 f = normalize(vec3(0) - ro),
 	     r = normalize(cross(vec3(0, 1, 0), f));
 	return normalize(f + r * uv.x + cross(f, r) * uv.y);
 }
@@ -169,7 +169,7 @@ vec3 sky(vec3 rd) {
 	return mix(col, vec3(2, 1.6f, 1.4f), smoothstep(.9f, 1.0f, den) * (1.0f - clamp(d / 64.0f, 0.0f, 1.0f)));
 }
 
-float fakeEnv(vec3 n) { Clone(ref n);return length(sin(n * 2.5f) * .5f + .5f) / 1.73205f; }
+float fakeEnv(vec3 n) { return length(sin(n * 2.5f) * .5f + .5f) / 1.73205f; }
 
 float glassSdf(vec3 p) {
 	Clone(ref p); p.y += 2.0f;
@@ -188,7 +188,7 @@ Hit sdf(vec3 p) {
 }
 
 vec3 N(vec3 p, float d) {
-	Clone(ref p); float h = d * .05f;
+	float h = d * .05f;
 	vec3 n = vec3(0);
 	for (int i = min(iFrame, 0); i < 4; i++) {
 		vec3 e = .005773f * (2.0f * vec3(((i + 3) >> 1) & 1, (i >> 1) & 1, i & 1) - 1.0f);
@@ -199,7 +199,7 @@ vec3 N(vec3 p, float d) {
 }
 
 vec3 NGlass(vec3 p) {
-	Clone(ref p); vec3 n = vec3(0);
+	vec3 n = vec3(0);
 	for (int i = min(iFrame, 0); i < 4; i++) {
 		vec3 e = .005773f * (2.0f * vec3(((i + 3) >> 1) & 1, (i >> 1) & 1, i & 1) - 1.0f);
 		n += e * glassSdf(p + e * .01f);

@@ -34,20 +34,45 @@ public class FunctionDefinitionTests
     }
     
     [Test]
-    public void CheckInParamsAreClonedBeforeUse()
+    public void CheckNonInParamsAreNotCloned()
     {
         var lexer = new Lexer();
-        lexer.Load("struct S { }; void main(inout vec2 v1, in vec2 v2, out vec2 v3, in S s, in int n) { }");
+        lexer.Load("struct S { }; void main(inout vec2 v1, out vec2 v3, in int n) { }");
 
         var options = CustomOptions.TranspileOptions();
         var rootNode = new Parser(lexer)
             .Parse()
             .Simplify(options);
 
-        Assert.That(rootNode.ToCode(options).ToSimple(), Does.Not.Contain("Clone(ref v1)"));
+        Assert.That(rootNode.ToCode(options).ToSimple(), Does.Not.Contain("Clone"));
+    }
+    
+    [Test, Sequential]
+    public void CheckNonModifiedInParamsAreNotCloned([Values("struct S { }; void main(in vec2 v2, in S s) { }", "struct S { }; void main(vec2 v2, S s) { }")] string code)
+    {
+        var lexer = new Lexer();
+        lexer.Load(code);
+
+        var options = CustomOptions.TranspileOptions();
+        var rootNode = new Parser(lexer)
+            .Parse()
+            .Simplify(options);
+
+        Assert.That(rootNode.ToCode(options).ToSimple(), Does.Not.Contain("Clone"));
+    }
+    
+    [Test]
+    public void CheckModifiedInParamsAreCloned()
+    {
+        var lexer = new Lexer();
+        lexer.Load("struct S { int i; }; void main(vec2 v2, in S s) { v2.x++; s.i *= -1; }");
+
+        var options = CustomOptions.TranspileOptions();
+        var rootNode = new Parser(lexer)
+            .Parse()
+            .Simplify(options);
+
         Assert.That(rootNode.ToCode(options).ToSimple(), Does.Contain("Clone(ref v2)"));
-        Assert.That(rootNode.ToCode(options).ToSimple(), Does.Not.Contain("Clone(ref v3)"));
         Assert.That(rootNode.ToCode(options).ToSimple(), Does.Contain("Clone(ref s)"));
-        Assert.That(rootNode.ToCode(options).ToSimple(), Does.Not.Contain("Clone(ref n)"));
     }
 }
