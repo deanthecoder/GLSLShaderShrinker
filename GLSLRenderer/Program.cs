@@ -1,5 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Reflection;
+using System.Security.Cryptography;
+using System.Text;
 using CommandLine;
 using ImageMagick;
 
@@ -58,11 +60,16 @@ public static class Program
                              var y = (int)iResolution.y - index / (int)iResolution.x - 1;
                              var glslProg = new GLSLProg(iResolution, iTime);
                              object[] parameters = { null!, new vec2(x, y) };
-                             mainImageMethod.Invoke(glslProg, parameters);  
+                             mainImageMethod.Invoke(glslProg, parameters);
                              pixels[index] = (vec4)parameters[0];
                          });
 
-            Console.WriteLine($" {stopwatch.Elapsed.TotalSeconds:F1}s");
+            var hash = new StringBuilder();
+            var allComponents = pixels.SelectMany(pixel => pixel.Components).ToArray();
+            foreach (var t in SHA256.HashData(FloatsToBytes(allComponents)).Take(4))
+                hash.Append(t.ToString("X2"));
+
+            Console.WriteLine($" {stopwatch.Elapsed.TotalSeconds:F1}s ({hash})");
 
             images.Add(PixelsToMagickImage(pixels, iResolution, fps));
         }
@@ -70,6 +77,13 @@ public static class Program
         Console.Write($"Writing {options.OutputPath}...");
         CreateAnimatedGif(options.OutputPath, images);
         Console.WriteLine(" Done.");
+    }
+
+    private static byte[] FloatsToBytes(float[] values)
+    {
+        var result = new byte[values.Length * sizeof(float)];
+        Buffer.BlockCopy(values, 0, result, 0, result.Length);
+        return result;
     }
 
     private static MagickImage PixelsToMagickImage(vec4[] pixels, vec2 iResolution, float fps)
