@@ -171,7 +171,7 @@ public class GLSLProgBase
         where T : VectorBase, new() =>
         new() { Components = v1.Components.Select(sign).ToArray() };
 
-    public static float mod(float f, float a) => a != 0.0f ? f % a : 0.0f;
+    public static float mod(float f, float a) => (float)(a != 0.0f ? f - a * Math.Floor(f / a) : 0.0);
 
     public static T mod<T>(T v1, T v2)
         where T : VectorBase, new() =>

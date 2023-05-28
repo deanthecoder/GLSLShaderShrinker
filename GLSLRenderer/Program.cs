@@ -48,7 +48,7 @@ public static class Program
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            Console.Write($"Rendering (iTime = {iTime})...");
+            Console.Write($"Rendering (iTime = {iTime:F2})...");
             Parallel.For(
                          0,
                          pixels.Length,
