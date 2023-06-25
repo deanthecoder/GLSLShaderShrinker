@@ -25,6 +25,9 @@ public class GLSLProgBase
         iTime = time;
     }
 
+    /// <summary>
+    /// ShaderToy uniforms.
+    /// </summary>
     public vec3 iResolution { get; }
     public float iTime { get; }
     public int iFrame => (int)Math.Floor(iTime * 60.0);
@@ -33,6 +36,23 @@ public class GLSLProgBase
     public int iChannel1 => 0;
     public int iChannel2 => 0;
     public int iChannel3 => 0;
+
+    /// <summary>
+    /// Posh Brolly uniforms
+    /// </summary>
+    public float _t => iTime;
+    public vec3 _res => iResolution;
+    public int _fn => iFrame;
+    public int _tex0 => iChannel0;
+    public int _tex1 => iChannel1;
+    public int _tex2 => iChannel2;
+    public int _tex3 => iChannel3;
+    public float _s0 => 0.5f;
+    public float _s1 => 0.5f;
+    public float _s2 => 0.5f;
+    public float _s3 => 0.5f;
+    public float _s4 => 0.5f;
+    public float _s5 => 0.5f;
 
     public static T Clone<T>(ref T o)
     {
@@ -247,6 +267,12 @@ public class GLSLProgBase
     public static T cos<T>(T v)
         where T : VectorBase, new() =>
         new() { Components = v.Components.Select(cos).ToArray() };
+
+    public static float acos(float v) => (float)Math.Acos(v);
+
+    public static T acos<T>(T v)
+        where T : VectorBase, new() =>
+        new() { Components = v.Components.Select(acos).ToArray() };
 
     public static float sin(float v) => (float)Math.Sin(v);
 
