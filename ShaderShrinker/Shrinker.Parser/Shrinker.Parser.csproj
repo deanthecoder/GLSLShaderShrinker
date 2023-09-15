@@ -5,6 +5,7 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <LangVersion>latest</LangVersion>
+    <Company>Dean Edis (DeanTheCoder)</Company>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Shrinker.Lexer\Shrinker.Lexer.csproj" />

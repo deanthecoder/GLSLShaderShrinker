@@ -6,6 +6,8 @@
     <UseWPF>true</UseWPF>
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
     <LangVersion>latest</LangVersion>
+    <Company>Dean Edis (DeanTheCoder)</Company>
+    <Product>GLSL Shader Shrinker</Product>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>App.ico</ApplicationIcon>
