@@ -88,7 +88,7 @@ public class GLSLProgBase
     }
 
     public static float clamp(in float v, in float min, in float max) =>
-        Math.Clamp(v, min, max);
+        Math.Min(Math.Max(v, min), max);
 
     public static T clamp<T>(T v, VectorBase min, VectorBase max)
         where T : VectorBase, new() =>
