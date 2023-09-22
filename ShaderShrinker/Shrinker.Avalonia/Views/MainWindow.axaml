@@ -48,8 +48,11 @@
         </Grid.ColumnDefinitions>
 
         <!-- Project web link https://github.com/deanthecoder/GLSLShaderShrinker -->
-        <Button Grid.Column="1" Grid.Row="0" HorizontalAlignment="Right" Margin="8,2" VerticalAlignment="Top"
-                Content="Project Page"/>
+        <Button Grid.Column="1" Grid.Row="0"
+                Margin="16,2" 
+                HorizontalAlignment="Right" VerticalAlignment="Top"
+                Content="Project Page"
+                Command="{Binding LaunchProjectPage}"/>
         
         <StackPanel Grid.Column="0" Grid.Row="1" VerticalAlignment="Top">
             <!-- Import Options -->

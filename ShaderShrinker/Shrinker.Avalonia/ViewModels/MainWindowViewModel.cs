@@ -1,13 +1,21 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Windows.Input;
 using DiffPlex;
 using DiffPlex.DiffBuilder;
 using DiffPlex.DiffBuilder.Model;
+using Shrinker.Avalonia.Commands;
+using Shrinker.Avalonia.Models;
 
 namespace Shrinker.Avalonia.ViewModels;
+
+using System.Windows.Input;
 
 public class MainWindowViewModel : ViewModelBase
 {
     public List<CombinedDiff> Diffs { get; } = new();
+    public ICommand LaunchProjectPage { get; } = new RelayCommand(() => Process.Start(new ProcessStartInfo("https://github.com/deanthecoder/GLSLShaderShrinker") { UseShellExecute = true }));
     
     public MainWindowViewModel()
     {

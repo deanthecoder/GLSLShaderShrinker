@@ -11,7 +11,7 @@
 
 using DiffPlex.DiffBuilder.Model;
 
-namespace Shrinker.Avalonia.ViewModels;
+namespace Shrinker.Avalonia.Models;
 
 public class CombinedDiff
 {
