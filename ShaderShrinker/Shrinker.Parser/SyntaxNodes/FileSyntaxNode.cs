@@ -610,7 +610,7 @@ namespace Shrinker.Parser.SyntaxNodes
                              var functionName = node.Token.Content;
                              var roundBrackets = (RoundBracketSyntaxNode)match.Single();
 
-                             FunctionCallSyntaxNode functionCall = null;
+                             FunctionCallSyntaxNode functionCall;
                              if (userDefinedFunctions.Contains(functionName))
                              {
                                  // User-defined function.
