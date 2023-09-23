@@ -1,7 +1,5 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Diagnostics;
-using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using Shrinker.Avalonia.ViewModels;
 using Shrinker.Avalonia.Views;

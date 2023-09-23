@@ -59,10 +59,10 @@
             <Border Classes="class" Margin="4,8,4,4">
                 <StackPanel>
                     <TextBlock Text="Step 1 - GLSL Import" FontSize="10" Margin="4"/>
-                    <Button ToolTip.Tip="From Clipboard" Margin="16,2">
+                    <Button ToolTip.Tip="From Clipboard" Margin="16,2" Command="{Binding ImportGlslClipboardCommand}">
                         <Avalonia:MaterialIcon Kind="ClipboardArrowDown" />
                     </Button>
-                    <Button ToolTip.Tip="From File..." Margin="16,2">
+                    <Button ToolTip.Tip="From File..." Margin="16,2" Command="{Binding ImportGlslFileCommand}">
                         <Avalonia:MaterialIcon Kind="FileDownload" />
                     </Button>
                     <Button ToolTip.Tip="From Shadertoy" Margin="16,2">

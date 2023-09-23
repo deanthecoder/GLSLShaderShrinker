@@ -10,6 +10,8 @@
 // -----------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using System.Security.Principal;
 using System.Windows.Input;
 
 namespace Shrinker.Avalonia.Commands;
@@ -27,7 +29,7 @@ public class RelayCommand : ICommand
 
     public event EventHandler CanExecuteChanged;
 
-    public bool CanExecute(object parameter) => m_canExecute == null || m_canExecute();
+    public virtual bool CanExecute(object parameter) => m_canExecute == null || m_canExecute();
 
     public void Execute(object parameter) => m_execute();
 
