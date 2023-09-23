@@ -1,5 +1,4 @@
 using Avalonia.Controls;
-using Avalonia.Input;
 using Avalonia.Interactivity;
 
 namespace Shrinker.Avalonia.Views;
@@ -11,5 +10,10 @@ public partial class MainWindow : Window
         InitializeComponent();
     }
 
-    private void GiveFocus(object sender, RoutedEventArgs e) => ((InputElement)sender).Focus();
+    private void GiveFocus(object sender, RoutedEventArgs e)
+    {
+        var textBox = (TextBox)sender;
+        textBox.Focus();
+        textBox.CaretIndex = textBox.Text?.Length ?? 0;
+    }
 }

@@ -81,11 +81,13 @@
                                                  Loaded="GiveFocus"
                                                  Margin="0,0,8,0" />
                                         <Button Command="{Binding ImportGlslShadertoyCommand}"
+                                                IsDefault="True"
                                                 Margin="4" ToolTip.Tip="Download">
                                             <Avalonia:MaterialIcon Kind="Download" Width="20" Height="20"/>
                                         </Button>
                                         <Button
                                             Command="{Binding CloseDialogCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=DialogHostAvalonia:DialogHost}}"
+                                            IsCancel="True"
                                             Margin="4" ToolTip.Tip="Cancel">
                                             <Avalonia:MaterialIcon Kind="Cancel" Width="20" Height="20" />
                                         </Button>
