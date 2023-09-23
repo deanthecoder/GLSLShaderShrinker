@@ -10,13 +10,10 @@
 // -----------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
-using System.Security.Principal;
-using System.Windows.Input;
 
 namespace Shrinker.Avalonia.Commands;
 
-public class RelayCommand : ICommand
+public class RelayCommand : CommandBase
 {
     private readonly Action m_execute;
     private readonly Func<bool> m_canExecute;
@@ -26,12 +23,8 @@ public class RelayCommand : ICommand
         m_execute = execute ?? throw new ArgumentNullException(nameof(execute));
         m_canExecute = canExecute;
     }
+    
+    public override bool CanExecute(object parameter) => m_canExecute == null || m_canExecute();
 
-    public event EventHandler CanExecuteChanged;
-
-    public virtual bool CanExecute(object parameter) => m_canExecute == null || m_canExecute();
-
-    public void Execute(object parameter) => m_execute();
-
-    public void RaiseCanExecuteChanged() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+    public override void Execute(object parameter) => m_execute();
 }

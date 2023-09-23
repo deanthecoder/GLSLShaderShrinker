@@ -4,9 +4,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows.Input;
 using AvaloniaEdit.Utils;
+using DialogHostAvalonia;
 using ReactiveUI;
 using Shrinker.Avalonia.Commands;
 using Shrinker.Avalonia.Models;
+using Shrinker.Avalonia.Shadertoy;
 using TextCopy;
 
 namespace Shrinker.Avalonia.ViewModels;
@@ -16,6 +18,8 @@ public class MainWindowViewModel : ReactiveObject
     private readonly ObservableCollection<CombinedDiff> m_diffs = new();
     private ICommand m_importGlslClipboardCommand;
     private ICommand m_importGlslFileCommand;
+    private CommandBase m_importGlslShadertoyCommand;
+    private string m_shadertoyId;
 
     public IEnumerable<CombinedDiff> Diffs => m_diffs;
     public ICommand LaunchProjectPage { get; } = new RelayCommand(() => Process.Start(new ProcessStartInfo("https://github.com/deanthecoder/GLSLShaderShrinker") { UseShellExecute = true }));
@@ -27,7 +31,7 @@ public class MainWindowViewModel : ReactiveObject
             if (m_importGlslFileCommand == null)
             {
                 var fileOpenCommand = new FileOpenCommand("Load GLSL file", "GLSL Files", new[] { "*.txt", "*.glsl", "*.*" });
-                fileOpenCommand.FileSelected += (sender, fileInfo) => { ImportGlslFromFile(fileInfo); };
+                fileOpenCommand.FileSelected += (_, fileInfo) => { ImportGlslFromFile(fileInfo); };
 
                 m_importGlslFileCommand = fileOpenCommand;
             }
@@ -35,7 +39,19 @@ public class MainWindowViewModel : ReactiveObject
             return m_importGlslFileCommand;
         }
     }
-    
+
+    public CommandBase ImportGlslShadertoyCommand => m_importGlslShadertoyCommand ??= new RelayCommand(ImportGlslFromShadertoy, () => !string.IsNullOrWhiteSpace(ShadertoyId));
+
+    public string ShadertoyId
+    {
+        get => m_shadertoyId;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref m_shadertoyId, value);
+            ImportGlslShadertoyCommand.RaiseCanExecuteChanged();
+        }
+    }
+
     public MainWindowViewModel()
     {
         ImportGlslFromString("You can use paste GLSL from the clipboard,\nor use the import buttons on the left.");
@@ -47,6 +63,35 @@ public class MainWindowViewModel : ReactiveObject
     {
         if (file.Exists)
             ImportGlslFromString(File.ReadAllText(file.FullName));
+    }
+
+    private async void ImportGlslFromShadertoy()
+    {
+        try
+        {
+            var id = ShadertoyId;
+            var glsl = await ShadertoyImporter.ImportAsync(id);
+            if (glsl == null)
+                return; // Nothing to do.
+            
+            if (string.IsNullOrWhiteSpace(glsl))
+            {
+                // todo
+                // MyMessageQueue.Enqueue($"Failed to import GLSL: {(string.IsNullOrEmpty(shaderData.Error) ? "Unknown error occurred." : shaderData.Error)}");
+                return;
+            }
+
+            ImportGlslFromString(glsl);
+        }
+        catch
+        {
+            // todo
+            // MyMessageQueue.Enqueue($"Failed to import GLSL: {(string.IsNullOrEmpty(shaderData.Error) ? "Unknown error occurred." : shaderData.Error)}");
+        }
+        finally
+        {
+            DialogHost.Close(null);
+        }
     }
 
     private void ImportGlslFromString(string glsl)

@@ -4,8 +4,8 @@
              xmlns:local="using:Shrinker.Avalonia"
              xmlns:Themes="clr-namespace:Material.Styles.Themes;assembly=Material.Styles"
              xmlns:Avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:dialogHostAvalonia="clr-namespace:DialogHostAvalonia;assembly=DialogHost.Avalonia"
              RequestedThemeVariant="Default">
-             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
     <Application.DataTemplates>
         <local:ViewLocator/>
@@ -13,9 +13,9 @@
   
     <Application.Styles>
         <FluentTheme />
-
         <Themes:MaterialTheme BaseTheme="Dark" PrimaryColor="BlueGrey" SecondaryColor="Lime" />
         <Avalonia:MaterialIconStyles />
+        <dialogHostAvalonia:DialogHostStyles />
 
         <StyleInclude Source="avares://AvaloniaEdit/Themes/Fluent/AvaloniaEdit.xaml" />
     </Application.Styles>

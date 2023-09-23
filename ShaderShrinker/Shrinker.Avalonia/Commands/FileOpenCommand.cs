@@ -12,7 +12,6 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -20,13 +19,12 @@ using Avalonia.Platform.Storage;
 
 namespace Shrinker.Avalonia.Commands;
 
-public class FileOpenCommand : ICommand
+public class FileOpenCommand : CommandBase
 {
     private readonly string m_title;
     private readonly string m_filterName;
     private readonly string[] m_filterExtensions;
     
-    public event EventHandler CanExecuteChanged;
     public event EventHandler<FileInfo> FileSelected;
 
     public FileOpenCommand(string title, string filterName, string[] filterExtensions)
@@ -36,12 +34,10 @@ public class FileOpenCommand : ICommand
         m_filterExtensions = filterExtensions;
     }
 
-    public bool CanExecute(object parameter) => true;
-
-    public async void Execute(object parameter)
+    public override async void Execute(object parameter)
     {
-        if (Application.Current.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
-            throw new InvalidOperationException("Cannot find the main application window.");
+        if (Application.Current?.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
+            return; // Cannot find the main application window.
 
         var files =
             await TopLevel
