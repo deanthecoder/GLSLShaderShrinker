@@ -8,10 +8,12 @@ namespace Shrinker.Avalonia;
 
 public partial class App : Application
 {
-    public override void Initialize()
+    public App()
     {
-        AvaloniaXamlLoader.Load(this);
+        DataContext = new AppViewModel();
     }
+    
+    public override void Initialize() => AvaloniaXamlLoader.Load(this);
 
     public override void OnFrameworkInitializationCompleted()
     {

@@ -5,7 +5,10 @@
              xmlns:Themes="clr-namespace:Material.Styles.Themes;assembly=Material.Styles"
              xmlns:Avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:dialogHostAvalonia="clr-namespace:DialogHostAvalonia;assembly=DialogHost.Avalonia"
-             RequestedThemeVariant="Default">
+             xmlns:ViewModels="clr-namespace:Shrinker.Avalonia.ViewModels"
+             Name="GLSL Shader Shrinker"
+             RequestedThemeVariant="Default"
+             x:DataType="ViewModels:AppViewModel">
 
     <Application.DataTemplates>
         <local:ViewLocator/>
@@ -19,4 +22,11 @@
 
         <StyleInclude Source="avares://AvaloniaEdit/Themes/Fluent/AvaloniaEdit.xaml" />
     </Application.Styles>
+
+    <NativeMenu.Menu>
+        <NativeMenu>
+            <NativeMenuItem Header="About GLSL Shader Shrinker" Command="{CompiledBinding AboutCommand}"/>
+        </NativeMenu>
+    </NativeMenu.Menu>
+    
 </Application>
