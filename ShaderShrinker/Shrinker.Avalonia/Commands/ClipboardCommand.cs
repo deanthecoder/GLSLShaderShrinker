@@ -20,7 +20,7 @@ namespace Shrinker.Avalonia.Commands;
 /// </summary>
 public class ClipboardCommand : RelayCommand
 {
-    public ClipboardCommand(Action execute, Func<bool> canExecute = null)
+    public ClipboardCommand(Action<object> execute, Func<bool> canExecute = null)
         : base(execute, canExecute)
     {
         DispatcherTimer.Run(

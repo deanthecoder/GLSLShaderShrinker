@@ -41,4 +41,8 @@
     <ItemGroup>
       <EmbeddedResource Include="GLSL.xshd" />
     </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Shrinker.Parser\Shrinker.Parser.csproj" />
+    </ItemGroup>
 </Project>

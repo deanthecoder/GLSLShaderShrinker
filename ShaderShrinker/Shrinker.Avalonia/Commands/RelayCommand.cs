@@ -15,10 +15,10 @@ namespace Shrinker.Avalonia.Commands;
 
 public class RelayCommand : CommandBase
 {
-    private readonly Action m_execute;
+    private readonly Action<object> m_execute;
     private readonly Func<bool> m_canExecute;
 
-    public RelayCommand(Action execute, Func<bool> canExecute = null)
+    public RelayCommand(Action<object> execute, Func<bool> canExecute = null)
     {
         m_execute = execute ?? throw new ArgumentNullException(nameof(execute));
         m_canExecute = canExecute;
@@ -26,5 +26,5 @@ public class RelayCommand : CommandBase
     
     public override bool CanExecute(object parameter) => m_canExecute == null || m_canExecute();
 
-    public override void Execute(object parameter) => m_execute();
+    public override void Execute(object parameter) => m_execute(parameter);
 }

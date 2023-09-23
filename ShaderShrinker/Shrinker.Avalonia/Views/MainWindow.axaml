@@ -104,7 +104,8 @@
                             <Button ToolTip.Tip="Maximum" Margin="16,2">
                                 <Avalonia:MaterialIcon Kind="ArrowCollapse" />
                             </Button>
-                            <Button ToolTip.Tip="Minimum (/Reformat)" Margin="16,2">
+                            <Button ToolTip.Tip="Minimum (/Reformat)" Margin="16,2"
+                                    Command="{Binding ShrinkCommand}" CommandParameter="Min">
                                 <Avalonia:MaterialIcon Kind="FormatAlignLeft" />
                             </Button>
                             <Button ToolTip.Tip="Custom" Margin="16,2">
