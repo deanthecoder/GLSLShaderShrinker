@@ -101,7 +101,8 @@
                     <Border Classes="class">
                         <StackPanel>
                             <TextBlock Text="Step 2 - Shrink" FontSize="10" Margin="4" />
-                            <Button ToolTip.Tip="Maximum" Margin="16,2">
+                            <Button ToolTip.Tip="Maximum" Margin="16,2"
+                                    Command="{Binding ShrinkCommand}" CommandParameter="Max">
                                 <Avalonia:MaterialIcon Kind="ArrowCollapse" />
                             </Button>
                             <Button ToolTip.Tip="Minimum (/Reformat)" Margin="16,2"
