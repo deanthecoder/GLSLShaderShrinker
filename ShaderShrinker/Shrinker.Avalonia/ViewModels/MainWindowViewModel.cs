@@ -1,10 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Windows.Input;
+using Avalonia.Threading;
 using AvaloniaEdit.Utils;
 using DialogHostAvalonia;
+using Material.Styles.Controls;
+using Material.Styles.Models;
 using ReactiveUI;
 using Shrinker.Avalonia.Commands;
 using Shrinker.Avalonia.Models;
@@ -76,23 +80,24 @@ public class MainWindowViewModel : ReactiveObject
             
             if (string.IsNullOrWhiteSpace(glsl))
             {
-                // todo
-                // MyMessageQueue.Enqueue($"Failed to import GLSL: {(string.IsNullOrEmpty(shaderData.Error) ? "Unknown error occurred." : shaderData.Error)}");
+                PostSnackbarMessage("Failed to import GLSL.");
                 return;
             }
 
             ImportGlslFromString(glsl);
         }
-        catch
+        catch (Exception ex)
         {
-            // todo
-            // MyMessageQueue.Enqueue($"Failed to import GLSL: {(string.IsNullOrEmpty(shaderData.Error) ? "Unknown error occurred." : shaderData.Error)}");
+            PostSnackbarMessage($"Failed to import GLSL: {ex.Message}");
         }
         finally
         {
             DialogHost.Close(null);
         }
     }
+
+    private static void PostSnackbarMessage(object message) =>
+        SnackbarHost.Post(new SnackbarModel(message, TimeSpan.FromSeconds(3.0)), null, DispatcherPriority.Normal);
 
     private void ImportGlslFromString(string glsl)
     {

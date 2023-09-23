@@ -6,6 +6,7 @@
         xmlns:Avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
         xmlns:Views="clr-namespace:Shrinker.Avalonia.Views"
         xmlns:DialogHostAvalonia="clr-namespace:DialogHostAvalonia;assembly=DialogHost.Avalonia"
+        xmlns:Controls="clr-namespace:Material.Styles.Controls;assembly=Material.Styles"
         mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="620"
         MinWidth="800" MinHeight="600"
         x:Class="Shrinker.Avalonia.Views.MainWindow"
@@ -38,150 +39,152 @@
     </Window.Styles>
 
     <DialogHostAvalonia:DialogHost OverlayBackground="Black">
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-            
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
+        <Controls:SnackbarHost HostName="Root" SnackbarHorizontalAlignment="Center">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
 
-            <!-- Project web link https://github.com/deanthecoder/GLSLShaderShrinker -->
-            <Button Grid.Column="1" Grid.Row="0"
-                    Margin="16,2" 
-                    HorizontalAlignment="Right" VerticalAlignment="Top"
-                    Content="Project Page"
-                    Command="{Binding LaunchProjectPage}"/>
-            
-            <StackPanel Grid.Column="0" Grid.Row="1" VerticalAlignment="Top">
-                <!-- Import Options -->
-                <Border Classes="class" Margin="4,8,4,4">
-                    <StackPanel>
-                        <TextBlock Text="Step 1 - GLSL Import" FontSize="10" Margin="4"/>
-                        <Button ToolTip.Tip="From Clipboard" Margin="16,2" Command="{Binding ImportGlslClipboardCommand}">
-                            <Avalonia:MaterialIcon Kind="ClipboardArrowDown" />
-                        </Button>
-                        <Button ToolTip.Tip="From File..." Margin="16,2" Command="{Binding ImportGlslFileCommand}">
-                            <Avalonia:MaterialIcon Kind="FileDownload" />
-                        </Button>
-                        <Button ToolTip.Tip="From Shadertoy" Margin="16,2"
-                                Command="{Binding OpenDialogCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=DialogHostAvalonia:DialogHost}}">
-                            <Button.CommandParameter>
-                                <!-- Shadertoy import options -->
-                                <StackPanel Orientation="Horizontal" Margin="8">
-                                    <TextBox Text="{Binding ShadertoyId}"
-                                             Watermark="Shadertoy ID (E.g. tt3yRH)"
-                                             Width="200"
-                                             VerticalAlignment="Center"
+                <!-- Project web link https://github.com/deanthecoder/GLSLShaderShrinker -->
+                <Button Grid.Column="1" Grid.Row="0"
+                        Margin="16,2" 
+                        HorizontalAlignment="Right" VerticalAlignment="Top"
+                        Content="Project Page"
+                        Command="{Binding LaunchProjectPage}"/>
+                
+                <StackPanel Grid.Column="0" Grid.Row="1" VerticalAlignment="Top">
+                    <!-- Import Options -->
+                    <Border Classes="class" Margin="4,8,4,4">
+                        <StackPanel>
+                            <TextBlock Text="Step 1 - GLSL Import" FontSize="10" Margin="4"/>
+                            <Button ToolTip.Tip="From Clipboard" Margin="16,2" Command="{Binding ImportGlslClipboardCommand}">
+                                <Avalonia:MaterialIcon Kind="ClipboardArrowDown" />
+                            </Button>
+                            <Button ToolTip.Tip="From File..." Margin="16,2" Command="{Binding ImportGlslFileCommand}">
+                                <Avalonia:MaterialIcon Kind="FileDownload" />
+                            </Button>
+                            <Button ToolTip.Tip="From Shadertoy" Margin="16,2"
+                                    Command="{Binding OpenDialogCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=DialogHostAvalonia:DialogHost}}">
+                                <Button.CommandParameter>
+                                    <!-- Shadertoy import options -->
+                                    <StackPanel Orientation="Horizontal" Margin="8">
+                                        <TextBox Text="{Binding ShadertoyId}"
+                                                 Watermark="Shadertoy ID (E.g. tt3yRH)"
+                                                 Width="200"
+                                                 VerticalAlignment="Center"
                                                  Loaded="GiveFocus"
-                                             Margin="0,0,8,0" />
-                                    <Button Command="{Binding ImportGlslShadertoyCommand}"
-                                            Margin="4" ToolTip.Tip="Download">
-                                        <Avalonia:MaterialIcon Kind="Download" Width="20" Height="20"/>
-                                    </Button>
-                                    <Button
-                                        Command="{Binding CloseDialogCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=DialogHostAvalonia:DialogHost}}"
-                                        Margin="4" ToolTip.Tip="Cancel">
-                                        <Avalonia:MaterialIcon Kind="Cancel" Width="20" Height="20" />
-                                    </Button>
-                                </StackPanel>
-                            </Button.CommandParameter>
-                            
-                            <Avalonia:MaterialIcon Kind="CloudDownload" />
-                        </Button>
-                    </StackPanel>
-                </Border>
-
-                <!-- Shrink Options -->
-                <Border Classes="class">
-                    <StackPanel>
-                        <TextBlock Text="Step 2 - Shrink" FontSize="10" Margin="4" />
-                        <Button ToolTip.Tip="Maximum" Margin="16,2">
-                            <Avalonia:MaterialIcon Kind="ArrowCollapse" />
-                        </Button>
-                        <Button ToolTip.Tip="Minimum (/Reformat)" Margin="16,2">
-                            <Avalonia:MaterialIcon Kind="FormatAlignLeft" />
-                        </Button>
-                        <Button ToolTip.Tip="Custom" Margin="16,2">
-                            <Avalonia:MaterialIcon Kind="FormatListChecks" />
-                        </Button>
-                    </StackPanel>
-                </Border>
-
-                <!-- Export Options -->
-                <Border Classes="class">
-                    <StackPanel>
-                        <TextBlock Text="Step 3 - GLSL Export" FontSize="10" Margin="4" />
-                        <StackPanel Margin="8,8,8,0">
-                            <RadioButton Content="GLSL" />
-                            <RadioButton Content="C-Style" />
+                                                 Margin="0,0,8,0" />
+                                        <Button Command="{Binding ImportGlslShadertoyCommand}"
+                                                Margin="4" ToolTip.Tip="Download">
+                                            <Avalonia:MaterialIcon Kind="Download" Width="20" Height="20"/>
+                                        </Button>
+                                        <Button
+                                            Command="{Binding CloseDialogCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=DialogHostAvalonia:DialogHost}}"
+                                            Margin="4" ToolTip.Tip="Cancel">
+                                            <Avalonia:MaterialIcon Kind="Cancel" Width="20" Height="20" />
+                                        </Button>
+                                    </StackPanel>
+                                </Button.CommandParameter>
+                                
+                                <Avalonia:MaterialIcon Kind="CloudDownload" />
+                            </Button>
                         </StackPanel>
+                    </Border>
 
-                        <Button ToolTip.Tip="To Clipboard (CTRL+C)" Margin="16,2">
-                            <Avalonia:MaterialIcon Kind="ClipboardArrowRight" />
-                        </Button>
-                        <Button x:Name="ToFileButton" ToolTip.Tip="To File..." Margin="16,2">
-                            <Avalonia:MaterialIcon Kind="FileSend" />
-                        </Button>
-                        
-                        <Button ToolTip.Tip="Hints and Tips..." Margin="16,16,16,2">
-                            <Avalonia:MaterialIcon Kind="MessageBulleted" />
-                        </Button>
-                    </StackPanel>
+                    <!-- Shrink Options -->
+                    <Border Classes="class">
+                        <StackPanel>
+                            <TextBlock Text="Step 2 - Shrink" FontSize="10" Margin="4" />
+                            <Button ToolTip.Tip="Maximum" Margin="16,2">
+                                <Avalonia:MaterialIcon Kind="ArrowCollapse" />
+                            </Button>
+                            <Button ToolTip.Tip="Minimum (/Reformat)" Margin="16,2">
+                                <Avalonia:MaterialIcon Kind="FormatAlignLeft" />
+                            </Button>
+                            <Button ToolTip.Tip="Custom" Margin="16,2">
+                                <Avalonia:MaterialIcon Kind="FormatListChecks" />
+                            </Button>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Export Options -->
+                    <Border Classes="class">
+                        <StackPanel>
+                            <TextBlock Text="Step 3 - GLSL Export" FontSize="10" Margin="4" />
+                            <StackPanel Margin="8,8,8,0">
+                                <RadioButton Content="GLSL" />
+                                <RadioButton Content="C-Style" />
+                            </StackPanel>
+
+                            <Button ToolTip.Tip="To Clipboard (CTRL+C)" Margin="16,2">
+                                <Avalonia:MaterialIcon Kind="ClipboardArrowRight" />
+                            </Button>
+                            <Button x:Name="ToFileButton" ToolTip.Tip="To File..." Margin="16,2">
+                                <Avalonia:MaterialIcon Kind="FileSend" />
+                            </Button>
+                            
+                            <Button ToolTip.Tip="Hints and Tips..." Margin="16,16,16,2">
+                                <Avalonia:MaterialIcon Kind="MessageBulleted" />
+                            </Button>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+
+                <Border Grid.Row="1" Grid.Column="1"
+                        BorderThickness="1" BorderBrush="{DynamicResource MaterialPrimaryLightBrush}"
+                        Margin="8" Padding="8">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                            
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Grid.Styles>
+                            <Style Selector="ListBox ListBoxItem">
+                                <Setter Property="Padding" Value="0" />
+                            </Style>
+                            <Style Selector="TextBlock">
+                                <Setter Property="Background" Value="#1E1E1E"/>
+                                <Setter Property="TextAlignment" Value="Center"/>
+                                <Setter Property="Padding" Value="2"/>
+                            </Style>
+                        </Grid.Styles>
+
+                        <TextBlock Grid.Column="0" Grid.Row="0" Text="Original" Margin="0,0,1,4"/>
+                        <TextBlock Grid.Column="1" Grid.Row="0" Text="New" Margin="1,0,0,4" />
+
+                        <ScrollViewer Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1"
+                                      VerticalScrollBarVisibility="Visible">
+                            <ItemsControl ItemsSource="{Binding Diffs}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <Views:CodeLineControl Grid.Column="0" Diff="{Binding LeftDiff}"/>
+                                            <Views:CodeLineControl Grid.Column="1" Diff="{Binding RightDiff}"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </Grid>
                 </Border>
-            </StackPanel>
-
-            <Border Grid.Row="1" Grid.Column="1"
-                    BorderThickness="1" BorderBrush="{DynamicResource MaterialPrimaryLightBrush}"
-                    Margin="8" Padding="8">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                        
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-
-                    <Grid.Styles>
-                        <Style Selector="ListBox ListBoxItem">
-                            <Setter Property="Padding" Value="0" />
-                        </Style>
-                        <Style Selector="TextBlock">
-                            <Setter Property="Background" Value="#1E1E1E"/>
-                            <Setter Property="TextAlignment" Value="Center"/>
-                            <Setter Property="Padding" Value="2"/>
-                        </Style>
-                    </Grid.Styles>
-
-                    <TextBlock Grid.Column="0" Grid.Row="0" Text="Original" Margin="0,0,1,4"/>
-                    <TextBlock Grid.Column="1" Grid.Row="0" Text="New" Margin="1,0,0,4" />
-
-                    <ScrollViewer Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1"
-                                  VerticalScrollBarVisibility="Visible">
-                        <ItemsControl ItemsSource="{Binding Diffs}">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="*" />
-                                        </Grid.ColumnDefinitions>
-
-                                        <Views:CodeLineControl Grid.Column="0" Diff="{Binding LeftDiff}"/>
-                                        <Views:CodeLineControl Grid.Column="1" Diff="{Binding RightDiff}"/>
-                                    </Grid>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </ScrollViewer>
-                </Grid>
-            </Border>
-        </Grid>
+            </Grid>
+        </Controls:SnackbarHost>
     </DialogHostAvalonia:DialogHost>
 </Window>
