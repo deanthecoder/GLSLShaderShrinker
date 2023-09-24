@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------
-//  <copyright file="FileOpenCommand.cs" company="Dean Edis">
+//  <copyright file="FileSaveCommand.cs" company="Dean Edis">
 //      Copyright (c) 2023 Dean Edis. All rights reserved.
 //  </copyright>
 //  <summary>
@@ -19,36 +19,45 @@ using Avalonia.Platform.Storage;
 
 namespace Shrinker.Avalonia.Commands;
 
-public class FileOpenCommand : CommandBase
+public class FileSaveCommand : CommandBase
 {
     private readonly string m_title;
     private readonly string m_filterName;
     private readonly string[] m_filterExtensions;
-    
+    private readonly string m_defaultName;
+    private readonly Func<bool> m_canExecute;
+
     public event EventHandler<FileInfo> FileSelected;
 
-    public FileOpenCommand(string title, string filterName, string[] filterExtensions)
+    public FileSaveCommand(string title, string filterName, string[] filterExtensions, string defaultName = null, Func<bool> canExecute = null)
     {
-        m_title = title;
-        m_filterName = filterName;
-        m_filterExtensions = filterExtensions;
+        m_title = title ?? throw new ArgumentNullException(nameof(title));
+        m_filterName = filterName ?? throw new ArgumentNullException(nameof(filterName));
+        m_filterExtensions = filterExtensions ?? throw new ArgumentNullException(nameof(filterExtensions));
+        m_defaultName = defaultName;
+        m_canExecute = canExecute ?? (() => true);
     }
+
+    public override bool CanExecute(object parameter) =>
+        base.CanExecute(parameter) && m_canExecute();
 
     public override async void Execute(object parameter)
     {
         if (Application.Current?.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
             return; // Cannot find the main application window.
 
-        var files =
+        var selectedFile =
             await TopLevel
                 .GetTopLevel(desktop.MainWindow)
                 .StorageProvider
-                .OpenFilePickerAsync(
-                                     new FilePickerOpenOptions
+                .SaveFilePickerAsync(
+                                     new FilePickerSaveOptions
                                      {
                                          Title = m_title,
-                                         AllowMultiple = false,
-                                         FileTypeFilter = new[]
+                                         ShowOverwritePrompt = true,
+                                         SuggestedFileName = m_defaultName,
+                                         DefaultExtension = m_filterExtensions.FirstOrDefault()?.TrimStart('*'),
+                                         FileTypeChoices = new[]
                                          {
                                              new FilePickerFileType(m_filterName)
                                              {
@@ -56,7 +65,6 @@ public class FileOpenCommand : CommandBase
                                              }
                                          }
                                      });
-        var selectedFile = files.FirstOrDefault();
         if (selectedFile != null)
             FileSelected?.Invoke(this, new FileInfo(selectedFile.Path.AbsolutePath));
     }

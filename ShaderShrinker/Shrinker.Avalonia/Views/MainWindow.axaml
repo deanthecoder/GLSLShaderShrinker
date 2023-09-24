@@ -137,7 +137,8 @@
                                     Command="{Binding ExportGlslClipboardCommand}">
                                 <Avalonia:MaterialIcon Kind="ClipboardArrowRight" />
                             </Button>
-                            <Button x:Name="ToFileButton" ToolTip.Tip="To File..." Margin="16,2">
+                            <Button x:Name="ToFileButton" ToolTip.Tip="To File..." Margin="16,2"
+                                    Command="{Binding ExportGlslFileCommand}">
                                 <Avalonia:MaterialIcon Kind="FileSend" />
                             </Button>
                             

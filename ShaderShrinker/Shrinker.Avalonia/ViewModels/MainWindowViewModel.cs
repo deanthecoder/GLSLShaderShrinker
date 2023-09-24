@@ -27,6 +27,7 @@ public class MainWindowViewModel : ReactiveObject
     private CommandBase m_shrinkCommand;
     private CommandBase m_exportGlslClipboardCommand;
     private bool m_isInstructionGlsl; // True if the 'instructions' are being displayed.
+    private CommandBase m_exportGlslFileCommand;
 
     public DiffCollection Diffs { get; } = new();
     public ObservableCollection<CodeHint> Hints { get; } = new();
@@ -41,9 +42,9 @@ public class MainWindowViewModel : ReactiveObject
         {
             if (m_importGlslFileCommand == null)
             {
-                var fileOpenCommand = new FileOpenCommand("Load GLSL file", "GLSL Files", new[] { "*.txt", "*.glsl", "*.*" });
-                fileOpenCommand.FileSelected += (_, fileInfo) => ImportGlslFromFile(fileInfo);
-                m_importGlslFileCommand = fileOpenCommand;
+                var openCommand = new FileOpenCommand("Load GLSL file", "GLSL Files", new[] { "*.txt", "*.glsl", "*.*" });
+                openCommand.FileSelected += (_, fileInfo) => ImportGlslFromFile(fileInfo);
+                m_importGlslFileCommand = openCommand;
             }
 
             return m_importGlslFileCommand;
@@ -73,7 +74,22 @@ public class MainWindowViewModel : ReactiveObject
 
     public ICommand ExportGlslClipboardCommand =>
         m_exportGlslClipboardCommand ??= new RelayCommand(ExportGlslToClipboard, () => Diffs.HasRightContent());
-    
+
+    public ICommand ExportGlslFileCommand
+    {
+        get
+        {
+            if (m_exportGlslFileCommand == null)
+            {
+                var saveCommand = new FileSaveCommand("Save file", "Files", new[] { "*.glsl", "*.c", "*.cpp", "*.h", "*.inl", "*.txt" }, "output.glsl", () => Diffs.HasRightContent());
+                saveCommand.FileSelected += (_, fileInfo) => ExportGlslToFile(fileInfo);
+                m_exportGlslFileCommand = saveCommand;
+            }
+
+            return m_exportGlslFileCommand;
+        }
+    }
+
     public string ShadertoyId
     {
         get => m_shadertoyId;
@@ -95,6 +111,7 @@ public class MainWindowViewModel : ReactiveObject
         {
             m_shrinkCommand.RaiseCanExecuteChanged();
             m_exportGlslClipboardCommand.RaiseCanExecuteChanged();
+            m_exportGlslFileCommand.RaiseCanExecuteChanged();
         };
         Hints.CollectionChanged += (_, _) =>
         {
@@ -185,4 +202,11 @@ public class MainWindowViewModel : ReactiveObject
 
     private void ExportGlslToClipboard(object parameter) =>
         ClipboardService.SetTextAsync(Diffs.GetAllRightText());
+
+    private void ExportGlslToFile(FileInfo targetFile)
+    {
+        using var fileStream = targetFile.OpenWrite();
+        using var writer = new StreamWriter(fileStream);
+        writer.Write(Diffs.GetAllRightText());
+    }
 }
