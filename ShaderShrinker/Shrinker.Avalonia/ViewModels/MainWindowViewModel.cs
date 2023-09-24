@@ -26,8 +26,9 @@ public class MainWindowViewModel : ReactiveObject
     private ICommand m_importGlslFileCommand;
     private CommandBase m_importGlslShadertoyCommand;
     private string m_shadertoyId;
-    private RelayCommand m_shrinkCommand;
-    private bool m_isInstructionGlsl;
+    private CommandBase m_shrinkCommand;
+    private CommandBase m_exportGlslClipboardCommand;
+    private bool m_isInstructionGlsl; // True if the 'instructions' are being displayed.
 
     public IEnumerable<CombinedDiff> Diffs => m_diffs;
     public ICommand LaunchProjectPage { get; } = new RelayCommand(_ => Process.Start(new ProcessStartInfo("https://github.com/deanthecoder/GLSLShaderShrinker") { UseShellExecute = true }));
@@ -57,7 +58,6 @@ public class MainWindowViewModel : ReactiveObject
             if (m_shrinkCommand == null)
             {
                 m_shrinkCommand = new RelayCommand(o => ShrinkGlsl((string)o), () => m_diffs.Any() && !IsInstructionGlsl);
-                m_diffs.CollectionChanged += (_, _) => m_shrinkCommand.RaiseCanExecuteChanged();
                 PropertyChanged += (_, args) =>
                 {
                     if (args.PropertyName == nameof(IsInstructionGlsl))
@@ -69,6 +69,9 @@ public class MainWindowViewModel : ReactiveObject
         }
     }
 
+    public ICommand ExportGlslClipboardCommand =>
+        m_exportGlslClipboardCommand ??= new RelayCommand(ExportGlslToClipboard, () => m_diffs.Any(o => !string.IsNullOrWhiteSpace(o.RightDiff?.Text)));
+    
     public string ShadertoyId
     {
         get => m_shadertoyId;
@@ -79,10 +82,18 @@ public class MainWindowViewModel : ReactiveObject
         }
     }
 
+    public string ModifierKeyString => OperatingSystem.IsMacOS() ? "\u2318" : "Ctrl";
+
     public MainWindowViewModel()
     {
         ImportGlslFromString("You can use paste GLSL from the clipboard,\nor use the import buttons on the left.");
         IsInstructionGlsl = true;
+
+        m_diffs.CollectionChanged += (_, _) =>
+        {
+            m_shrinkCommand.RaiseCanExecuteChanged();
+            m_exportGlslClipboardCommand.RaiseCanExecuteChanged();
+        };
     }
 
     public bool IsInstructionGlsl
@@ -161,5 +172,11 @@ public class MainWindowViewModel : ReactiveObject
         var diffs = DiffCreator.CreateDiffs(glsl.Trim(), processedGlsl);
         m_diffs.Clear();
         m_diffs.AddRange(diffs);
+    }
+
+    private void ExportGlslToClipboard(object parameter)
+    {
+        var glsl = string.Join("\n", m_diffs.Select(o => o.RightDiff?.Text).Where(o => o != null));
+        ClipboardService.SetTextAsync(glsl);
     }
 }

@@ -15,10 +15,14 @@
         Background="{DynamicResource MaterialPaperBrush}"
         Padding="4"
         Title="GLSL Shader Shrinker">
-
     <Design.DataContext>
         <vm:MainWindowViewModel/>
     </Design.DataContext>
+
+    <Window.KeyBindings>
+        <KeyBinding Command="{Binding ImportGlslClipboardCommand}" Gesture="{OnPlatform 'ctrl+v', macOS='⌘+v'}" />
+        <KeyBinding Command="{Binding ExportGlslClipboardCommand}" Gesture="{OnPlatform 'ctrl+c', macOS='⌘+c'}" />
+    </Window.KeyBindings>
     
     <Window.Styles>
         <Style Selector="Avalonia|MaterialIcon">
@@ -63,10 +67,13 @@
                     <Border Classes="class" Margin="4,8,4,4">
                         <StackPanel>
                             <TextBlock Text="Step 1 - GLSL Import" FontSize="10" Margin="4"/>
-                            <Button ToolTip.Tip="From Clipboard" Margin="16,2" Command="{Binding ImportGlslClipboardCommand}">
+                            <Button ToolTip.Tip="{Binding ModifierKeyString, StringFormat=From Clipboard ({0} + V)}"
+                                    Margin="16,2"
+                                    Command="{Binding ImportGlslClipboardCommand}">
                                 <Avalonia:MaterialIcon Kind="ClipboardArrowDown" />
                             </Button>
-                            <Button ToolTip.Tip="From File..." Margin="16,2" Command="{Binding ImportGlslFileCommand}">
+                            <Button ToolTip.Tip="From File..." Margin="16,2"
+                                    Command="{Binding ImportGlslFileCommand}">
                                 <Avalonia:MaterialIcon Kind="FileDownload" />
                             </Button>
                             <Button ToolTip.Tip="From Shadertoy" Margin="16,2"
@@ -126,7 +133,8 @@
                                 <RadioButton Content="C-Style" />
                             </StackPanel>
 
-                            <Button ToolTip.Tip="To Clipboard (CTRL+C)" Margin="16,2">
+                            <Button ToolTip.Tip="{Binding ModifierKeyString, StringFormat=To Clipboard ({0} + C)}" Margin="16,2"
+                                    Command="{Binding ExportGlslClipboardCommand}">
                                 <Avalonia:MaterialIcon Kind="ClipboardArrowRight" />
                             </Button>
                             <Button x:Name="ToFileButton" ToolTip.Tip="To File..." Margin="16,2">
