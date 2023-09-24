@@ -13,6 +13,9 @@ using DiffPlex.DiffBuilder.Model;
 
 namespace Shrinker.Avalonia.Models;
 
+/// <summary>
+/// Represents a single left/right diff line.
+/// </summary>
 public class CombinedDiff
 {
     public DiffPiece LeftDiff { get; }
