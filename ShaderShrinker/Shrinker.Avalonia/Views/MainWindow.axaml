@@ -21,7 +21,9 @@
 
     <Window.KeyBindings>
         <KeyBinding Command="{Binding ImportGlslClipboardCommand}" Gesture="{OnPlatform 'ctrl+v', macOS='⌘+v'}" />
+        <KeyBinding Command="{Binding ImportGlslFileCommand}" Gesture="{OnPlatform 'ctrl+o', macOS='⌘+o'}" />
         <KeyBinding Command="{Binding ExportGlslClipboardCommand}" Gesture="{OnPlatform 'ctrl+c', macOS='⌘+c'}" />
+        <KeyBinding Command="{Binding ExportGlslFileCommand}" Gesture="{OnPlatform 'ctrl+s', macOS='⌘+s'}" />
     </Window.KeyBindings>
     
     <Window.Styles>
@@ -72,11 +74,12 @@
                                     Command="{Binding ImportGlslClipboardCommand}">
                                 <Avalonia:MaterialIcon Kind="ClipboardArrowDown" />
                             </Button>
-                            <Button ToolTip.Tip="From File..." Margin="16,2"
+                            <Button ToolTip.Tip="{Binding ModifierKeyString, StringFormat=From File ({0} + O)}"
+                                    Margin="16,2"
                                     Command="{Binding ImportGlslFileCommand}">
                                 <Avalonia:MaterialIcon Kind="FileDownload" />
                             </Button>
-                            <Button ToolTip.Tip="From Shadertoy" Margin="16,2"
+                            <Button ToolTip.Tip="From Shadertoy..." Margin="16,2"
                                     Command="{Binding OpenDialogCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=DialogHostAvalonia:DialogHost}}">
                                 <Button.CommandParameter>
                                     <!-- Shadertoy import options -->
@@ -137,7 +140,8 @@
                                     Command="{Binding ExportGlslClipboardCommand}">
                                 <Avalonia:MaterialIcon Kind="ClipboardArrowRight" />
                             </Button>
-                            <Button x:Name="ToFileButton" ToolTip.Tip="To File..." Margin="16,2"
+                            <Button x:Name="ToFileButton" Margin="16,2"
+                                    ToolTip.Tip="{Binding ModifierKeyString, StringFormat=To File... ({0} + S)}"
                                     Command="{Binding ExportGlslFileCommand}">
                                 <Avalonia:MaterialIcon Kind="FileSend" />
                             </Button>
