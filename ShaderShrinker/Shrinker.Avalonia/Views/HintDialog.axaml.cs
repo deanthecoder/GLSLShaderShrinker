@@ -9,9 +9,12 @@
 //  </summary>
 // -----------------------------------------------------------------------
 
+using System;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using AvaloniaEdit;
+using Shrinker.Avalonia.Extensions;
 using Shrinker.Parser;
 
 namespace Shrinker.Avalonia.Views;
@@ -25,8 +28,11 @@ public partial class HintDialog : UserControl
 
     private void OnTextEditorLoaded(object sender, RoutedEventArgs e)
     {
-        var textEditor = (TextEditor)sender;
+        var textEditor = ((TextEditor)sender).MakeReadOnly();
         textEditor.SyntaxHighlighting = CodeLineControl.SyntaxHighlighter;
         textEditor.Text = ((CodeHint)textEditor.DataContext)?.Item;
     }
+
+    private void OnListLoaded(object sender, RoutedEventArgs e) =>
+        ((ListBox)sender).ScrollIntoView(0);
 }

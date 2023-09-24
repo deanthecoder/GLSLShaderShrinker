@@ -14,25 +14,27 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        
-        <Border BorderThickness="1" BorderBrush="{DynamicResource MaterialPrimaryLightBrush}">
-            <ListBox ItemsSource="{Binding Hints}" Grid.IsSharedSizeScope="True">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" SharedSizeGroup="ItemColumn"/>
-                                <ColumnDefinition Width="16"/>
-                                <ColumnDefinition Width="*" SharedSizeGroup="SuggestionColumn"/>
-                            </Grid.ColumnDefinitions>
+
+        <ListBox ItemsSource="{Binding Hints}" Grid.IsSharedSizeScope="True" Loaded="OnListLoaded"
+                 Background="#30000000">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="250" SharedSizeGroup="ItemColumn"/>
+                            <ColumnDefinition Width="16"/>
+                            <ColumnDefinition Width="*" SharedSizeGroup="SuggestionColumn"/>
+                        </Grid.ColumnDefinitions>
                             
-                            <AvaloniaEdit:TextEditor Grid.Column="0" Loaded="OnTextEditorLoaded"/>
-                            <TextBlock Grid.Column="2" Text="{Binding Suggestion}"/>
-                        </Grid>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-        </Border>
+                        <AvaloniaEdit:TextEditor Grid.Column="0"
+                                                 Loaded="OnTextEditorLoaded"
+                                                 HorizontalScrollBarVisibility="Hidden"
+                                                 IsReadOnly="True" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Column="2" Text="{Binding Suggestion}" />
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
 
         <Button Grid.Row="1" Content="OK" HorizontalAlignment="Right"
                 Command="{Binding CloseDialogCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=DialogHostAvalonia:DialogHost}}"

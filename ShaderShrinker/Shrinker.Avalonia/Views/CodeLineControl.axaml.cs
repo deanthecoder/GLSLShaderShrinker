@@ -19,6 +19,7 @@ using AvaloniaEdit;
 using AvaloniaEdit.Highlighting;
 using AvaloniaEdit.Highlighting.Xshd;
 using DiffPlex.DiffBuilder.Model;
+using Shrinker.Avalonia.Extensions;
 
 namespace Shrinker.Avalonia.Views;
 
@@ -78,11 +79,7 @@ public partial class CodeLineControl : UserControl
 
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
-        var editor = (TextEditor)sender;
-        editor.SyntaxHighlighting = SyntaxHighlighter;
-        editor.TextArea.TextView.LinkTextForegroundBrush = Brushes.Cyan;
-        editor.TextArea.TextView.Margin = new Thickness(0);
-        editor.TextArea.SelectionChanged += (_, _) => editor.TextArea.ClearSelection();
-        editor.TextArea.Caret.PositionChanged += (_, _) => editor.TextArea.Caret.Hide();
+        var textEditor = ((TextEditor)sender).MakeReadOnly();
+        textEditor.SyntaxHighlighting = SyntaxHighlighter;
     }
 }

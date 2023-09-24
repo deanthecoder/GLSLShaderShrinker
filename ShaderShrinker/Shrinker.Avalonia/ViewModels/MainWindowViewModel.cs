@@ -111,7 +111,7 @@ public class MainWindowViewModel : ReactiveObject
 
     public MainWindowViewModel()
     {
-        ImportGlslFromString("You can use paste GLSL from the clipboard,\nor use the import buttons on the left.");
+        ImportGlslFromString($"You can use '{ModifierKeyString} + V' to paste GLSL from the clipboard,\nor use the import buttons on the left.");
         IsInstructionGlsl = true;
 
         Diffs.CollectionChanged += (_, _) =>
