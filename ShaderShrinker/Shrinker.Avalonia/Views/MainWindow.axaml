@@ -1,6 +1,6 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="using:Shrinker.Avalonia.ViewModels"
+        xmlns:ViewModels="using:Shrinker.Avalonia.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:Avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
@@ -10,13 +10,13 @@
         mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="620"
         MinWidth="800" MinHeight="600"
         x:Class="Shrinker.Avalonia.Views.MainWindow"
-        x:DataType="vm:MainWindowViewModel"
+        x:DataType="ViewModels:MainWindowViewModel"
         Icon="/Assets/App.ico"
         Background="{DynamicResource MaterialPaperBrush}"
         Padding="4"
         Title="GLSL Shader Shrinker">
     <Design.DataContext>
-        <vm:MainWindowViewModel/>
+        <ViewModels:MainWindowViewModel/>
     </Design.DataContext>
 
     <Window.KeyBindings>
@@ -141,9 +141,25 @@
                                 <Avalonia:MaterialIcon Kind="FileSend" />
                             </Button>
                             
-                            <Button ToolTip.Tip="Hints and Tips..." Margin="16,16,16,2">
-                                <Avalonia:MaterialIcon Kind="MessageBulleted" />
-                            </Button>
+                            <Grid IsEnabled="{Binding HasHints}">
+                                <Button ToolTip.Tip="Hints and Tips..." Margin="16,16,16,2"
+                                        Command="{Binding OpenDialogCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=DialogHostAvalonia:DialogHost}}">
+                                    <Button.CommandParameter>
+                                        <Views:HintDialog />
+                                    </Button.CommandParameter>
+
+                                    <Avalonia:MaterialIcon Kind="MessageBulleted" />
+                                </Button>
+
+                                <Border Background="Red" CornerRadius="10" MinWidth="20" Height="20"
+                                        HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,8,8,0"
+                                        IsVisible="{Binding HasHints}">
+                                    <TextBlock Text="{Binding HintCount}"
+                                               Foreground="White" Margin="2,0"
+                                               VerticalAlignment="Center" HorizontalAlignment="Center"
+                                               FontSize="12" />
+                                </Border>
+                            </Grid>
                         </StackPanel>
                     </Border>
                 </StackPanel>

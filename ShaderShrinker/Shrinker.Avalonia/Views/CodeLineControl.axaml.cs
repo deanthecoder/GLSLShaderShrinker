@@ -52,7 +52,7 @@ public partial class CodeLineControl : UserControl
                                                             o.m_editor.Background = brush;
                                                         });
 
-    private static IHighlightingDefinition SyntaxHighlighter { get; }
+    public static IHighlightingDefinition SyntaxHighlighter { get; }
 
     static CodeLineControl()
     {

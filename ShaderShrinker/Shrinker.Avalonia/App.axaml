@@ -20,6 +20,7 @@
         <Avalonia:MaterialIconStyles />
         <dialogHostAvalonia:DialogHostStyles />
 
+        <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml" />
         <StyleInclude Source="avares://AvaloniaEdit/Themes/Fluent/AvaloniaEdit.xaml" />
     </Application.Styles>
 

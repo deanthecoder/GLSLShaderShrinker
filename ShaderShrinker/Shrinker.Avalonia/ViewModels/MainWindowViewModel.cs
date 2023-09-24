@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -28,6 +29,10 @@ public class MainWindowViewModel : ReactiveObject
     private bool m_isInstructionGlsl; // True if the 'instructions' are being displayed.
 
     public DiffCollection Diffs { get; } = new();
+    public ObservableCollection<CodeHint> Hints { get; } = new();
+    public int HintCount => Hints.Count;
+    public bool HasHints => Hints.Any();
+
     public ICommand LaunchProjectPage { get; } = new RelayCommand(_ => Process.Start(new ProcessStartInfo("https://github.com/deanthecoder/GLSLShaderShrinker") { UseShellExecute = true }));
     public ICommand ImportGlslClipboardCommand => m_importGlslClipboardCommand ??= new ClipboardCommand(ImportGlslFromClipboard);
     public ICommand ImportGlslFileCommand
@@ -90,6 +95,11 @@ public class MainWindowViewModel : ReactiveObject
         {
             m_shrinkCommand.RaiseCanExecuteChanged();
             m_exportGlslClipboardCommand.RaiseCanExecuteChanged();
+        };
+        Hints.CollectionChanged += (_, _) =>
+        {
+            this.RaisePropertyChanged(nameof(HintCount));
+            this.RaisePropertyChanged(nameof(HasHints));
         };
     }
 
@@ -162,10 +172,16 @@ public class MainWindowViewModel : ReactiveObject
         var optimizedCode = rootNode.Simplify(options).ToCode();
         // todo (optimizedCode.GetCodeCharCount(), optimizedCode, rootNode.GetHints().ToList());
         SetGlsl(glsl, optimizedCode);
+
+        Hints.Clear();
+        Hints.AddRange(rootNode.GetHints().OrderBy(o => o.Item));
     }
 
-    private void SetGlsl(string glsl, string processedGlsl) =>
+    private void SetGlsl(string glsl, string processedGlsl)
+    {
+        Hints.Clear();
         Diffs.ReplaceAll(DiffCreator.CreateDiffs(glsl.Trim(), processedGlsl));
+    }
 
     private void ExportGlslToClipboard(object parameter) =>
         ClipboardService.SetTextAsync(Diffs.GetAllRightText());
