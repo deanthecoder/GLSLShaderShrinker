@@ -128,9 +128,9 @@
                     <Border Classes="class">
                         <StackPanel>
                             <TextBlock Text="Step 3 - GLSL Export" FontSize="10" Margin="4" />
-                            <StackPanel Margin="8,8,8,0">
-                                <RadioButton Content="GLSL" />
-                                <RadioButton Content="C-Style" />
+                            <StackPanel Margin="8">
+                                <RadioButton Content="GLSL" IsChecked="{Binding IsOutputGlsl}"/>
+                                <RadioButton Content="C-Style" IsChecked="{Binding !IsOutputGlsl}" />
                             </StackPanel>
 
                             <Button ToolTip.Tip="{Binding ModifierKeyString, StringFormat=To Clipboard ({0} + C)}" Margin="16,2"

@@ -31,8 +31,8 @@ public class AppViewModel : ReactiveObject
                                             if (isOpen)
                                                 return;
                                             var dialog = new AboutDialog();
-                                            dialog.Opened += (sender, args) => isOpen = true;
-                                            dialog.Closed += (sender, args) => isOpen = false;
+                                            dialog.Opened += (_, _) => isOpen = true;
+                                            dialog.Closed += (_, _) => isOpen = false;
                                             var mainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
                                             dialog.ShowDialog(mainWindow);
                                         });

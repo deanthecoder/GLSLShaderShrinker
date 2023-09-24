@@ -17,10 +17,11 @@ namespace Shrinker.Parser
 {
     public static class COutputFormatter
     {
-        public static string ToCCode(this string glsl, int originalSize, int optimizedSize)
+        public static string ToCCode(this string glsl, int originalSize = 0, int optimizedSize = 0)
         {
             var output = new StringBuilder();
-            output.Append(string.Empty.WithAppMessage(originalSize, optimizedSize));
+            if (originalSize * optimizedSize > 0)
+                output.Append(string.Empty.WithAppMessage(originalSize, optimizedSize));
             output.AppendLine("static const char* fragmentShader =");
 
             foreach (var line in glsl.Split('\n'))

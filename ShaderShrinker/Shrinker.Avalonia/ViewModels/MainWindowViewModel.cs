@@ -28,6 +28,7 @@ public class MainWindowViewModel : ReactiveObject
     private CommandBase m_exportGlslClipboardCommand;
     private bool m_isInstructionGlsl; // True if the 'instructions' are being displayed.
     private CommandBase m_exportGlslFileCommand;
+    private bool m_isOutputGlsl = true;
 
     public DiffCollection Diffs { get; } = new();
     public ObservableCollection<CodeHint> Hints { get; } = new();
@@ -101,6 +102,12 @@ public class MainWindowViewModel : ReactiveObject
     }
 
     public string ModifierKeyString => OperatingSystem.IsMacOS() ? "\u2318" : "Ctrl";
+
+    public bool IsOutputGlsl
+    {
+        get => m_isOutputGlsl;
+        set => this.RaiseAndSetIfChanged(ref m_isOutputGlsl, value);
+    }
 
     public MainWindowViewModel()
     {
@@ -200,13 +207,18 @@ public class MainWindowViewModel : ReactiveObject
         Diffs.ReplaceAll(DiffCreator.CreateDiffs(glsl.Trim(), processedGlsl));
     }
 
-    private void ExportGlslToClipboard(object parameter) =>
-        ClipboardService.SetTextAsync(Diffs.GetAllRightText());
+    private void ExportGlslToClipboard(object parameter)
+    {
+        var glsl = Diffs.GetAllRightText();
+        ClipboardService.SetTextAsync(IsOutputGlsl ? glsl : glsl.ToCCode()); // todo - size.
+    }
 
     private void ExportGlslToFile(FileInfo targetFile)
     {
         using var fileStream = targetFile.OpenWrite();
         using var writer = new StreamWriter(fileStream);
-        writer.Write(Diffs.GetAllRightText());
+        
+        var glsl = Diffs.GetAllRightText();
+        writer.Write(IsOutputGlsl ? glsl : glsl.ToCCode()); // todo - size.
     }
 }
