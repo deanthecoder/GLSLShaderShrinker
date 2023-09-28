@@ -13,6 +13,7 @@ using ReactiveUI;
 using Shrinker.Avalonia.Commands;
 using Shrinker.Avalonia.Models;
 using Shrinker.Avalonia.Shadertoy;
+using Shrinker.Lexer;
 using Shrinker.Parser;
 using TextCopy;
 
@@ -29,6 +30,8 @@ public class MainWindowViewModel : ReactiveObject
     private bool m_isInstructionGlsl; // True if the 'instructions' are being displayed.
     private CommandBase m_exportGlslFileCommand;
     private bool m_isOutputGlsl = true;
+    private int m_originalSize;
+    private int m_processedSize;
 
     public PresetsViewModel Presets { get; } = new();
     public DiffCollection Diffs { get; } = new();
@@ -104,6 +107,9 @@ public class MainWindowViewModel : ReactiveObject
 
     public string ModifierKeyString => OperatingSystem.IsMacOS() ? "\u2318" : "Ctrl";
 
+    /// <summary>
+    /// Whether to export as raw GLSL, or encode as C-style code.
+    /// </summary>
     public bool IsOutputGlsl
     {
         get => m_isOutputGlsl;
@@ -187,10 +193,8 @@ public class MainWindowViewModel : ReactiveObject
         var rootNode = new Parser.Parser(lexer).Parse();
 
         var options = Presets.GetOptions();
-        var optimizedCode = rootNode.Simplify(options).ToCode();
-        
-        // todo (optimizedCode.GetCodeCharCount(), optimizedCode, rootNode.GetHints().ToList());
-        SetGlsl(glsl, optimizedCode);
+        var processedGlsl = rootNode.Simplify(options).ToCode();
+        SetGlsl(glsl, processedGlsl);
 
         Hints.Clear();
         Hints.AddRange(rootNode.GetHints().OrderBy(o => o.Item));
@@ -200,6 +204,9 @@ public class MainWindowViewModel : ReactiveObject
     {
         Hints.Clear();
         Diffs.ReplaceAll(DiffCreator.CreateDiffs(glsl.Trim(), processedGlsl));
+        
+        OriginalSize = glsl.GetCodeCharCount();
+        ProcessedSize = processedGlsl.GetCodeCharCount();
     }
 
     private void ExportGlslToClipboard(object parameter)
@@ -216,7 +223,16 @@ public class MainWindowViewModel : ReactiveObject
         var glsl = Diffs.GetAllRightText();
         writer.Write(IsOutputGlsl ? glsl : glsl.ToCCode());
     }
-    
-    public int OriginalSize { get; }
-    public int OutputSize { get; }
+
+    public int OriginalSize
+    {
+        get => m_originalSize;
+        set => this.RaiseAndSetIfChanged(ref m_originalSize, value);
+    }
+
+    public int ProcessedSize
+    {
+        get => m_processedSize;
+        set => this.RaiseAndSetIfChanged(ref m_processedSize, value);
+    }
 }

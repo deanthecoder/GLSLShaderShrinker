@@ -47,6 +47,9 @@ public static class DiffCreator
             // The RHS is blank, so make the left non-colorized.
             diffs.ForEach(o => o.LeftDiff.Type = ChangeType.Unchanged);
         }
+        
+        // todo - if both lines only differ in whitespace, put side by side.
+        // todo - if left line prefixes right light, put side by side? E.g. Functions changed to a single line...
 
         return diffs;
     }

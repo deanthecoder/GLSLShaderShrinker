@@ -222,7 +222,6 @@
                     </Grid.ColumnDefinitions>
                     
                     <TextBlock Grid.Column="0"
-                               FontSize="10"
                                Text="{Binding OriginalSize, StringFormat=Original: {0:N0} characters}"/>
                     
                     <StackPanel Grid.Column="1"
@@ -247,8 +246,7 @@
                     </StackPanel>
 
                     <TextBlock Grid.Column="2"
-                               FontSize="10"
-                               Text="{Binding OutputSize, StringFormat=Output: {0:N0} characters}" />
+                               Text="{Binding ProcessedSize, StringFormat=Output: {0:N0} characters}" />
                 </Grid>
             </Grid>
         </Controls:SnackbarHost>

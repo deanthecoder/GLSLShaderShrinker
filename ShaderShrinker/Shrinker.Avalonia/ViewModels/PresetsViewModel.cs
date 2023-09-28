@@ -37,9 +37,6 @@ public class PresetsViewModel : ReactiveObject
                 var presetsDir = new DirectoryInfo(Path.Combine(AppContext.BaseDirectory, "Presets"));
                 if (presetsDir.Exists)
                     m_presets.AddRange(presetsDir.EnumerateFiles());
-
-                // Add 'special' case.
-                // todo m_presets.Add(m_customPreset);
             }
 
             return m_presets;
@@ -52,6 +49,7 @@ public class PresetsViewModel : ReactiveObject
         set => this.RaiseAndSetIfChanged(ref m_selectedPreset, value);
     }
 
+    // todo - support custom options.
     public CustomOptions GetOptions() =>
         JsonConvert.DeserializeObject<CustomOptions>(File.ReadAllText(Selected.FullName));
 }
