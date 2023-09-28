@@ -30,6 +30,7 @@ public class MainWindowViewModel : ReactiveObject
     private CommandBase m_exportGlslFileCommand;
     private bool m_isOutputGlsl = true;
 
+    public PresetsViewModel Presets { get; } = new();
     public DiffCollection Diffs { get; } = new();
     public ObservableCollection<CodeHint> Hints { get; } = new();
     public int HintCount => Hints.Count;
@@ -61,7 +62,7 @@ public class MainWindowViewModel : ReactiveObject
         {
             if (m_shrinkCommand == null)
             {
-                m_shrinkCommand = new RelayCommand(o => ShrinkGlsl((string)o), () => Diffs.Any() && !IsInstructionGlsl);
+                m_shrinkCommand = new RelayCommand(_ => ShrinkGlsl(), () => Diffs.Any() && !IsInstructionGlsl);
                 PropertyChanged += (_, args) =>
                 {
                     if (args.PropertyName == nameof(IsInstructionGlsl))
@@ -177,23 +178,17 @@ public class MainWindowViewModel : ReactiveObject
         IsInstructionGlsl = false;
     }
 
-    private void ShrinkGlsl(string level)
+    private void ShrinkGlsl()
     {
         var glsl = Diffs.GetAllLeftText();
         
         var lexer = new Lexer.Lexer();
         lexer.Load(glsl);
         var rootNode = new Parser.Parser(lexer).Parse();
-        
-        var options = level switch
-        {
-            "Max" => CustomOptions.All(),
-            "Min" => CustomOptions.None(),
-            // todo "Custom" => CustomOptions,
-            _ => throw new InvalidOperationException($"Unknown optimization level: {level}")
-        };
 
+        var options = Presets.GetOptions();
         var optimizedCode = rootNode.Simplify(options).ToCode();
+        
         // todo (optimizedCode.GetCodeCharCount(), optimizedCode, rootNode.GetHints().ToList());
         SetGlsl(glsl, optimizedCode);
 
@@ -210,7 +205,7 @@ public class MainWindowViewModel : ReactiveObject
     private void ExportGlslToClipboard(object parameter)
     {
         var glsl = Diffs.GetAllRightText();
-        ClipboardService.SetTextAsync(IsOutputGlsl ? glsl : glsl.ToCCode()); // todo - size.
+        ClipboardService.SetTextAsync(IsOutputGlsl ? glsl : glsl.ToCCode());
     }
 
     private void ExportGlslToFile(FileInfo targetFile)
@@ -219,6 +214,9 @@ public class MainWindowViewModel : ReactiveObject
         using var writer = new StreamWriter(fileStream);
         
         var glsl = Diffs.GetAllRightText();
-        writer.Write(IsOutputGlsl ? glsl : glsl.ToCCode()); // todo - size.
+        writer.Write(IsOutputGlsl ? glsl : glsl.ToCCode());
     }
+    
+    public int OriginalSize { get; }
+    public int OutputSize { get; }
 }

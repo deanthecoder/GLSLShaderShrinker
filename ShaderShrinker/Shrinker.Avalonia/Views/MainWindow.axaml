@@ -7,6 +7,8 @@
         xmlns:Views="clr-namespace:Shrinker.Avalonia.Views"
         xmlns:DialogHostAvalonia="clr-namespace:DialogHostAvalonia;assembly=DialogHost.Avalonia"
         xmlns:Controls="clr-namespace:Material.Styles.Controls;assembly=Material.Styles"
+        xmlns:Assists="clr-namespace:Material.Styles.Assists;assembly=Material.Styles"
+        xmlns:Io="clr-namespace:System.IO;assembly=System.Runtime"
         mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="620"
         MinWidth="800" MinHeight="600"
         x:Class="Shrinker.Avalonia.Views.MainWindow"
@@ -24,6 +26,7 @@
         <KeyBinding Command="{Binding ImportGlslFileCommand}" Gesture="{OnPlatform 'ctrl+o', macOS='⌘+o'}" />
         <KeyBinding Command="{Binding ExportGlslClipboardCommand}" Gesture="{OnPlatform 'ctrl+c', macOS='⌘+c'}" />
         <KeyBinding Command="{Binding ExportGlslFileCommand}" Gesture="{OnPlatform 'ctrl+s', macOS='⌘+s'}" />
+        <KeyBinding Command="{Binding ShrinkCommand}" Gesture="{OnPlatform 'alt-enter', macOS='⌘+enter'}" />
     </Window.KeyBindings>
     
     <Window.Styles>
@@ -50,6 +53,7 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 
                 <Grid.ColumnDefinitions>
@@ -68,7 +72,7 @@
                     <!-- Import Options -->
                     <Border Classes="class" Margin="4,8,4,4">
                         <StackPanel>
-                            <TextBlock Text="Step 1 - GLSL Import" FontSize="10" Margin="4"/>
+                            <TextBlock Text="Shader Import" FontSize="10" Margin="4"/>
                             <Button ToolTip.Tip="{Binding ModifierKeyString, StringFormat=From Clipboard ({0} + V)}"
                                     Margin="16,2"
                                     Command="{Binding ImportGlslClipboardCommand}">
@@ -111,26 +115,15 @@
 
                     <!-- Shrink Options -->
                     <Border Classes="class">
-                        <StackPanel>
-                            <TextBlock Text="Step 2 - Shrink" FontSize="10" Margin="4" />
-                            <Button ToolTip.Tip="Maximum" Margin="16,2"
-                                    Command="{Binding ShrinkCommand}" CommandParameter="Max">
-                                <Avalonia:MaterialIcon Kind="ArrowCollapse" />
-                            </Button>
-                            <Button ToolTip.Tip="Minimum (/Reformat)" Margin="16,2"
-                                    Command="{Binding ShrinkCommand}" CommandParameter="Min">
-                                <Avalonia:MaterialIcon Kind="FormatAlignLeft" />
-                            </Button>
-                            <Button ToolTip.Tip="Custom" Margin="16,2">
-                                <Avalonia:MaterialIcon Kind="FormatListChecks" />
-                            </Button>
-                        </StackPanel>
+                        <Button ToolTip.Tip="Custom" Margin="16,2">
+                            <Avalonia:MaterialIcon Kind="FormatListChecks" />
+                        </Button>
                     </Border>
 
                     <!-- Export Options -->
                     <Border Classes="class">
                         <StackPanel>
-                            <TextBlock Text="Step 3 - GLSL Export" FontSize="10" Margin="4" />
+                            <TextBlock Text="Shader Export" FontSize="10" Margin="4" />
                             <StackPanel Margin="8">
                                 <RadioButton Content="GLSL" IsChecked="{Binding IsOutputGlsl}"/>
                                 <RadioButton Content="C-Style" IsChecked="{Binding !IsOutputGlsl}" />
@@ -169,6 +162,7 @@
                     </Border>
                 </StackPanel>
 
+                <!-- Diff area -->
                 <Border Grid.Row="1" Grid.Column="1"
                         BorderThickness="1" BorderBrush="{DynamicResource MaterialPrimaryLightBrush}"
                         Margin="8" Padding="8">
@@ -196,7 +190,7 @@
 
                         <TextBlock Grid.Column="0" Grid.Row="0" Text="Original" Margin="0,0,1,4"/>
                         <TextBlock Grid.Column="1" Grid.Row="0" Text="New" Margin="1,0,0,4" />
-
+                        
                         <ScrollViewer Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1"
                                       VerticalScrollBarVisibility="Visible">
                             <ItemsControl ItemsSource="{Binding Diffs}">
@@ -205,11 +199,13 @@
                                         <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="2" />
                                                 <ColumnDefinition Width="*" />
                                             </Grid.ColumnDefinitions>
 
                                             <Views:CodeLineControl Grid.Column="0" Diff="{Binding LeftDiff}"/>
-                                            <Views:CodeLineControl Grid.Column="1" Diff="{Binding RightDiff}"/>
+                                            <Border Grid.Column="1" Background="#30000000"></Border>
+                                            <Views:CodeLineControl Grid.Column="2" Diff="{Binding RightDiff}"/>
                                         </Grid>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
@@ -217,6 +213,43 @@
                         </ScrollViewer>
                     </Grid>
                 </Border>
+
+                <Grid Grid.Row="2" Grid.Column="1" Margin="8,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <TextBlock Grid.Column="0"
+                               FontSize="10"
+                               Text="{Binding OriginalSize, StringFormat=Original: {0:N0} characters}"/>
+                    
+                    <StackPanel Grid.Column="1"
+                                Orientation="Horizontal"
+                                HorizontalAlignment="Center">
+                        <ComboBox Width="220"
+                                  Padding="12,0"
+                                  HorizontalAlignment="Left"
+                                  Theme="{DynamicResource MaterialOutlineComboBox}"
+                                  Assists:ComboBoxAssist.Label="Preset"
+                                  ItemsSource="{Binding Presets.All}"
+                                  SelectedItem="{Binding Presets.Selected}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate x:DataType="Io:FileInfo">
+                                    <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        <Button Margin="8,0" VerticalAlignment="Center"
+                                Command="{Binding ShrinkCommand}"
+                                Content="Apply"/>
+                    </StackPanel>
+
+                    <TextBlock Grid.Column="2"
+                               FontSize="10"
+                               Text="{Binding OutputSize, StringFormat=Output: {0:N0} characters}" />
+                </Grid>
             </Grid>
         </Controls:SnackbarHost>
     </DialogHostAvalonia:DialogHost>

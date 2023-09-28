@@ -49,4 +49,19 @@
     <ItemGroup>
       <ProjectReference Include="..\Shrinker.Parser\Shrinker.Parser.csproj" />
     </ItemGroup>
+
+    <ItemGroup>
+      <None Update="Presets\Maximum">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="Presets\Golf (Experimental)">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="Presets\Reformat">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="Presets\Remove Dead Code">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
 </Project>
