@@ -27,6 +27,7 @@ public partial class CodeLineControl : UserControl
 {
     private static readonly Brush TextAddedColor;
     private static readonly Brush TextRemovedColor;
+    private static readonly Brush TextModifiedColor;
 
     private DiffPiece m_diff;
     public static readonly DirectProperty<CodeLineControl, DiffPiece> DiffProperty =
@@ -49,6 +50,9 @@ public partial class CodeLineControl : UserControl
                                                                 case ChangeType.Inserted:
                                                                     brush = TextAddedColor;
                                                                     break;
+                                                                case ChangeType.Modified:
+                                                                    brush = TextModifiedColor;
+                                                                    break;
                                                             }
                                                             o.m_editor.Background = brush;
                                                         });
@@ -59,6 +63,7 @@ public partial class CodeLineControl : UserControl
     {
         TextRemovedColor = new SolidColorBrush(Colors.Red) { Opacity = 0.1 };
         TextAddedColor = new SolidColorBrush(Colors.Green) { Opacity = 0.1 };
+        TextModifiedColor = new SolidColorBrush(Colors.DarkOrange) { Opacity = 0.1 };
         
         var assembly = Assembly.GetExecutingAssembly();
         using var s = assembly.GetManifestResourceStream("Shrinker.Avalonia.GLSL.xshd");

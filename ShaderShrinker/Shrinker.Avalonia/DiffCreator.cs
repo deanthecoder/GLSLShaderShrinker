@@ -42,15 +42,52 @@ public static class DiffCreator
             }
         }
 
-        if (string.IsNullOrEmpty(newText))
+        if (!string.IsNullOrEmpty(newText))
+        {
+            MergeSimilarLines(diffs);
+        }
+        else
         {
             // The RHS is blank, so make the left non-colorized.
             diffs.ForEach(o => o.LeftDiff.Type = ChangeType.Unchanged);
         }
-        
-        // todo - if both lines only differ in whitespace, put side by side.
-        // todo - if left line prefixes right light, put side by side? E.g. Functions changed to a single line...
 
         return diffs;
     }
+
+    private static void MergeSimilarLines(List<CombinedDiff> diffs)
+    {
+        for (var i = 0; i < diffs.Count - 1; i++)
+        {
+            // Find deleted line on the LHS.
+            if (diffs[i].LeftDiff?.Type != ChangeType.Deleted)
+                continue;
+            
+            // Find next non-blank line on the RHS.
+            var nextNonBlankRhsIndex = i;
+            while (nextNonBlankRhsIndex < diffs.Count && diffs[nextNonBlankRhsIndex].RightDiff == null)
+                nextNonBlankRhsIndex++;
+            if (nextNonBlankRhsIndex >= diffs.Count)
+                continue;
+
+            // If they're similar, place them next to each other.
+            if (diffs[nextNonBlankRhsIndex].RightDiff is { Type: ChangeType.Inserted })
+            {
+                var leftText = diffs[i].LeftDiff.Text;
+                var rightText = diffs[nextNonBlankRhsIndex].RightDiff.Text;
+                if (!string.IsNullOrWhiteSpace(RemoveWhiteSpace(leftText)) && CompareIgnoringWhitespace(rightText, leftText))
+                {
+                    diffs[i].LeftDiff.Type = ChangeType.Modified;
+                    diffs[i].RightDiff = new DiffPiece(rightText, ChangeType.Modified);
+                    diffs.RemoveAt(nextNonBlankRhsIndex);
+                }
+            }
+        }
+    }
+
+    private static bool CompareIgnoringWhitespace(string rightText, string leftText) =>
+        RemoveWhiteSpace(rightText).StartsWith(RemoveWhiteSpace(leftText));
+
+    private static string RemoveWhiteSpace(string s) =>
+        s.Replace(" ", string.Empty).Replace("\t", string.Empty);
 }

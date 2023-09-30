@@ -19,11 +19,14 @@ namespace Shrinker.Avalonia.Models;
 public class CombinedDiff
 {
     public DiffPiece LeftDiff { get; }
-    public DiffPiece RightDiff { get; }
+    public DiffPiece RightDiff { get; set; }
  
     public CombinedDiff(DiffPiece leftDiff, DiffPiece rightDiff)
     {
         LeftDiff = leftDiff;
         RightDiff = rightDiff;
     }
+
+    public override string ToString() =>
+        $"{LeftDiff?.Text ?? "<empty>"} | {RightDiff?.Text ?? "<empty>"}";
 }
