@@ -45,8 +45,19 @@ public class PresetsViewModel : ReactiveObject
 
     public FileInfo Selected
     {
-        get => m_selectedPreset ??= All.FirstOrDefault(o => o.Name.Equals("Maximum")) ?? All.FirstOrDefault();
-        set => this.RaiseAndSetIfChanged(ref m_selectedPreset, value);
+        get
+        {
+            if (m_selectedPreset == null)
+            {
+                m_selectedPreset = All.FirstOrDefault(o => o.Name.Equals(UserSettings.Instance.Preset));
+                m_selectedPreset ??= All.FirstOrDefault(o => o.Name.Equals("Maximum"));
+                m_selectedPreset ??= All.FirstOrDefault();
+            }
+
+            return m_selectedPreset;
+        }
+        
+        set => UserSettings.Instance.Preset = this.RaiseAndSetIfChanged(ref m_selectedPreset, value).Name;
     }
 
     // todo - support custom options.
