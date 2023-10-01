@@ -16,6 +16,7 @@ public class UserSettings : IDisposable
     public static UserSettings Instance { get; } = new();
 
     public string Preset { get; set; } = string.Empty;
+    public bool OutputAsGlsl { get; set; } = true;
 
     private UserSettings()
     {

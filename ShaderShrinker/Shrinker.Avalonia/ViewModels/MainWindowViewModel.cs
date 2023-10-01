@@ -29,7 +29,6 @@ public class MainWindowViewModel : ReactiveObject
     private CommandBase m_exportGlslClipboardCommand;
     private bool m_isInstructionGlsl; // True if the 'instructions' are being displayed.
     private CommandBase m_exportGlslFileCommand;
-    private bool m_isOutputGlsl = true;
     private int m_originalSize;
     private int m_processedSize;
 
@@ -112,8 +111,14 @@ public class MainWindowViewModel : ReactiveObject
     /// </summary>
     public bool IsOutputGlsl
     {
-        get => m_isOutputGlsl;
-        set => this.RaiseAndSetIfChanged(ref m_isOutputGlsl, value);
+        get => UserSettings.Instance.OutputAsGlsl;
+        set
+        {
+            if (UserSettings.Instance.OutputAsGlsl == value)
+                return;
+            UserSettings.Instance.OutputAsGlsl = value;
+            this.RaisePropertyChanged();
+        }
     }
 
     public MainWindowViewModel()
