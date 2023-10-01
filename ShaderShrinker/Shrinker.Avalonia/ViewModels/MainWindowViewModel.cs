@@ -96,7 +96,7 @@ public class MainWindowViewModel : ReactiveObject
 
     public string ShadertoyId
     {
-        get => m_shadertoyId;
+        get => m_shadertoyId ??= UserSettings.Instance.ShadertoyId;
         set
         {
             this.RaiseAndSetIfChanged(ref m_shadertoyId, value);
@@ -157,8 +157,8 @@ public class MainWindowViewModel : ReactiveObject
     {
         try
         {
-            var id = ShadertoyId;
-            var glsl = await ShadertoyImporter.ImportAsync(id);
+            UserSettings.Instance.ShadertoyId = ShadertoyId;
+            var glsl = await ShadertoyImporter.ImportAsync(ShadertoyId);
             if (glsl == null)
                 return; // Nothing to do.
             

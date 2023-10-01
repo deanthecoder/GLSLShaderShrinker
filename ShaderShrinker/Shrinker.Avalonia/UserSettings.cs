@@ -17,6 +17,7 @@ public class UserSettings : IDisposable
 
     public string Preset { get; set; } = string.Empty;
     public bool OutputAsGlsl { get; set; } = true;
+    public string ShadertoyId { get; set; } = string.Empty;
 
     private UserSettings()
     {

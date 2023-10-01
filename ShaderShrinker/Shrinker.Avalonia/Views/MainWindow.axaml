@@ -189,7 +189,7 @@
                         </Grid.Styles>
 
                         <TextBlock Grid.Column="0" Grid.Row="0" Text="Original" Margin="0,0,1,4"/>
-                        <TextBlock Grid.Column="1" Grid.Row="0" Text="New" Margin="1,0,0,4" />
+                        <TextBlock Grid.Column="1" Grid.Row="0" Text="Output" Margin="1,0,0,4" />
                         
                         <ScrollViewer Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1"
                                       VerticalScrollBarVisibility="Visible">
