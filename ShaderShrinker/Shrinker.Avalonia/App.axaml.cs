@@ -1,3 +1,4 @@
+using System;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
@@ -6,7 +7,7 @@ using Shrinker.Avalonia.Views;
 
 namespace Shrinker.Avalonia;
 
-public partial class App : Application
+public class App : Application
 {
     public App()
     {
@@ -24,7 +25,11 @@ public partial class App : Application
                 DataContext = new MainWindowViewModel()
             };
 
-            desktop.MainWindow.Closed += (sender, args) => UserSettings.Instance.Dispose();
+            desktop.MainWindow.Closed += (_, _) =>
+            {
+                ((IDisposable)desktop.MainWindow.DataContext).Dispose();
+                UserSettings.Instance.Dispose();
+            };
         }
         
         base.OnFrameworkInitializationCompleted();

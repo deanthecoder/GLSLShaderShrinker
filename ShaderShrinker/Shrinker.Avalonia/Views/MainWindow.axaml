@@ -8,7 +8,7 @@
         xmlns:DialogHostAvalonia="clr-namespace:DialogHostAvalonia;assembly=DialogHost.Avalonia"
         xmlns:Controls="clr-namespace:Material.Styles.Controls;assembly=Material.Styles"
         xmlns:Assists="clr-namespace:Material.Styles.Assists;assembly=Material.Styles"
-        xmlns:Io="clr-namespace:System.IO;assembly=System.Runtime"
+        xmlns:Models="clr-namespace:Shrinker.Avalonia.Models"
         mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="620"
         MinWidth="800" MinHeight="600"
         x:Class="Shrinker.Avalonia.Views.MainWindow"
@@ -111,13 +111,6 @@
                                 <Avalonia:MaterialIcon Kind="CloudDownload" />
                             </Button>
                         </StackPanel>
-                    </Border>
-
-                    <!-- Shrink Options -->
-                    <Border Classes="class">
-                        <Button ToolTip.Tip="Custom" Margin="16,2">
-                            <Avalonia:MaterialIcon Kind="FormatListChecks" />
-                        </Button>
                     </Border>
 
                     <!-- Export Options -->
@@ -235,14 +228,29 @@
                                   ItemsSource="{Binding Presets.All}"
                                   SelectedItem="{Binding Presets.Selected}">
                             <ComboBox.ItemTemplate>
-                                <DataTemplate x:DataType="Io:FileInfo">
+                                <DataTemplate x:DataType="Models:NameAndFileInfo">
                                     <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis"/>
                                 </DataTemplate>
                             </ComboBox.ItemTemplate>
                         </ComboBox>
-                        <Button Margin="8,0" VerticalAlignment="Center"
+
+                        <Button VerticalAlignment="Center"
+                                Margin="8,0,0,0"
+                                Height="{Binding Bounds.Height, ElementName=ShrinkButton}"
+                                IsVisible="{Binding Presets.Selected.Name, Converter={StaticResource IsEqualConverter}, ConverterParameter=Custom}"
+                                Command="{Binding OpenDialogCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=DialogHostAvalonia:DialogHost}}">
+                            <Button.CommandParameter>
+                                <Views:OptionsDialog DataContext="{Binding Presets}"/>
+                            </Button.CommandParameter>
+                            
+                            <Avalonia:MaterialIcon Kind="FormatListChecks" />
+                        </Button>
+
+                        <Button x:Name="ShrinkButton"
+                                Margin="8,0"
+                                VerticalAlignment="Center"
                                 Command="{Binding ShrinkCommand}"
-                                Content="Apply"/>
+                                Content="Run"/>
                     </StackPanel>
 
                     <TextBlock Grid.Column="2"

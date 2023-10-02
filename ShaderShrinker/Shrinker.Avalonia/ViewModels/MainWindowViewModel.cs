@@ -19,7 +19,7 @@ using TextCopy;
 
 namespace Shrinker.Avalonia.ViewModels;
 
-public class MainWindowViewModel : ReactiveObject
+public class MainWindowViewModel : ReactiveObject, IDisposable
 {
     private ICommand m_importGlslClipboardCommand;
     private ICommand m_importGlslFileCommand;
@@ -218,6 +218,7 @@ public class MainWindowViewModel : ReactiveObject
     {
         var glsl = Diffs.GetAllRightText();
         ClipboardService.SetTextAsync(IsOutputGlsl ? glsl : glsl.ToCCode());
+        // todo - toast
     }
 
     private void ExportGlslToFile(FileInfo targetFile)
@@ -240,4 +241,6 @@ public class MainWindowViewModel : ReactiveObject
         get => m_processedSize;
         set => this.RaiseAndSetIfChanged(ref m_processedSize, value);
     }
+
+    public void Dispose() => Presets?.Dispose();
 }

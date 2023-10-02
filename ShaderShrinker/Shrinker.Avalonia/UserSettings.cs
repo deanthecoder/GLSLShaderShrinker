@@ -2,6 +2,8 @@ using System;
 using System.IO;
 using System.Reflection;
 using Newtonsoft.Json;
+using Shrinker.Parser;
+// ReSharper disable UnusedMember.Global
 
 namespace Shrinker.Avalonia;
 
@@ -18,6 +20,7 @@ public class UserSettings : IDisposable
     public string Preset { get; set; } = string.Empty;
     public bool OutputAsGlsl { get; set; } = true;
     public string ShadertoyId { get; set; } = string.Empty;
+    public string CustomPresetJson { get; set; } = JsonConvert.SerializeObject(CustomOptions.None());
 
     private UserSettings()
     {

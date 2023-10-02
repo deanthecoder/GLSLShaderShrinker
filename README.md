@@ -225,9 +225,9 @@ Remove any commented-out code, or code surrounded with `#if 0...#endif`.
 #### Before
 ```c
 #if 1
-float myFunc(vec3 p) { return p.x + p.y - p.z; }
+    float myFunc(vec3 p) { return p.x + p.y - p.z; }
 #else
-float myFunc(vec3 p) { return 3.141; }
+    float myFunc(vec3 p) { return 3.141; }
 #endif
 ```
 #### After
@@ -580,12 +580,14 @@ float doMaths(float a, float b, float c) {
 
 float f() {
     float result = doMaths(1.0, 2.0, 3.14159);
+    ...
 }
 ```
 #### After
 ```c
 float f() {
     float result = 3.0;
+    ...
 }
 ```
 

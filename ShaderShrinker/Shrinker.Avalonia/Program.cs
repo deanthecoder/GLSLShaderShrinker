@@ -1,8 +1,9 @@
 ﻿using Avalonia;
 using Avalonia.ReactiveUI;
-using System;
 
 namespace Shrinker.Avalonia;
+
+using System;
 
 public static class Program
 {

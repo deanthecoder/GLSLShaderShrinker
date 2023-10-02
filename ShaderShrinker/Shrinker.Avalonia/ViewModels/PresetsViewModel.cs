@@ -14,36 +14,49 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using AvaloniaEdit.Utils;
+using DynamicData;
 using Newtonsoft.Json;
 using ReactiveUI;
+using Shrinker.Avalonia.Models;
 using Shrinker.Parser;
 
 namespace Shrinker.Avalonia.ViewModels;
 
-public class PresetsViewModel : ReactiveObject
+public class PresetsViewModel : ReactiveObject, IDisposable
 {
-    private FileInfo m_selectedPreset;
-    private ObservableCollection<FileInfo> m_presets;
+    private NameAndFileInfo m_selectedPreset;
+    private ObservableCollection<NameAndFileInfo> m_presets;
+    private TempFile m_customPresetFile;
+    
+    public CustomOptions CustomOptions { get; private set; }
 
-    public IEnumerable<FileInfo> All
+    public IEnumerable<NameAndFileInfo> All
     {
         get
         {
             if (m_presets == null)
             {
-                m_presets = new ObservableCollection<FileInfo>();
-
+                m_presets = new ObservableCollection<NameAndFileInfo>();
+                
+                // Load Presets from disk.
+                var presets = new List<NameAndFileInfo>();
                 var presetsDir = new DirectoryInfo(Path.Combine(AppContext.BaseDirectory, "Presets"));
                 if (presetsDir.Exists)
-                    m_presets.AddRange(presetsDir.EnumerateFiles());
+                    presets.AddRange(presetsDir.EnumerateFiles().Select(o => new NameAndFileInfo(o)));
+
+                // Add the custom preset.
+                m_customPresetFile = new TempFile(UserSettings.Instance.CustomPresetJson);
+                CustomOptions = JsonConvert.DeserializeObject<CustomOptions>(UserSettings.Instance.CustomPresetJson);
+                presets.Add(new NameAndFileInfo("Custom", m_customPresetFile));
+                
+                m_presets.AddRange(presets.OrderBy(o => o.Name));
             }
 
             return m_presets;
         }
     }
 
-    public FileInfo Selected
+    public NameAndFileInfo Selected
     {
         get
         {
@@ -60,7 +73,12 @@ public class PresetsViewModel : ReactiveObject
         set => UserSettings.Instance.Preset = this.RaiseAndSetIfChanged(ref m_selectedPreset, value).Name;
     }
 
-    // todo - support custom options.
     public CustomOptions GetOptions() =>
-        JsonConvert.DeserializeObject<CustomOptions>(File.ReadAllText(Selected.FullName));
+        Selected.Name == "Custom" ? CustomOptions : JsonConvert.DeserializeObject<CustomOptions>(File.ReadAllText(Selected.File.FullName));
+
+    public void Dispose()
+    {
+        UserSettings.Instance.CustomPresetJson = JsonConvert.SerializeObject(CustomOptions, Formatting.Indented);
+        m_customPresetFile?.Dispose();
+    }
 }
