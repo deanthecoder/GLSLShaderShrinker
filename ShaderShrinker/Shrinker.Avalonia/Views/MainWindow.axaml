@@ -49,18 +49,7 @@
 
     <DialogHostAvalonia:DialogHost OverlayBackground="Black">
         <Controls:SnackbarHost HostName="Root" SnackbarHorizontalAlignment="Center">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-                
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-
+            <Grid RowDefinitions="Auto,*,Auto" ColumnDefinitions="Auto,*">
                 <!-- Project web link https://github.com/deanthecoder/GLSLShaderShrinker -->
                 <Button Grid.Column="1" Grid.Row="0"
                         Margin="16,2" 
@@ -159,17 +148,7 @@
                 <Border Grid.Row="1" Grid.Column="1"
                         BorderThickness="1" BorderBrush="{DynamicResource MaterialPrimaryLightBrush}"
                         Margin="8" Padding="8">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
-                            
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-
+                    <Grid RowDefinitions="Auto,*" ColumnDefinitions="*,*">
                         <Grid.Styles>
                             <Style Selector="ListBox ListBoxItem">
                                 <Setter Property="Padding" Value="0" />
@@ -178,6 +157,16 @@
                                 <Setter Property="Background" Value="#1E1E1E"/>
                                 <Setter Property="TextAlignment" Value="Center"/>
                                 <Setter Property="Padding" Value="2"/>
+                            </Style>
+                            <Style Selector="TextBlock.LineNumber">
+                                <Setter Property="Background" Value="{x:Null}"/>
+                                <Setter Property="Foreground" Value="DarkCyan"/>
+                                <Setter Property="FontSize" Value="10"/>
+                                <Setter Property="TextAlignment" Value="Left"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                <Setter Property="Width" Value="26"/>
+                                <Setter Property="Padding" Value="0"/>
+                                <Setter Property="Margin" Value="6,0,0,6"/>
                             </Style>
                         </Grid.Styles>
 
@@ -189,16 +178,20 @@
                             <ItemsControl ItemsSource="{Binding Diffs}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="2" />
-                                                <ColumnDefinition Width="*" />
-                                            </Grid.ColumnDefinitions>
-
-                                            <Views:CodeLineControl Grid.Column="0" Diff="{Binding LeftDiff}"/>
+                                        <Grid ColumnDefinitions="*,2,*">
+                                            <Grid ColumnDefinitions="30,*">
+                                                <TextBlock Classes="LineNumber"
+                                                           Text="{Binding LeftLineNumber}"/>
+                                                <Views:CodeLineControl Grid.Column="1"
+                                                                       Diff="{Binding LeftDiff}" />
+                                            </Grid>
                                             <Border Grid.Column="1" Background="#30000000"></Border>
-                                            <Views:CodeLineControl Grid.Column="2" Diff="{Binding RightDiff}"/>
+                                            <Grid Grid.Column="2" ColumnDefinitions="30,*">
+                                                <TextBlock Classes="LineNumber"
+                                                           Text="{Binding RightLineNumber}" />
+                                                <Views:CodeLineControl Grid.Column="1"
+                                                                       Diff="{Binding RightDiff}" />
+                                            </Grid>
                                         </Grid>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
@@ -207,13 +200,7 @@
                     </Grid>
                 </Border>
 
-                <Grid Grid.Row="2" Grid.Column="1" Margin="8,0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    
+                <Grid Grid.Row="2" Grid.Column="1" Margin="8,0" ColumnDefinitions="Auto,*,Auto">
                     <TextBlock Grid.Column="0"
                                Text="{Binding OriginalSize, StringFormat=Original: {0:N0} characters}"/>
                     

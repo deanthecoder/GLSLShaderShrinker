@@ -23,10 +23,10 @@ public static class DiffCreator
     {
         var differ = new Differ();
         var diffBuilder = new InlineDiffBuilder(differ);
-        var diff = diffBuilder.BuildDiffModel(oldText, newText, true);
+        var diffModel = diffBuilder.BuildDiffModel(oldText, newText, true);
 
         var diffs = new List<CombinedDiff>();
-        foreach (var line in diff.Lines)
+        foreach (var line in diffModel.Lines)
         {
             switch (line.Type)
             {
@@ -50,6 +50,22 @@ public static class DiffCreator
         {
             // The RHS is blank, so make the left non-colorized.
             diffs.ForEach(o => o.LeftDiff.Type = ChangeType.Unchanged);
+        }
+
+        return AssignLineNumbers(diffs);
+    }
+
+    private static IEnumerable<CombinedDiff> AssignLineNumbers(IReadOnlyCollection<CombinedDiff> diffs)
+    {
+        var leftLineNumber = 0;
+        var rightLineNumber = 0;
+
+        foreach (var diff in diffs)
+        {
+            if (diff.LeftDiff != null)
+                diff.SetLeftPageNumber(++leftLineNumber);
+            if (diff.RightDiff != null)
+                diff.SetRightPageNumber(++rightLineNumber);
         }
 
         return diffs;

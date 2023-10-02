@@ -20,12 +20,18 @@ public class CombinedDiff
 {
     public DiffPiece LeftDiff { get; }
     public DiffPiece RightDiff { get; set; }
- 
+
+    public string LeftLineNumber { get; private set; } = string.Empty;
+    public string RightLineNumber { get; private set; } = string.Empty;
+
     public CombinedDiff(DiffPiece leftDiff, DiffPiece rightDiff)
     {
         LeftDiff = leftDiff;
         RightDiff = rightDiff;
     }
+
+    public void SetLeftPageNumber(int i) => LeftLineNumber = $"{i:D}";
+    public void SetRightPageNumber(int i) => RightLineNumber = $"{i:D}";
 
     public override string ToString() =>
         $"{LeftDiff?.Text ?? "<empty>"} | {RightDiff?.Text ?? "<empty>"}";
