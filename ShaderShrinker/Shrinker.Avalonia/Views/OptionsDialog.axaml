@@ -7,19 +7,21 @@
              xmlns:Converters="clr-namespace:Shrinker.Avalonia.Converters"
              xmlns:AvaloniaHtml="clr-namespace:TheArtOfDev.HtmlRenderer.Avalonia;assembly=Avalonia.HtmlRenderer"
              xmlns:DialogHostAvalonia="clr-namespace:DialogHostAvalonia;assembly=DialogHost.Avalonia"
+             xmlns:Controls="clr-namespace:Material.Styles.Controls;assembly=Material.Styles"
              mc:Ignorable="d" d:DesignWidth="780" d:DesignHeight="450"
              x:DataType="ViewModels:PresetsViewModel"
              x:Class="Shrinker.Avalonia.Views.OptionsDialog">
     <UserControl.Resources>
         <Converters:MarkdownToHtmlConverter x:Key="MarkdownToHtmlControlConverter" />
     </UserControl.Resources>
-    <Grid Margin="8,0">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-
-        <Grid ColumnDefinitions="*,*"
+    
+    <Grid Margin="8,0" RowDefinitions="Auto,*,Auto">
+        <Controls:ColorZone Mode="PrimaryMid" Padding="16,8">
+            <!-- ReSharper disable once Xaml.StyleClassNotFound -->
+            <TextBlock Classes="Body1" Text="Custom Preset" Foreground="White" />
+        </Controls:ColorZone>
+        
+        <Grid Grid.Row="1" ColumnDefinitions="*,*"
               Background="#30000000">
             <StackPanel Grid.Row="0" Grid.Column="0"
                         Margin="8">
@@ -228,7 +230,7 @@
             </StackPanel>
         </Grid>
 
-        <Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto">
+        <Grid Grid.Row="2" ColumnDefinitions="Auto,*,Auto">
             <Avalonia:MaterialIcon Grid.Column="0"
                                    Kind="InfoCircle" Width="16" Height="16"
                                    Foreground="{DynamicResource MaterialPrimaryLightBrush}" />

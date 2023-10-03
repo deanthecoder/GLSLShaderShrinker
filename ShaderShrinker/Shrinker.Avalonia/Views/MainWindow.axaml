@@ -26,7 +26,7 @@
         <KeyBinding Command="{Binding ImportGlslFileCommand}" Gesture="{OnPlatform 'ctrl+o', macOS='⌘+o'}" />
         <KeyBinding Command="{Binding ExportGlslClipboardCommand}" Gesture="{OnPlatform 'ctrl+c', macOS='⌘+c'}" />
         <KeyBinding Command="{Binding ExportGlslFileCommand}" Gesture="{OnPlatform 'ctrl+s', macOS='⌘+s'}" />
-        <KeyBinding Command="{Binding ShrinkCommand}" Gesture="{OnPlatform 'alt-enter', macOS='⌘+enter'}" />
+        <KeyBinding Command="{Binding ShrinkCommand}" Gesture="{OnPlatform 'alt+enter', macOS='⌘+enter'}" />
     </Window.KeyBindings>
     
     <Window.Styles>
@@ -120,26 +120,6 @@
                                     Command="{Binding ExportGlslFileCommand}">
                                 <Avalonia:MaterialIcon Kind="FileSend" />
                             </Button>
-                            
-                            <Grid IsEnabled="{Binding HasHints}">
-                                <Button ToolTip.Tip="Hints and Tips..." Margin="16,16,16,2"
-                                        Command="{Binding OpenDialogCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=DialogHostAvalonia:DialogHost}}">
-                                    <Button.CommandParameter>
-                                        <Views:HintDialog />
-                                    </Button.CommandParameter>
-
-                                    <Avalonia:MaterialIcon Kind="MessageBulleted" />
-                                </Button>
-
-                                <Border Background="Red" CornerRadius="10" MinWidth="20" Height="20"
-                                        HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,8,8,0"
-                                        IsVisible="{Binding HasHints}">
-                                    <TextBlock Text="{Binding HintCount}"
-                                               Foreground="White" Margin="2,0"
-                                               VerticalAlignment="Center" HorizontalAlignment="Center"
-                                               FontSize="12" />
-                                </Border>
-                            </Grid>
                         </StackPanel>
                     </Border>
                 </StackPanel>
@@ -153,7 +133,7 @@
                             <Style Selector="ListBox ListBoxItem">
                                 <Setter Property="Padding" Value="0" />
                             </Style>
-                            <Style Selector="TextBlock">
+                            <Style Selector="TextBlock.Title">
                                 <Setter Property="Background" Value="#1E1E1E"/>
                                 <Setter Property="TextAlignment" Value="Center"/>
                                 <Setter Property="Padding" Value="2"/>
@@ -170,8 +150,8 @@
                             </Style>
                         </Grid.Styles>
 
-                        <TextBlock Grid.Column="0" Grid.Row="0" Text="Original" Margin="0,0,1,4"/>
-                        <TextBlock Grid.Column="1" Grid.Row="0" Text="Output" Margin="1,0,0,4" />
+                        <TextBlock Grid.Column="0" Grid.Row="0" Classes="Title" Text="Original" Margin="0,0,1,4"/>
+                        <TextBlock Grid.Column="1" Grid.Row="0" Classes="Title" Text="Output" Margin="1,0,0,4" />
                         
                         <ScrollViewer Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1"
                                       VerticalScrollBarVisibility="Visible">
@@ -197,6 +177,28 @@
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
                         </ScrollViewer>
+
+                        <Grid Grid.Row="1" Grid.Column="1"
+                              HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                              IsEnabled="{Binding HasHints}">
+                            <Button ToolTip.Tip="Hints and Tips..."
+                                    Command="{Binding OpenDialogCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=DialogHostAvalonia:DialogHost}}">
+                                <Button.CommandParameter>
+                                    <Views:HintDialog />
+                                </Button.CommandParameter>
+
+                                <Avalonia:MaterialIcon Kind="MessageBulleted" />
+                            </Button>
+
+                            <Border Background="Red" CornerRadius="10" MinWidth="20" Height="20"
+                                    HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,-6,-6,0"
+                                    IsVisible="{Binding HasHints}">
+                                <TextBlock Text="{Binding HintCount}"
+                                           Foreground="White" Margin="0"
+                                           VerticalAlignment="Center" HorizontalAlignment="Center"
+                                           FontSize="12" />
+                            </Border>
+                        </Grid>
                     </Grid>
                 </Border>
 

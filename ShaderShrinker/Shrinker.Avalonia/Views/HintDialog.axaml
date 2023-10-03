@@ -5,17 +5,18 @@
              xmlns:ViewModels="clr-namespace:Shrinker.Avalonia.ViewModels"
              xmlns:DialogHostAvalonia="clr-namespace:DialogHostAvalonia;assembly=DialogHost.Avalonia"
              xmlns:AvaloniaEdit="https://github.com/avaloniaui/avaloniaedit"
+             xmlns:Controls="clr-namespace:Material.Styles.Controls;assembly=Material.Styles"
              mc:Ignorable="d"
              x:Class="Shrinker.Avalonia.Views.HintDialog"
              x:DataType="ViewModels:MainWindowViewModel"
              Width="700" Height="480">
-    <Grid Margin="8,0">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-
-        <ListBox ItemsSource="{Binding Hints}" Grid.IsSharedSizeScope="True" Loaded="OnListLoaded"
+    <Grid Margin="8,0" RowDefinitions="Auto,*,Auto">
+        <Controls:ColorZone Mode="PrimaryMid" Padding="16,8">
+            <!-- ReSharper disable once Xaml.StyleClassNotFound -->
+            <TextBlock Classes="Body1" Text="Hints" Foreground="White"/>
+        </Controls:ColorZone>
+        
+        <ListBox Grid.Row="1" ItemsSource="{Binding Hints}" Grid.IsSharedSizeScope="True" Loaded="OnListLoaded"
                  Background="#30000000">
             <ListBox.ItemTemplate>
                 <DataTemplate>
@@ -25,7 +26,7 @@
                             <ColumnDefinition Width="16"/>
                             <ColumnDefinition Width="*" SharedSizeGroup="SuggestionColumn"/>
                         </Grid.ColumnDefinitions>
-                            
+                                
                         <AvaloniaEdit:TextEditor Grid.Column="0"
                                                  Loaded="OnTextEditorLoaded"
                                                  HorizontalScrollBarVisibility="Hidden"
@@ -36,7 +37,7 @@
             </ListBox.ItemTemplate>
         </ListBox>
 
-        <Button Grid.Row="1" Content="OK" HorizontalAlignment="Right"
+        <Button Grid.Row="2" Content="OK" HorizontalAlignment="Right"
                 Command="{Binding CloseDialogCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=DialogHostAvalonia:DialogHost}}"
                 Margin="0,8,0,0" Foreground="White" />
     </Grid>
