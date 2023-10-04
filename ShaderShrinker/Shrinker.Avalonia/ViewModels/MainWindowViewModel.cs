@@ -191,18 +191,25 @@ public class MainWindowViewModel : ReactiveObject, IDisposable
 
     private void ShrinkGlsl()
     {
-        var glsl = Diffs.GetAllLeftText();
-        
-        var lexer = new Lexer.Lexer();
-        lexer.Load(glsl);
-        var rootNode = new Parser.Parser(lexer).Parse();
+        try
+        {
+            var glsl = Diffs.GetAllLeftText();
+            
+            var lexer = new Lexer.Lexer();
+            lexer.Load(glsl);
+            var rootNode = new Parser.Parser(lexer).Parse();
 
-        var options = Presets.GetOptions();
-        var processedGlsl = rootNode.Simplify(options).ToCode();
-        SetGlsl(glsl, processedGlsl);
+            var options = Presets.GetOptions();
+            var processedGlsl = rootNode.Simplify(options).ToCode();
+            SetGlsl(glsl, processedGlsl);
 
-        Hints.Clear();
-        Hints.AddRange(rootNode.GetHints().OrderBy(o => o.Item));
+            Hints.Clear();
+            Hints.AddRange(rootNode.GetHints().OrderBy(o => o.Item));
+        }
+        catch (Exception ex)
+        {
+            PostSnackbarMessage($"Failed to parse GLSL: {ex.Message}");
+        }
     }
 
     private void SetGlsl(string glsl, string processedGlsl)
@@ -217,8 +224,8 @@ public class MainWindowViewModel : ReactiveObject, IDisposable
     private void ExportGlslToClipboard(object parameter)
     {
         var glsl = Diffs.GetAllRightText();
-        ClipboardService.SetTextAsync(IsOutputGlsl ? glsl : glsl.ToCCode());
-        // todo - toast
+        ClipboardService.SetTextAsync(IsOutputGlsl ? glsl : glsl.ToCCode()); 
+        PostSnackbarMessage("Copied to clipboard.");
     }
 
     private void ExportGlslToFile(FileInfo targetFile)

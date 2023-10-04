@@ -8,6 +8,7 @@ using TextCopy;
 
 namespace Shrinker.Cmd
 {
+    // todo - make just a transpiler and rename.
     // todo - add command line args.
     internal static class Program
     {
