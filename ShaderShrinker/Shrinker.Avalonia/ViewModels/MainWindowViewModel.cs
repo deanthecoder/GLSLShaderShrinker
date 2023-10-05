@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Avalonia.Threading;
 using AvaloniaEdit.Utils;
@@ -31,6 +32,7 @@ public class MainWindowViewModel : ReactiveObject, IDisposable
     private CommandBase m_exportGlslFileCommand;
     private int m_originalSize;
     private int m_processedSize;
+    private bool m_isBusy;
 
     public PresetsViewModel Presets { get; } = new();
     public DiffCollection Diffs { get; } = new();
@@ -189,31 +191,48 @@ public class MainWindowViewModel : ReactiveObject, IDisposable
         IsInstructionGlsl = false;
     }
 
-    private void ShrinkGlsl()
+    private async void ShrinkGlsl()
     {
         try
         {
-            var glsl = Diffs.GetAllLeftText();
-            
-            var lexer = new Lexer.Lexer();
-            lexer.Load(glsl);
-            var rootNode = new Parser.Parser(lexer).Parse();
+            IsBusy = true;
 
-            var options = Presets.GetOptions();
-            var processedGlsl = rootNode.Simplify(options).ToCode();
-            SetGlsl(glsl, processedGlsl);
+            await Task.Run(
+                     () =>
+                     {
+                         var glsl = Diffs.GetAllLeftText();
 
-            Hints.Clear();
-            Hints.AddRange(rootNode.GetHints().OrderBy(o => o.Item));
+                         var lexer = new Lexer.Lexer();
+                         lexer.Load(glsl);
+                         var rootNode = new Parser.Parser(lexer).Parse();
+
+                         var options = Presets.GetOptions();
+                         var processedGlsl = rootNode.Simplify(options).ToCode();
+                         SetGlsl(glsl, processedGlsl);
+
+                         Hints.Clear();
+                         Hints.AddRange(rootNode.GetHints().OrderBy(o => o.Item));
+                     });
         }
         catch (Exception ex)
         {
             PostSnackbarMessage($"Failed to parse GLSL: {ex.Message}");
         }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
     private void SetGlsl(string glsl, string processedGlsl)
     {
+        if (!Dispatcher.UIThread.CheckAccess())
+        {
+            // Dispatch the call to the UI thread.
+            Dispatcher.UIThread.InvokeAsync(() => SetGlsl(glsl, processedGlsl));
+            return;
+        }
+        
         Hints.Clear();
         Diffs.ReplaceAll(DiffCreator.CreateDiffs(glsl.Trim(), processedGlsl));
         
@@ -247,6 +266,12 @@ public class MainWindowViewModel : ReactiveObject, IDisposable
     {
         get => m_processedSize;
         set => this.RaiseAndSetIfChanged(ref m_processedSize, value);
+    }
+
+    public bool IsBusy
+    {
+        get => m_isBusy;
+        set => this.RaiseAndSetIfChanged(ref m_isBusy, value);
     }
 
     public void Dispose() => Presets?.Dispose();

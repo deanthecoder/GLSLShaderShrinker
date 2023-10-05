@@ -245,6 +245,18 @@
                     <TextBlock Grid.Column="2"
                                Text="{Binding ProcessedSize, StringFormat=Output: {0:N0} characters}" />
                 </Grid>
+
+                <Border Grid.Row="0" Grid.Column="0"
+                        Grid.RowSpan="3" Grid.ColumnSpan="2"
+                        IsVisible="{Binding IsBusy}" Background="#A0000000">
+                    <Controls:Card HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <StackPanel Margin="16,8">
+                            <!-- ReSharper disable once Xaml.StyleClassNotFound -->
+                            <ProgressBar Classes="circular" Width="50" Height="50" IsIndeterminate="True" />
+                            <TextBlock Text="Please Wait..." Margin="0,20,0,0"/>
+                        </StackPanel>
+                    </Controls:Card>
+                </Border>
             </Grid>
         </Controls:SnackbarHost>
     </DialogHostAvalonia:DialogHost>
