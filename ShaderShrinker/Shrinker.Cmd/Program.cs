@@ -85,7 +85,7 @@ namespace Shrinker.Cmd
                 try
                 {
                     Console.WriteLine("Launching diff process...");
-                    if (DiffRunner.Launch(DiffTool.DiffMerge, oldFile, newFile) != LaunchResult.NoDiffToolFound)
+                    if (DiffRunner.Launch(DiffTool.P4Merge, oldFile, newFile) != LaunchResult.NoDiffToolFound)
                     {
                         var attempts = 50;
                         while (!Process.GetProcesses().Any(o => o.ProcessName.StartsWith("diffmerge", StringComparison.OrdinalIgnoreCase)) && attempts-- > 0)
