@@ -2,6 +2,7 @@
 
 # Define variables
 APP_NAME="GLSL Shader Shrinker"
+APP_VERSION="2.0.0"
 EXECUTABLE_NAME="Shrinker.Avalonia"
 BUNDLE_NAME="GLSLShaderShrinker.app"
 IDENTIFIER="com.deanedis.glslshadershrinker"
@@ -35,9 +36,9 @@ cat > "$BUNDLE_NAME/Contents/Info.plist" << EOF
     <key>CFBundleExecutable</key>
     <string>$EXECUTABLE_NAME</string>
     <key>CFBundleVersion</key>
-    <string>2.0.0</string>
+    <string>$APP_VERSION</string>
     <key>CFBundleShortVersionString</key>
-    <string>2.0.0</string>
+    <string>$APP_VERSION</string>
     <key>LSMinimumSystemVersion</key>
     <string>10.12</string>
     <key>CFBundleSignature</key>

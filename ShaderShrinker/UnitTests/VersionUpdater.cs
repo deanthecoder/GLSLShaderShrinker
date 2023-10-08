@@ -17,20 +17,36 @@ using NUnit.Framework;
 namespace UnitTests
 {
     [TestFixture]
-    public class InstallerVersionUpdater
+    public class VersionUpdater
     {
+        /// <summary>
+        /// Update version numbers, using 'packageMe.sh' as the source.
+        /// </summary>
         [Test]
-        public void UpdateInstallerVersion()
+        public void UpdateVersionNumbers()
         {
             var rootDir = new FileInfo(Assembly.GetExecutingAssembly().Location).Directory;
             while (!rootDir.EnumerateFiles("*.md").Any())
                 rootDir = rootDir.Parent;
 
             // Get app version.
-            var assemblyInfoFile = rootDir.EnumerateFiles("ShaderShrinker/Shrinker.WpfApp/Properties/AssemblyInfo.cs").First();
-            var assemblyVersionLine = File.ReadAllLines(assemblyInfoFile.FullName).First(o => o.StartsWith("[assembly: AssemblyVersion("));
-            var assemblyVersion = assemblyVersionLine.Substring(28).Replace(".0.0\")]", null);
-
+            var assemblyInfoFile = rootDir.EnumerateFiles("ShaderShrinker/Shrinker.Avalonia/packageMe.sh").First();
+            var assemblyVersionLine = File.ReadAllLines(assemblyInfoFile.FullName).First(o => o.StartsWith("APP_VERSION="));
+            var assemblyVersion = assemblyVersionLine.Substring(13).Replace(".0\"", null);
+            
+            // Update project.
+            var csproj = rootDir.EnumerateFiles("ShaderShrinker/Shrinker.Avalonia/Shrinker.Avalonia.csproj").First();
+            var csprojLines = File.ReadAllLines(csproj.FullName);
+            for (var i = 0; i < csprojLines.Length; i++)
+            {
+                if (csprojLines[i].TrimStart().StartsWith("<AssemblyVersion>"))
+                    csprojLines[i] = $"        <AssemblyVersion>{assemblyVersion}.0.0</AssemblyVersion>";
+                if (csprojLines[i].TrimStart().StartsWith("<FileVersion>"))
+                    csprojLines[i] = $"        <FileVersion>{assemblyVersion}.0.0</FileVersion>";
+            }
+            
+            File.WriteAllLines(csproj.FullName, csprojLines);
+            
             // Open installer .iss.
             var issFile = rootDir.EnumerateFiles("InstallScript.iss", SearchOption.AllDirectories).FirstOrDefault();
             Assert.That(issFile, Is.Not.Null);

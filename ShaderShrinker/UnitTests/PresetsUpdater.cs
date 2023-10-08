@@ -28,14 +28,13 @@ namespace UnitTests
             while (!rootDir.EnumerateFiles("*.md").Any())
                 rootDir = rootDir.Parent;
 
-            var presetDir = rootDir.EnumerateDirectories("ShaderShrinker/Shrinker.WpfApp/Presets").Single();
+            var presetDir = rootDir.EnumerateDirectories("ShaderShrinker/Shrinker.Avalonia/Presets").Single();
             presetDir.EnumerateFiles().ToList().ForEach(o => o.Delete());
 
             File.WriteAllText(Path.Combine(presetDir.FullName, "Maximum"), OptionsAsString(CustomOptions.All()));
-            File.WriteAllText(Path.Combine(presetDir.FullName, "Minimum (Reformat)"), OptionsAsString(CustomOptions.None()));
+            File.WriteAllText(Path.Combine(presetDir.FullName, "Reformat"), OptionsAsString(CustomOptions.None()));
             File.WriteAllText(Path.Combine(presetDir.FullName, "Remove Dead Code"), OptionsAsString(RemoveSurplus()));
-
-            File.WriteAllText(Path.Combine(presetDir.FullName, "Maximum (Golfed)"), OptionsAsString(GetGolfingOptions()));
+            File.WriteAllText(Path.Combine(presetDir.FullName, "Golf (Experimental)"), OptionsAsString(GetGolfingOptions()));
         }
 
         internal static CustomOptions GetGolfingOptions()
