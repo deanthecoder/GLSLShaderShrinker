@@ -211,7 +211,11 @@ public class MainWindowViewModel : ReactiveObject, IDisposable
                          SetGlsl(glsl, processedGlsl);
 
                          Hints.Clear();
-                         Hints.AddRange(rootNode.GetHints().OrderBy(o => o.Item));
+                         Hints.AddRange(rootNode
+                                            .GetHints()
+                                            .OrderBy(o => o.Priority)
+                                            .ThenBy(o => o.Suggestion)
+                                            .ThenBy(o => o.Item));
                      });
         }
         catch (Exception ex)

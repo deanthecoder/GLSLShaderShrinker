@@ -15,11 +15,13 @@ namespace Shrinker.Parser
     {
         public string Item { get; }
         public string Suggestion { get; }
+        public HintPriority Priority { get; }
 
-        protected CodeHint(string item, string suggestion)
+        protected CodeHint(string item, string suggestion, HintPriority priority)
         {
             Item = item;
             Suggestion = suggestion;
+            Priority = priority;
         }
 
         public override string ToString() => $"{Item}|{Suggestion}";

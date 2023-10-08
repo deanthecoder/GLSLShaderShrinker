@@ -13,7 +13,7 @@ namespace Shrinker.Parser.Hints
 {
     public class IntroduceDefineHint : CodeHint
     {
-        public IntroduceDefineHint(string originalName, string defineNameAndValue) : base(originalName, $"[GOLF] Consider adding '#define {defineNameAndValue}'")
+        public IntroduceDefineHint(string originalName, string defineNameAndValue) : base(originalName, $"[GOLF] Consider adding '#define {defineNameAndValue}'", HintPriority.Low)
         {
         }
     }

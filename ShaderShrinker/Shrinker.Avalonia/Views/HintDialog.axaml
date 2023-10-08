@@ -6,6 +6,7 @@
              xmlns:DialogHostAvalonia="clr-namespace:DialogHostAvalonia;assembly=DialogHost.Avalonia"
              xmlns:AvaloniaEdit="https://github.com/avaloniaui/avaloniaedit"
              xmlns:Controls="clr-namespace:Material.Styles.Controls;assembly=Material.Styles"
+             xmlns:Avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              mc:Ignorable="d"
              x:Class="Shrinker.Avalonia.Views.HintDialog"
              x:DataType="ViewModels:MainWindowViewModel"
@@ -16,22 +17,43 @@
             <TextBlock Classes="Body1" Text="Hints" Foreground="White"/>
         </Controls:ColorZone>
         
-        <ListBox Grid.Row="1" ItemsSource="{Binding Hints}" Grid.IsSharedSizeScope="True" Loaded="OnListLoaded"
+        <ListBox Grid.Row="1" ItemsSource="{Binding Hints}"
+                 Grid.IsSharedSizeScope="True" Loaded="OnListLoaded"
                  Background="#30000000">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Grid>
                         <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="20" SharedSizeGroup="PriorityColumn"/>
                             <ColumnDefinition Width="250" SharedSizeGroup="ItemColumn"/>
                             <ColumnDefinition Width="16"/>
                             <ColumnDefinition Width="*" SharedSizeGroup="SuggestionColumn"/>
                         </Grid.ColumnDefinitions>
-                                
-                        <AvaloniaEdit:TextEditor Grid.Column="0"
+
+                        <Grid.Styles>
+                            <Style Selector="Avalonia|MaterialIcon[Tag=High]">
+                                <Setter Property="Foreground" Value="Red" />
+                            </Style>
+                            <Style Selector="Avalonia|MaterialIcon[Tag=Medium]">
+                                <Setter Property="Foreground" Value="Orange" />
+                            </Style>
+                            <Style Selector="Avalonia|MaterialIcon[Tag=Low]">
+                                <Setter Property="Foreground" Value="Green" />
+                            </Style>
+                        </Grid.Styles>
+
+                        <Avalonia:MaterialIcon Grid.Column="0"
+                                Tag="{Binding Priority}"
+                                Kind="ArrowRightDropCircleOutline"
+                                Margin="4,0,8,0">
+                        </Avalonia:MaterialIcon>
+                        
+                        <AvaloniaEdit:TextEditor Grid.Column="1"
                                                  Loaded="OnTextEditorLoaded"
                                                  HorizontalScrollBarVisibility="Hidden"
+                                                 Padding="0,6,0,0"
                                                  IsReadOnly="True" VerticalAlignment="Center"/>
-                        <TextBlock Grid.Column="2" Text="{Binding Suggestion}" />
+                        <TextBlock Grid.Column="3" Text="{Binding Suggestion}" VerticalAlignment="Center"/>
                     </Grid>
                 </DataTemplate>
             </ListBox.ItemTemplate>
