@@ -7,7 +7,7 @@
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
         <ApplicationIcon>Assets/App.ico</ApplicationIcon>
-        <Company>Dean Edis</Company>
+        <Company>Dean Edis (DeanTheCoder)</Company>
         <Product>GLSL Shader Shrinker</Product>
         <AssemblyVersion>2.0.0.0</AssemblyVersion>
         <FileVersion>2.0.0.0</FileVersion>

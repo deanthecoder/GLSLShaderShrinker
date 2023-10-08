@@ -21,7 +21,7 @@
         <TextBlock Text="GLSL Shader Shrinker" FontSize="30"/>
         
         <TextBlock x:Name="AppVersion" FontSize="12"/>
-        <TextBlock Text="Copyright © 2023 Dean Edis." Margin="0,16,0,0"/>
+        <TextBlock Text="Copyright © 2023 Dean Edis (DeanTheCoder)." Margin="0,16,0,0"/>
         <TextBlock Text="All rights reserved." Margin="4"/>
     </StackPanel>
 </Window>
