@@ -72,7 +72,7 @@ namespace Shrinker.Lexer
             return s.Trim();
         }
 
-        public static string WithAppMessage(this string glsl, int originalSize, int optimizedSize)
+        public static string WithAppMessage(this string glsl, int originalSize = 0, int optimizedSize = 0)
         {
             const string MessageBase = "Processed by 'GLSL Shader Shrinker'";
             if (glsl.Contains(MessageBase))

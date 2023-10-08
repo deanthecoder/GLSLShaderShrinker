@@ -246,7 +246,7 @@ public class MainWindowViewModel : ReactiveObject, IDisposable
 
     private void ExportGlslToClipboard(object parameter)
     {
-        var glsl = Diffs.GetAllRightText();
+        var glsl = Diffs.GetAllRightText().WithAppMessage();
         ClipboardService.SetTextAsync(IsOutputGlsl ? glsl : glsl.ToCCode()); 
         PostSnackbarMessage("Copied to clipboard.");
     }
@@ -256,7 +256,7 @@ public class MainWindowViewModel : ReactiveObject, IDisposable
         using var fileStream = targetFile.OpenWrite();
         using var writer = new StreamWriter(fileStream);
         
-        var glsl = Diffs.GetAllRightText();
+        var glsl = Diffs.GetAllRightText().WithAppMessage();
         writer.Write(IsOutputGlsl ? glsl : glsl.ToCCode());
     }
 
