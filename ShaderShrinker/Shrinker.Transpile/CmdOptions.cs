@@ -16,14 +16,11 @@ using CommandLine;
 
 #pragma warning disable CS8618
 
-namespace Shrinker.Cmd;
+namespace Shrinker.Transpile;
 
 // ReSharper disable once ClassNeverInstantiated.Global
 public class CmdOptions
 {
     [Option('o', "output", Default = "", HelpText = "Transpile GLSL->CSharp file path.")]
     public string CSharpOutputPath { get; set; }
-    
-    [Option('d', "diff", Default = false, HelpText = "Launch external diffing tool.")]
-    public bool Diff { get; set; }
 }

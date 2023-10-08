@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shrinker.Lexer", "Shrinker.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shrinker.Parser", "Shrinker.Parser\Shrinker.Parser.csproj", "{4B02CF1B-391C-42C8-84B1-2CA6E5B8F504}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shrinker.Cmd", "Shrinker.Cmd\Shrinker.Cmd.csproj", "{6C0A1B07-B195-4A07-921C-F6D962870309}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shrinker.Transpile", "Shrinker.Transpile\Shrinker.Transpile.csproj", "{6C0A1B07-B195-4A07-921C-F6D962870309}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GLSLRenderer", "..\GLSLRenderer\GLSLRenderer.csproj", "{D5026CC4-1CF2-40C3-A185-37EA571A671D}"
 EndProject
