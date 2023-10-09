@@ -71,7 +71,7 @@ public static class DiffCreator
         return diffs;
     }
 
-    private static void MergeSimilarLines(List<CombinedDiff> diffs)
+    private static void MergeSimilarLines(IList<CombinedDiff> diffs)
     {
         for (var i = 0; i < diffs.Count - 1; i++)
         {
@@ -105,5 +105,5 @@ public static class DiffCreator
         RemoveWhiteSpace(rightText).StartsWith(RemoveWhiteSpace(leftText));
 
     private static string RemoveWhiteSpace(string s) =>
-        s.Replace(" ", string.Empty).Replace("\t", string.Empty);
+        s.Replace(" ", string.Empty).Replace("\t", string.Empty).Trim('{', '}');
 }
