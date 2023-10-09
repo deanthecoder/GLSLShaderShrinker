@@ -58,6 +58,6 @@ public class FileOpenCommand : CommandBase
                                      });
         var selectedFile = files.FirstOrDefault();
         if (selectedFile != null)
-            FileSelected?.Invoke(this, new FileInfo(selectedFile.Path.AbsolutePath));
+            FileSelected?.Invoke(this, new FileInfo(selectedFile.Path.LocalPath));
     }
 }
