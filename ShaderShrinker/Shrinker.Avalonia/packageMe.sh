@@ -3,13 +3,14 @@
 # Define variables
 APP_NAME="GLSL Shader Shrinker"
 APP_VERSION="2.0.0"
+APP_VERSION_SHORT="2.0"
 EXECUTABLE_NAME="Shrinker.Avalonia"
 BUNDLE_NAME="GLSLShaderShrinker.app"
 IDENTIFIER="com.deanedis.glslshadershrinker"
 
 # Step 1: Publish the application
 rm -rf bin/Release/net7.0/osx-arm64/publish/ 
-dotnet publish -c Release -r osx-arm64 --self-contained -p:PublishSingleFile=true
+dotnet publish -c Release -r osx-arm64 --self-contained true -property:Configuration=Release -p:UseAppHost=true
 
 # Step 2: Create the app bundle structure
 mkdir -p "$BUNDLE_NAME/Contents/MacOS"
@@ -38,7 +39,7 @@ cat > "$BUNDLE_NAME/Contents/Info.plist" << EOF
     <key>CFBundleVersion</key>
     <string>$APP_VERSION</string>
     <key>CFBundleShortVersionString</key>
-    <string>$APP_VERSION</string>
+    <string>$APP_VERSION_SHORT</string>
     <key>LSMinimumSystemVersion</key>
     <string>10.12</string>
     <key>CFBundleSignature</key>
@@ -52,4 +53,3 @@ EOF
 cp Assets/Icon.icns "$BUNDLE_NAME/Contents/Resources/Icon.icns"
 
 echo "App bundle $BUNDLE_NAME created."
-
