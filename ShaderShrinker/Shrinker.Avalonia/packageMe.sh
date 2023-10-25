@@ -5,7 +5,7 @@ APP_NAME="GLSL Shader Shrinker"
 APP_VERSION="2.0.0"
 APP_VERSION_SHORT="2.0"
 EXECUTABLE_NAME="Shrinker.Avalonia"
-BUNDLE_NAME="GLSLShaderShrinker.app"
+BUNDLE_NAME="${APP_NAME}.app"
 IDENTIFIER="com.deanedis.glslshadershrinker"
 
 # Step 1: Publish the application
