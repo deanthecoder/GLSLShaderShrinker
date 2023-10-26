@@ -11,9 +11,9 @@
 
 using System.Windows.Input;
 using Avalonia;
-using Avalonia.Controls.ApplicationLifetimes;
 using ReactiveUI;
 using Shrinker.Avalonia.Commands;
+using Shrinker.Avalonia.Extensions;
 using Shrinker.Avalonia.Views;
 
 namespace Shrinker.Avalonia.ViewModels;
@@ -33,8 +33,7 @@ public class AppViewModel : ReactiveObject
                                             var dialog = new AboutDialog();
                                             dialog.Opened += (_, _) => isOpen = true;
                                             dialog.Closed += (_, _) => isOpen = false;
-                                            var mainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
-                                            dialog.ShowDialog(mainWindow);
+                                            dialog.ShowDialog(Application.Current?.GetMainWindow());
                                         });
     }
 }

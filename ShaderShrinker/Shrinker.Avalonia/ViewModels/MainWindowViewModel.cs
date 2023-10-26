@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Avalonia;
 using Avalonia.Threading;
 using AvaloniaEdit.Utils;
 using DialogHostAvalonia;
@@ -12,8 +13,10 @@ using Material.Styles.Controls;
 using Material.Styles.Models;
 using ReactiveUI;
 using Shrinker.Avalonia.Commands;
+using Shrinker.Avalonia.Extensions;
 using Shrinker.Avalonia.Models;
 using Shrinker.Avalonia.Shadertoy;
+using Shrinker.Avalonia.Views;
 using Shrinker.Lexer;
 using Shrinker.Parser;
 using TextCopy;
@@ -26,6 +29,7 @@ public class MainWindowViewModel : ReactiveObject, IDisposable
     private ICommand m_importGlslFileCommand;
     private CommandBase m_importGlslShadertoyCommand;
     private CommandBase m_copyLeftCommand;
+    private CommandBase m_editCodeCommand;
     private string m_shadertoyId;
     private CommandBase m_shrinkCommand;
     private CommandBase m_exportGlslClipboardCommand;
@@ -98,6 +102,7 @@ public class MainWindowViewModel : ReactiveObject, IDisposable
     }
 
     public ICommand CopyLeftCommand => m_copyLeftCommand ??= new RelayCommand(_ => ImportGlslFromRhs(), () => Diffs.HasRightContent());
+    public ICommand EditCodeCommand => m_editCodeCommand ??= new RelayCommand(_ => EditGlsl(), () => !IsInstructionGlsl);
 
     public string ShadertoyId
     {
@@ -137,11 +142,17 @@ public class MainWindowViewModel : ReactiveObject, IDisposable
             m_exportGlslClipboardCommand?.RaiseCanExecuteChanged();
             m_exportGlslFileCommand?.RaiseCanExecuteChanged();
             m_copyLeftCommand?.RaiseCanExecuteChanged();
+            m_editCodeCommand?.RaiseCanExecuteChanged();
         };
         Hints.CollectionChanged += (_, _) =>
         {
             this.RaisePropertyChanged(nameof(HintCount));
             this.RaisePropertyChanged(nameof(HasHints));
+        };
+        PropertyChanged += (_, args) =>
+        {
+            if (args.PropertyName == nameof(IsInstructionGlsl))
+                m_editCodeCommand?.RaiseCanExecuteChanged();
         };
     }
 
@@ -159,11 +170,8 @@ public class MainWindowViewModel : ReactiveObject, IDisposable
             ImportGlslFromString(File.ReadAllText(file.FullName));
     }
 
-    private void ImportGlslFromRhs()
-    {
-        var glsl = Diffs.GetAllRightText().WithAppMessage();
-        ImportGlslFromString(glsl);
-    }
+    private void ImportGlslFromRhs() =>
+        ImportGlslFromString(Diffs.GetAllRightText());
 
     private async void ImportGlslFromShadertoy(object o)
     {
@@ -268,6 +276,13 @@ public class MainWindowViewModel : ReactiveObject, IDisposable
         
         var glsl = Diffs.GetAllRightText().WithAppMessage();
         writer.Write(IsOutputGlsl ? glsl : glsl.ToCCode());
+    }
+
+    private async void EditGlsl()
+    {
+        var glsl = Diffs.GetAllLeftText();
+        var editor = new CodeEditor { Glsl = glsl, Accept = ImportGlslFromString };
+        await editor.ShowDialog(Application.Current?.GetMainWindow());
     }
 
     public int OriginalSize

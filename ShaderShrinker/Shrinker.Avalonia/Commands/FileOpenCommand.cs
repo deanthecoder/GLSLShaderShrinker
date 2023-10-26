@@ -14,8 +14,8 @@ using System.IO;
 using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Platform.Storage;
+using Shrinker.Avalonia.Extensions;
 
 namespace Shrinker.Avalonia.Commands;
 
@@ -36,12 +36,12 @@ public class FileOpenCommand : CommandBase
 
     public override async void Execute(object parameter)
     {
-        if (Application.Current?.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
+        if (Application.Current?.GetMainWindow() == null)
             return; // Cannot find the main application window.
 
         var files =
             await TopLevel
-                .GetTopLevel(desktop.MainWindow)
+                .GetTopLevel(Application.Current?.GetMainWindow())
                 .StorageProvider
                 .OpenFilePickerAsync(
                                      new FilePickerOpenOptions
