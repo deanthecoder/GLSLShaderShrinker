@@ -152,6 +152,13 @@
 
                         <TextBlock Grid.Column="0" Grid.Row="0" Classes="Title" Text="Original" Margin="0,0,1,4"/>
                         <TextBlock Grid.Column="1" Grid.Row="0" Classes="Title" Text="Output" Margin="1,0,0,4" />
+                        <Button Grid.Column="1" Grid.Row="0"
+                                HorizontalAlignment="Left" VerticalAlignment="Center"
+                                Padding="0" Margin="4,0,4,2"
+                                ToolTip.Tip="Copy to Left Pane"
+                                Command="{Binding CopyLeftCommand}">
+                            <Avalonia:MaterialIcon Kind="ChevronDoubleLeft" Width="16" Height="16"/>
+                        </Button>
                         
                         <ScrollViewer Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1"
                                       VerticalScrollBarVisibility="Visible">
@@ -163,7 +170,7 @@
                                                 <TextBlock Classes="LineNumber"
                                                            Text="{Binding LeftLineNumber}"/>
                                                 <Views:CodeLineControl Grid.Column="1"
-                                                                       Diff="{Binding LeftDiff}" />
+                                                                       Diff="{Binding LeftDiff}"/>
                                             </Grid>
                                             <Border Grid.Column="1" Background="#30000000"></Border>
                                             <Grid Grid.Column="2" ColumnDefinitions="30,*">
@@ -239,7 +246,7 @@
                                 Margin="8,0"
                                 VerticalAlignment="Center"
                                 Command="{Binding ShrinkCommand}"
-                                Content="Run"/>
+                                Content="Apply"/>
                     </StackPanel>
 
                     <TextBlock Grid.Column="2"

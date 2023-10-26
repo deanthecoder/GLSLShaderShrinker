@@ -25,6 +25,7 @@ public class MainWindowViewModel : ReactiveObject, IDisposable
     private ICommand m_importGlslClipboardCommand;
     private ICommand m_importGlslFileCommand;
     private CommandBase m_importGlslShadertoyCommand;
+    private CommandBase m_copyLeftCommand;
     private string m_shadertoyId;
     private CommandBase m_shrinkCommand;
     private CommandBase m_exportGlslClipboardCommand;
@@ -96,6 +97,8 @@ public class MainWindowViewModel : ReactiveObject, IDisposable
         }
     }
 
+    public ICommand CopyLeftCommand => m_copyLeftCommand ??= new RelayCommand(_ => ImportGlslFromRhs(), () => Diffs.HasRightContent());
+
     public string ShadertoyId
     {
         get => m_shadertoyId ??= UserSettings.Instance.ShadertoyId;
@@ -130,9 +133,10 @@ public class MainWindowViewModel : ReactiveObject, IDisposable
 
         Diffs.CollectionChanged += (_, _) =>
         {
-            m_shrinkCommand.RaiseCanExecuteChanged();
-            m_exportGlslClipboardCommand.RaiseCanExecuteChanged();
-            m_exportGlslFileCommand.RaiseCanExecuteChanged();
+            m_shrinkCommand?.RaiseCanExecuteChanged();
+            m_exportGlslClipboardCommand?.RaiseCanExecuteChanged();
+            m_exportGlslFileCommand?.RaiseCanExecuteChanged();
+            m_copyLeftCommand?.RaiseCanExecuteChanged();
         };
         Hints.CollectionChanged += (_, _) =>
         {
@@ -153,6 +157,12 @@ public class MainWindowViewModel : ReactiveObject, IDisposable
     {
         if (file.Exists)
             ImportGlslFromString(File.ReadAllText(file.FullName));
+    }
+
+    private void ImportGlslFromRhs()
+    {
+        var glsl = Diffs.GetAllRightText().WithAppMessage();
+        ImportGlslFromString(glsl);
     }
 
     private async void ImportGlslFromShadertoy(object o)
