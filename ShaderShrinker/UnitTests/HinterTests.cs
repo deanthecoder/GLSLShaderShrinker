@@ -292,5 +292,27 @@ namespace UnitTests
 
             Assert.That(rootNode.GetHints().OfType<InvalidClampHint>().ToList(), Has.Count.EqualTo(1));
         }
+        
+        [Test, Sequential]
+        public void CheckValidPowerArgumentDoesNotTriggerHint([Values(0.0, 1.2)] double powerArg)
+        {
+            var lexer = new Lexer();
+            lexer.Load($"void main(float f) {{ pow(f, {powerArg}); }}");
+
+            var rootNode = new Parser(lexer).Parse();
+
+            Assert.That(rootNode.GetHints().OfType<NegativePowHint>(), Is.Empty);
+        }
+        
+        [Test]
+        public void CheckInvalidPowerArgumentTriggersHint()
+        {
+            var lexer = new Lexer();
+            lexer.Load("void main(float f) { pow(-1.2, f); }");
+
+            var rootNode = new Parser(lexer).Parse();
+
+            Assert.That(rootNode.GetHints().OfType<NegativePowHint>().ToList(), Has.Count.EqualTo(1));
+        }
     }
 }

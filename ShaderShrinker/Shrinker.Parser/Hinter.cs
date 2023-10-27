@@ -46,6 +46,9 @@ namespace Shrinker.Parser
 
             foreach (var codeHint in DetectInvalidClampArguments(rootNode))
                 yield return codeHint;
+
+            foreach (var codeHint in DetectNegativePowArguments(rootNode))
+                yield return codeHint;
         }
 
         private static IEnumerable<CodeHint> DetectFunctionsToInline(SyntaxNode rootNode)
@@ -89,7 +92,6 @@ namespace Shrinker.Parser
         private static IEnumerable<CodeHint> DetectDefinableReferences(SyntaxNode rootNode)
         {
             var candidates = new[] { "smoothstep", "iResolution", "normalize", "iTime", "iMouse" };
-            var replacement = new[] { "S smoothstep", "R iResolution", "N normalize", "T time", "M iMouse" };
             var usages = rootNode.TheTree
                 .Select(o => o.Token?.Content ?? (o as FunctionCallSyntaxNode)?.Name)
                 .Where(o => candidates.Any(o.StartsWithVarName))
@@ -128,6 +130,25 @@ namespace Shrinker.Parser
                     var clampArgsAsNumbers = clampCall.Params.GetCsv().Select(o => o.Count == 1 && o.FirstOrDefault()?.Token is INumberToken).ToArray();
                     if (clampArgsAsNumbers.SequenceEqual(new[] { true, true, false }))
                         yield return new InvalidClampHint(functionDefinition.UiName);
+                }
+            }
+        }
+
+        private static IEnumerable<CodeHint> DetectNegativePowArguments(SyntaxNode rootNode)
+        {
+            foreach (var functionDefinition in rootNode.FunctionDefinitions())
+            {
+                var powCalls =
+                    functionDefinition
+                        .FunctionCalls()
+                        .Where(o => o.Name == "pow");
+                foreach (var clampCall in powCalls)
+                {
+                    var powArg = clampCall.Params.GetCsv().FirstOrDefault();
+                    if (powArg?.First()?.Token is not INumberToken num)
+                        continue;
+                    if (num.IsNegative())
+                        yield return new NegativePowHint(functionDefinition.UiName);
                 }
             }
         }
