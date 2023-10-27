@@ -270,5 +270,27 @@ namespace UnitTests
 
             Assert.That(rootNode.GetHints().OfType<AllCallsToFunctionMadeWithSameParamHint>().ToList(), Has.Count.EqualTo(2));
         }
+
+        [Test]
+        public void CheckValidClampDoesNotTriggerHint()
+        {
+            var lexer = new Lexer();
+            lexer.Load("void main(float f) { clamp(f, 0.0, 1.0); }");
+
+            var rootNode = new Parser(lexer).Parse();
+
+            Assert.That(rootNode.GetHints().OfType<InvalidClampHint>(), Is.Empty);
+        }
+        
+        [Test]
+        public void CheckInvalidClampTriggersHint()
+        {
+            var lexer = new Lexer();
+            lexer.Load("void main(float f) { clamp(0.0, 1.0, f); }");
+
+            var rootNode = new Parser(lexer).Parse();
+
+            Assert.That(rootNode.GetHints().OfType<InvalidClampHint>().ToList(), Has.Count.EqualTo(1));
+        }
     }
 }

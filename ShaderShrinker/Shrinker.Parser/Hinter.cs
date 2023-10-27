@@ -43,6 +43,9 @@ namespace Shrinker.Parser
 
             foreach (var codeHint in DetectFunctionsCalledWithAllConstArguments(rootNode))
                 yield return codeHint;
+
+            foreach (var codeHint in DetectInvalidClampArguments(rootNode))
+                yield return codeHint;
         }
 
         private static IEnumerable<CodeHint> DetectFunctionsToInline(SyntaxNode rootNode)
@@ -91,6 +94,7 @@ namespace Shrinker.Parser
                 .Select(o => o.Token?.Content ?? (o as FunctionCallSyntaxNode)?.Name)
                 .Where(o => candidates.Any(o.StartsWithVarName))
                 .ToList();
+            var replacement = new[] { "S smoothstep", "R iResolution", "N normalize", "T time", "M iMouse" };
             foreach (var candidate in candidates)
             {
                 var usageCount = usages.Count(o => o.StartsWithVarName(candidate));
@@ -110,6 +114,23 @@ namespace Shrinker.Parser
                 .FunctionDefinitions()
                 .SelectMany(o => o.FunctionCalls().FunctionCallsMadeWithConstParams())
                 .Select(function => new FunctionCalledWithAllConstParamsHint(function));
+
+        private static IEnumerable<CodeHint> DetectInvalidClampArguments(SyntaxNode rootNode)
+        {
+            foreach (var functionDefinition in rootNode.FunctionDefinitions())
+            {
+                var clampCalls =
+                    functionDefinition
+                    .FunctionCalls()
+                    .Where(o => o.Name == "clamp");
+                foreach (var clampCall in clampCalls)
+                {
+                    var clampArgsAsNumbers = clampCall.Params.GetCsv().Select(o => o.Count == 1 && o.FirstOrDefault()?.Token is INumberToken).ToArray();
+                    if (clampArgsAsNumbers.SequenceEqual(new[] { true, true, false }))
+                        yield return new InvalidClampHint(functionDefinition.UiName);
+                }
+            }
+        }
 
         /// <summary>
         /// If all calls to a function have the same constant parameter, that parameter could be inlined.
