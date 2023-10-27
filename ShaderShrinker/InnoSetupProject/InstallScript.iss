@@ -4,7 +4,7 @@
 [Setup]
 AppId={{996B4B28-98DA-451F-ED15-8777E28DBDE4}
 AppName={#MyAppName}
-AppVersion=2.0
+AppVersion=2.1
 AppPublisher=Dean Edis
 AppPublisherURL=https://github.com/deanthecoder/GLSLShaderShrinker
 DefaultDirName={commonpf}\ShaderShrinker

@@ -9,8 +9,8 @@
         <ApplicationIcon>Assets/App.ico</ApplicationIcon>
         <Company>Dean Edis (DeanTheCoder)</Company>
         <Product>GLSL Shader Shrinker</Product>
-        <AssemblyVersion>2.0.0.0</AssemblyVersion>
-        <FileVersion>2.0.0.0</FileVersion>
+        <AssemblyVersion>2.1.0.0</AssemblyVersion>
+        <FileVersion>2.1.0.0</FileVersion>
     </PropertyGroup>
 
     <ItemGroup>

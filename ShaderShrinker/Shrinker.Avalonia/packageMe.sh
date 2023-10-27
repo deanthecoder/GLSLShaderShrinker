@@ -2,8 +2,8 @@
 
 # Define variables
 APP_NAME="GLSL Shader Shrinker"
-APP_VERSION="2.0.0"
-APP_VERSION_SHORT="2.0"
+APP_VERSION="2.1.0"
+APP_VERSION_SHORT="2.1"
 EXECUTABLE_NAME="Shrinker.Avalonia"
 BUNDLE_NAME="${APP_NAME}.app"
 IDENTIFIER="com.deanedis.glslshadershrinker"
