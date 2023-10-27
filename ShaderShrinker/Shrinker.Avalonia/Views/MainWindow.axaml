@@ -49,15 +49,8 @@
 
     <DialogHostAvalonia:DialogHost OverlayBackground="Black">
         <Controls:SnackbarHost HostName="Root" SnackbarHorizontalAlignment="Center">
-            <Grid RowDefinitions="Auto,*,Auto" ColumnDefinitions="Auto,*">
-                <!-- Project web link https://github.com/deanthecoder/GLSLShaderShrinker -->
-                <Button Grid.Column="1" Grid.Row="0"
-                        Margin="16,2" 
-                        HorizontalAlignment="Right" VerticalAlignment="Top"
-                        Content="Project Page"
-                        Command="{Binding LaunchProjectPage}"/>
-                
-                <StackPanel Grid.Column="0" Grid.Row="1" VerticalAlignment="Top">
+            <Grid RowDefinitions="*,Auto" ColumnDefinitions="Auto,*">
+                <StackPanel Grid.Column="0" Grid.Row="0" VerticalAlignment="Top">
                     <!-- Import Options -->
                     <Border Classes="class" Margin="4,8,4,4">
                         <StackPanel>
@@ -125,7 +118,7 @@
                 </StackPanel>
 
                 <!-- Diff area -->
-                <Border Grid.Row="1" Grid.Column="1"
+                <Border Grid.Row="0" Grid.Column="1"
                         BorderThickness="1" BorderBrush="{DynamicResource MaterialPrimaryLightBrush}"
                         Margin="8" Padding="8">
                     <Grid RowDefinitions="Auto,*" ColumnDefinitions="*,*">
@@ -221,7 +214,7 @@
                     </Grid>
                 </Border>
 
-                <Grid Grid.Row="2" Grid.Column="1" Margin="8,0" ColumnDefinitions="Auto,*,Auto">
+                <Grid Grid.Row="1" Grid.Column="1" Margin="8,0" ColumnDefinitions="Auto,*,Auto">
                     <TextBlock Grid.Column="0"
                                Text="{Binding OriginalSize, StringFormat=Original: {0:N0} characters}"/>
                     
@@ -266,7 +259,7 @@
                 </Grid>
 
                 <Border Grid.Row="0" Grid.Column="0"
-                        Grid.RowSpan="3" Grid.ColumnSpan="2"
+                        Grid.RowSpan="2" Grid.ColumnSpan="2"
                         IsVisible="{Binding IsBusy}" Background="#A0000000">
                     <Controls:Card HorizontalAlignment="Center" VerticalAlignment="Center">
                         <StackPanel Margin="16,8">
@@ -276,6 +269,15 @@
                         </StackPanel>
                     </Controls:Card>
                 </Border>
+
+                <!-- Project web link https://github.com/deanthecoder/GLSLShaderShrinker -->
+                <Button Grid.Column="0" Grid.Row="2"
+                        Margin="2" Padding="2"
+                        HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                        ToolTip.Tip="GitHub"
+                        Command="{Binding LaunchProjectPage}">
+                    <Avalonia:MaterialIcon Kind="Github"/>
+                </Button>
             </Grid>
         </Controls:SnackbarHost>
     </DialogHostAvalonia:DialogHost>
