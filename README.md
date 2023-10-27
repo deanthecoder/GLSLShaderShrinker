@@ -5,15 +5,15 @@
 * Requires the [ASP.NET runtime](https://dotnet.microsoft.com/download/dotnet/thank-you/runtime-aspnetcore-6.0.0-windows-hosting-bundle-installer), if not already installed.
 
 ## What Is It For?
-GLSL Shader Shrinker is a Windows GUI tool that attempts to reduce the size of GLSL fragment shader code, whilst keeping it _readable_ and understandable.
+GLSL Shader Shrinker is a cross-platform GUI tool that attempts to reduce the size of GLSL fragment shader code, whilst keeping it _readable_ and understandable.
 
-It is written in C# using WPF and Visual Studio 2019, and has several hundred NUnit-powered unit tests.
+It is written in C# using [Avalonia](https://avaloniaui.net/) and [JetBrains Rider](https://www.jetbrains.com/rider/), and has several hundred NUnit-powered unit tests.
 
 ![Main UI](img/ED209.png?raw=true "Main UI")
 
-It is designed to work primarily with code from [Shadertoy](https://www.shadertoy.com/), but has limited support for other styles of GLSL too (E.g. [Bonzomatic](https://github.com/Gargaj/Bonzomatic))
+It is designed to work primarily with code from [Shadertoy](https://www.shadertoy.com/), but has limited support for other styles of GLSL too (E.g. [Bonzomatic](https://github.com/Gargaj/Bonzomatic), [Posh Brolly](https://www.poshbrolly.net/))
 
-After writing a Shadertoy shader, usually from my boilerplate starting code, there is a sequence of operations I perform:
+After writing a shader, usually from my boilerplate starting code, there is a sequence of operations I perform:
 * Delete dead/commented-out code.
 * Remove unused functions.
 * Inline some constants (Max raymarching distance, 'hit test' accuracy, ...)
@@ -65,9 +65,9 @@ void mainImage(out vec4 fragColor, vec2 fragCoord) {
 ---
 ## Getting Started
 
-First, download and run the Windows installer from the 'Releases' section.
+First, download and run the installer from the 'Releases' section.
 
-**Note:** The application requires the Microsoft .NET 5 runtimes to be installed. If they are not found the application will automatically prompt for them to be downloaded.
+**Note:** The application requires the Microsoft .NET 7 runtimes to be installed. If they are not found the application will automatically prompt for them to be downloaded.
 
 ### Step 1 - Import GLSL Code
 You first need to import your GLSL into the tool.
@@ -81,71 +81,133 @@ This can be achieved using:
 
 ![Shadertoy](img/Shadertoy.png?raw=true "Shadertoy")
 
-### Step 2 - Shrink GLSL Code
+### Step 2 - Process GLSL Code
 Next choose the level of processing you want to apply.
 
 ![Shrink](img/Shrink.png?raw=true "Shrink")
 
-* Maximum processing - All options enabled.
-* Minimal processing - Minimal changes (Mostly code reformatting).
-* Custom options - Toggle exactly which processing features you require (Including GOLFing options)
+* Maximum - All options enabled.
+* Reformat - Minimal changes (Mostly code reformatting).
+* Remove Dead Code - Remove unreferences functions and unreachable code.
+* Custom - Toggle exactly which processing features you require (Including GOLFing options)
 
 ### Step 3 - Exporting GLSL Code
-Export the 'shrunk' GLSL.
+Export the 'processed' GLSL.
 
 ![Export](img/Export.png?raw=true "Export")
 
 This can be achieved using:
 * Copy'n'paste from the clipboard. (CTRL-C)
-* Export from a text file.
+* Export to a text file.
 
 ...and then use with Shadertoy, Bonzomatic, etc.
 
 ---
 ## Hints
-After shrinking your GLSL code, you might find some 'hints' are available.
+After processing your GLSL code, you might find some 'hints' are available.
 These range from 'this function isn't used' or 'this function is only used once, so you might like to inline it', all the way to some GOLFing hints.
 
 ![Export](img/Hints.png?raw=true "Export")
 
 ---
 ## Limitations
-Despite a lot of effort spent trying to ensure the tool produces great output every time, there are always going to be edge cases caused by different coding styles and patterns of content.
+Despite a lot of effort spent trying to ensure the tool produces valid output every time, there are always going to be edge cases caused by different coding styles and patterns of content.
 
 Heavy use of ```#define``` macros and ```#if...#else...#endif``` blocks can cause confusion when trying to parse the code.  Compilers have the luxury of seeing which specific code path is enabled, but a tool like this needs to understand **all** possible code paths at the same time - Not always easy!
 
-I apologize in advance if you find any issues - If I have the time I'll try my best to resolve them!
-
-In most cases they can be worked-around using a set of 'custom' settings which disable the problematic feature.
+In most cases issues can be worked-around using a set of 'custom' settings which disable the problematic feature.
 
 ---
 # Features
-* [Remove Comments](#remove-comments)
-* [Keep Header Comments](#keep-header-comments)
-* [Remove Unused Functions](#remove-unused-functions)
-* [Remove Unused Variables](#remove-unused-variables)
-* [Remove Unreachable Code](#remove-unreachable-code)
-* [Remove Disabled Code](#remove-disabled-code)
-* [Simplify Function Declarations](#simplify-function-declarations)
-* [Simplify Function Parameters](#simplify-function-parameters)
-* [Group Variable Declarations](#group-variable-declarations)
-* [Join Variable Declarations and Assignments](#join-variable-declarations-and-assignments)
-* [Detect New Constants](#detect-new-constants)
-* [Inline Constant Variables](#inline-constant-variables)
-* [Inline Constant #defines](#inline-constant-#defines)
-* [Simplify Number Format](#simplify-number-format)
-* [Simplify Vector Construction](#simplify-vector-construction)
-* [Simplify Vector References](#simplify-vector-references)
-* [Simplify Code Branching](#simplify-code-branching)
-* [Combine Consecutive Assignments](#combine-consecutive-assignments)
-* [Combine Assignment With Single Use](#combine-assignment-with-single-use)
-* [Introduce +=, -=, /=, *=](#introduce-+=,--=,-/=,-*=)
-* [Simplify Mathematical Expressions](#simplify-mathematical-expressions)
-* [Perform Simple Arithmetic](#perform-simple-arithmetic)
-* [Replace Functions Calls With Result](#replace-functions-calls-with-result)
-* [Move constant parameters to within called functions](#move-constant-parameters-to-within-called-functions)
-* [GOLF user defined code names](#golf-user-defined-code-names)
-* [Define common terms](#define-common-terms)
+- [GLSL Shader Shrinker](#glsl-shader-shrinker)
+  - [What Is It For?](#what-is-it-for)
+  - [What It *Can* Do](#what-it-can-do)
+  - [Example (Shadertoy Starting Point)](#example-shadertoy-starting-point)
+    - [Before Processing](#before-processing)
+    - [After Processing](#after-processing)
+  - [Getting Started](#getting-started)
+    - [Step 1 - Import GLSL Code](#step-1---import-glsl-code)
+    - [Step 2 - Process GLSL Code](#step-2---process-glsl-code)
+    - [Step 3 - Exporting GLSL Code](#step-3---exporting-glsl-code)
+  - [Hints](#hints)
+  - [Limitations](#limitations)
+- [Features](#features)
+  - [Remove Comments](#remove-comments)
+      - [Before](#before)
+      - [After](#after)
+  - [Keep Header Comments](#keep-header-comments)
+      - [Before](#before-1)
+      - [After](#after-1)
+  - [Remove Unused Functions](#remove-unused-functions)
+  - [Remove Unused Variables](#remove-unused-variables)
+      - [Before](#before-2)
+      - [After](#after-2)
+  - [Remove Unreachable Code](#remove-unreachable-code)
+      - [Before](#before-3)
+      - [After](#after-3)
+  - [Remove Disabled Code](#remove-disabled-code)
+      - [Before](#before-4)
+      - [After](#after-4)
+  - [Simplify Function Declarations](#simplify-function-declarations)
+      - [Before](#before-5)
+      - [After](#after-5)
+  - [Simplify Function Parameters](#simplify-function-parameters)
+      - [Before](#before-6)
+      - [After](#after-6)
+  - [Group Variable Declarations](#group-variable-declarations)
+      - [Before](#before-7)
+      - [After](#after-7)
+  - [Join Variable Declarations and Assignments](#join-variable-declarations-and-assignments)
+      - [Before](#before-8)
+      - [After](#after-8)
+  - [Detect New Constants](#detect-new-constants)
+      - [Before](#before-9)
+      - [After](#after-9)
+  - [Inline Constant Variables](#inline-constant-variables)
+      - [Before](#before-10)
+      - [After](#after-10)
+  - [Inline Constant #defines](#inline-constant-defines)
+      - [Before](#before-11)
+      - [After](#after-11)
+  - [Simplify Number Format](#simplify-number-format)
+      - [Before](#before-12)
+      - [After](#after-12)
+  - [Simplify Vector Construction](#simplify-vector-construction)
+      - [Before](#before-13)
+      - [After](#after-13)
+  - [Simplify Vector References](#simplify-vector-references)
+      - [Before](#before-14)
+      - [After](#after-14)
+  - [Simplify Code Branching](#simplify-code-branching)
+      - [Before](#before-15)
+      - [After](#after-15)
+  - [Combine Consecutive Assignments](#combine-consecutive-assignments)
+      - [Before](#before-16)
+      - [After](#after-16)
+  - [Combine Assignment With Single Use](#combine-assignment-with-single-use)
+      - [Before](#before-17)
+      - [After](#after-17)
+      - [Before](#before-18)
+      - [After](#after-18)
+  - [Introduce +=, -=, /=, \*=](#introduce-----)
+      - [Before](#before-19)
+      - [After](#after-19)
+  - [Simplify Mathematical Expressions](#simplify-mathematical-expressions)
+      - [Before](#before-20)
+      - [After](#after-20)
+  - [Perform Simple Arithmetic](#perform-simple-arithmetic)
+  - [Replace Functions Calls With Result](#replace-functions-calls-with-result)
+      - [Before](#before-21)
+      - [After](#after-21)
+  - [Move constant parameters to within called functions](#move-constant-parameters-to-within-called-functions)
+      - [Before](#before-22)
+      - [After](#after-22)
+  - [GOLF user defined code names](#golf-user-defined-code-names)
+      - [Before](#before-23)
+      - [After](#after-23)
+  - [Define common terms](#define-common-terms)
+      - [Before](#before-24)
+      - [After](#after-24)
 ## Remove Comments
 Remove all C/C++ -style comments from the code.
 #### Before
