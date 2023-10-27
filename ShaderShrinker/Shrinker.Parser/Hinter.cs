@@ -49,6 +49,9 @@ namespace Shrinker.Parser
 
             foreach (var codeHint in DetectNegativePowArguments(rootNode))
                 yield return codeHint;
+            
+            foreach (var codeHint in DetectNegativeSqrtArguments(rootNode))
+                yield return codeHint;
         }
 
         private static IEnumerable<CodeHint> DetectFunctionsToInline(SyntaxNode rootNode)
@@ -142,13 +145,32 @@ namespace Shrinker.Parser
                     functionDefinition
                         .FunctionCalls()
                         .Where(o => o.Name == "pow");
-                foreach (var clampCall in powCalls)
+                foreach (var powCall in powCalls)
                 {
-                    var powArg = clampCall.Params.GetCsv().FirstOrDefault();
+                    var powArg = powCall.Params.GetCsv().FirstOrDefault();
                     if (powArg?.First()?.Token is not INumberToken num)
                         continue;
                     if (num.IsNegative())
                         yield return new NegativePowHint(functionDefinition.UiName);
+                }
+            }
+        }
+        
+        private static IEnumerable<CodeHint> DetectNegativeSqrtArguments(SyntaxNode rootNode)
+        {
+            foreach (var functionDefinition in rootNode.FunctionDefinitions())
+            {
+                var sqrtCalls =
+                    functionDefinition
+                        .FunctionCalls()
+                        .Where(o => o.Name == "sqrt");
+                foreach (var sqrtCall in sqrtCalls)
+                {
+                    var sqrtArg = sqrtCall.Params.GetCsv().FirstOrDefault();
+                    if (sqrtArg?.First()?.Token is not INumberToken num)
+                        continue;
+                    if (num.IsZero() || num.IsNegative())
+                        yield return new NegativeSqrtHint(functionDefinition.UiName);
                 }
             }
         }

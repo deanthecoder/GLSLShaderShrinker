@@ -314,5 +314,27 @@ namespace UnitTests
 
             Assert.That(rootNode.GetHints().OfType<NegativePowHint>().ToList(), Has.Count.EqualTo(1));
         }
+        
+        [Test, Sequential]
+        public void CheckValidSqrtArgumentDoesNotTriggerHint([Values(0.5, 1.2)] double powerArg)
+        {
+            var lexer = new Lexer();
+            lexer.Load($"void main(float f) {{ sqrt({powerArg}); }}");
+
+            var rootNode = new Parser(lexer).Parse();
+
+            Assert.That(rootNode.GetHints().OfType<NegativeSqrtHint>(), Is.Empty);
+        }
+        
+        [Test, Sequential]
+        public void CheckInvalidSqrtArgumentTriggersHint([Values(-0.5, 0.0)] double powerArg)
+        {
+            var lexer = new Lexer();
+            lexer.Load($"void main(float f) {{ sqrt({powerArg}); }}");
+
+            var rootNode = new Parser(lexer).Parse();
+
+            Assert.That(rootNode.GetHints().OfType<NegativeSqrtHint>().ToList(), Has.Count.EqualTo(1));
+        }
     }
 }

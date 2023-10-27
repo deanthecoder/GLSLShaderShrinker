@@ -271,7 +271,7 @@
                 </Border>
 
                 <!-- Project web link https://github.com/deanthecoder/GLSLShaderShrinker -->
-                <Button Grid.Column="0" Grid.Row="2"
+                <Button Grid.Column="0" Grid.Row="1"
                         Margin="2" Padding="2"
                         HorizontalAlignment="Left" VerticalAlignment="Bottom"
                         ToolTip.Tip="GitHub"
