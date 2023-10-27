@@ -83,7 +83,7 @@ namespace Shrinker.Parser.Optimizations
                 for (var paramIndex = 0; paramIndex < paramCount; paramIndex++)
                 {
                     // Each nth param must be the same.
-                    var paramStrings = allCallsToThatFunction.Select(o => o.Params.GetCsv().ToList()[paramIndex].Select(p => p.ToCode()).Aggregate((a, b) => $"{a} {b}"));
+                    var paramStrings = allCallsToThatFunction.Select(o => o.Params.GetCsv().ElementAt(paramIndex).Select(p => p.ToCode()).Aggregate((a, b) => $"{a} {b}"));
                     if (paramStrings.Distinct().Count() != 1)
                         continue;
 

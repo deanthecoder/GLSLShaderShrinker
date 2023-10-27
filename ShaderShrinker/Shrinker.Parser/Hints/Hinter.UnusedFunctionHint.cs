@@ -13,7 +13,7 @@ namespace Shrinker.Parser.Hints
 {
     public class UnusedFunctionHint : CodeHint
     {
-        public UnusedFunctionHint(string function) : base(function, "Function is never called.")
+        public UnusedFunctionHint(string function) : base(function, "Function is never called.", HintPriority.High)
         {
         }
     }

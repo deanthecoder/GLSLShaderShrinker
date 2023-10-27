@@ -1,0 +1,71 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net7.0</TargetFramework>
+        <Nullable>disable</Nullable>
+        <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+        <ApplicationIcon>Assets/App.ico</ApplicationIcon>
+        <Company>Dean Edis (DeanTheCoder)</Company>
+        <Product>GLSL Shader Shrinker</Product>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <FileVersion>2.0.0.0</FileVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <AvaloniaResource Include="Assets\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia" Version="11.0.4" />
+        <PackageReference Include="Avalonia.AvaloniaEdit" Version="11.0.1" />
+        <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.0.4" />
+        <PackageReference Include="Avalonia.Desktop" Version="11.0.4" />
+        <PackageReference Include="Avalonia.HtmlRenderer" Version="11.0.0" />
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.4" />
+        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.0.4" />
+        <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.4" />
+        <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.4" />
+        <PackageReference Include="AvaloniaEdit.TextMate" Version="11.0.1" />
+        <PackageReference Include="DialogHost.Avalonia" Version="0.7.7" />
+        <PackageReference Include="DiffPlex" Version="1.7.1" />
+        <PackageReference Include="Markdig" Version="0.33.0" />
+        <PackageReference Include="Markdown.ColorCode" Version="2.0.0" />
+        <PackageReference Include="Material.Avalonia" Version="3.0.1" />
+        <PackageReference Include="Material.Icons.Avalonia" Version="2.0.1" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+        <PackageReference Include="TextCopy" Version="6.2.1" />
+        <PackageReference Include="TextMateSharp.Grammars" Version="1.0.56" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="AvaloniaEdit">
+        <HintPath>..\..\..\..\..\..\.nuget\packages\avalonia.avaloniaedit\11.0.0\lib\netstandard2.0\AvaloniaEdit.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Include="GLSL.xshd" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Shrinker.Parser\Shrinker.Parser.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="Presets\Maximum">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="Presets\Golf (Experimental)">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="Presets\Reformat">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="Presets\Remove Dead Code">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+</Project>

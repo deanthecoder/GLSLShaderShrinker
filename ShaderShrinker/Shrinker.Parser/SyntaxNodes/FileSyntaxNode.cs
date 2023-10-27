@@ -223,8 +223,10 @@ namespace Shrinker.Parser.SyntaxNodes
                 }
 
                 // Make a struct node.
-                var structNode = new StructDefinitionSyntaxNode((GenericSyntaxNode)matches[1], (BraceSyntaxNode)matches[2]);
+                var nameNode = (GenericSyntaxNode)matches[1];
+                var structNode = new StructDefinitionSyntaxNode(nameNode, (BraceSyntaxNode)matches[2]);
                 structs.Add(structNode);
+                TypeToken.RegisterUserStruct(nameNode.Name);
                 Children[i].ReplaceWith(structs.Last());
 
                 // Re-add the variable declaration (if there was one).
@@ -602,10 +604,13 @@ namespace Shrinker.Parser.SyntaxNodes
                              if (node.Parent is FunctionDeclarationSyntaxNode || node.Parent is FunctionDefinitionSyntaxNode)
                                  return true;
 
+                             if (!FunctionCallSyntaxNode.IsNodeFunctionLike(node))
+                                 return true;
+
                              var functionName = node.Token.Content;
                              var roundBrackets = (RoundBracketSyntaxNode)match.Single();
 
-                             FunctionCallSyntaxNode functionCall = null;
+                             FunctionCallSyntaxNode functionCall;
                              if (userDefinedFunctions.Contains(functionName))
                              {
                                  // User-defined function.
@@ -621,14 +626,11 @@ namespace Shrinker.Parser.SyntaxNodes
                                  // #defined macro - Ignore.
                                  return true;
                              }
-                             else if (!roundBrackets.TheTree.Any(o => o.Token is SemicolonToken))
+                             else
                              {
                                  // External function - Hopefully defined in another buffer.
                                  functionCall = new ExternalFunctionCallSyntaxNode((GenericSyntaxNode)node, roundBrackets);
                              }
-
-                             if (functionCall == null)
-                                 return true;
 
                              node.ReplaceWith(functionCall);
                              didChange = true;

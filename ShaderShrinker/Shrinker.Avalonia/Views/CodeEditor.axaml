@@ -1,0 +1,36 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:AvaloniaEdit="https://github.com/avaloniaui/avaloniaedit"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        MinWidth="600" MinHeight="400"
+        x:Class="Shrinker.Avalonia.Views.CodeEditor"
+        WindowStartupLocation="CenterOwner"
+        Title="Code Editor">
+    <Window.Styles>
+        <Style Selector="Button">
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Padding" Value="16,6" />
+            <Setter Property="Margin" Value="4,8" />
+        </Style>
+    </Window.Styles>
+
+    <Grid RowDefinitions="*,Auto">
+        <Border BorderThickness="1"
+                BorderBrush="{DynamicResource MaterialPrimaryLightBrush}"
+                Margin="8,8,8,0" Padding="8">
+            <AvaloniaEdit:TextEditor x:Name="m_editor"
+                                     Loaded="OnTextEditorLoaded"
+                                     FontFamily="Consolas"
+                                     ShowLineNumbers="True" />
+        </Border>
+        <UniformGrid Grid.Row="1"
+                     Columns="2"
+                     HorizontalAlignment="Right"
+                     Margin="4,0">
+            <Button Content="Accept" IsDefault="True" Click="OnAccept"/>
+            <Button Content="Discard" IsCancel="True" Click="OnDiscard"/>
+        </UniformGrid>
+    </Grid>
+</Window>

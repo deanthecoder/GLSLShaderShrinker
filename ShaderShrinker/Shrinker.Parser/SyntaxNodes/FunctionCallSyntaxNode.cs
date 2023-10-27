@@ -11,6 +11,7 @@
 
 using System;
 using System.Linq;
+using Shrinker.Lexer;
 
 namespace Shrinker.Parser.SyntaxNodes
 {
@@ -50,6 +51,20 @@ namespace Shrinker.Parser.SyntaxNodes
         public void Rename(string oldName, string newName)
         {
             Name = newName;
+        }
+
+        /// <summary>
+        /// See if a node looks like it might be a function call (E.g. foo(...))
+        /// </summary>
+        public static bool IsNodeFunctionLike(SyntaxNode node)
+        {
+            if (node is not GenericSyntaxNode)
+                return false;
+            if (node.Next is not RoundBracketSyntaxNode brackets)
+                return false;
+            if (brackets.TheTree.Any(o => o.Token is SemicolonToken))
+                return false;
+            return true;
         }
     }
 }

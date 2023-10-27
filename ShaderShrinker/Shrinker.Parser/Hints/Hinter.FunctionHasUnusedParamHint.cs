@@ -13,7 +13,7 @@ namespace Shrinker.Parser.Hints
 {
     public class FunctionHasUnusedParamHint : CodeHint
     {
-        public FunctionHasUnusedParamHint(string function, string param) : base(function, $"Function parameter '{param}' is unused.")
+        public FunctionHasUnusedParamHint(string function, string param) : base(function, $"Function parameter '{param}' is unused.", HintPriority.High)
         {
         }
     }

@@ -54,7 +54,7 @@ namespace Shrinker.Parser
                     repeatSimplifications = rootNode.DetectConstants();
 
                 if (options.InlineDefines)
-                    rootNode.InlineDefines();
+                    rootNode.InlineDefines(options);
 
                 if (options.InlineConstantVariables)
                     rootNode.InlineConstantVariables();
@@ -112,6 +112,9 @@ namespace Shrinker.Parser
 
             if (options.GolfDefineCommonTerms)
                 rootNode.GolfDefineCommonTerms();
+
+            if (options.TranspileToCSharp)
+                rootNode.TranspileToCSharp();
 
             return rootNode;
         }

@@ -1,6 +1,4 @@
-﻿using System.Linq;
-
-namespace Shrinker.Lexer
+﻿namespace Shrinker.Lexer
 {
     public class QuoteToken : Token
     {

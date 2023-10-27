@@ -10,6 +10,10 @@
 // -----------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using Shrinker.Lexer;
 
 namespace Shrinker.Parser.SyntaxNodes
 {
@@ -35,5 +39,31 @@ namespace Shrinker.Parser.SyntaxNodes
         public override string UiName => $"struct {Name} {{...}}";
 
         protected override SyntaxNode CreateSelf() => new StructDefinitionSyntaxNode();
+
+        /// <summary>
+        /// Append a coded string representing a suitable C# constructor.
+        /// </summary>
+        public static void WriteConstructor(StringBuilder sb, StructDefinitionSyntaxNode o)
+        {
+            var declarations = o.Braces.Children.OfType<VariableDeclarationSyntaxNode>().ToList();
+            var fields = new List<(TypeToken VariableType, string Name)>();
+            foreach (var decl in declarations)
+                fields.AddRange(decl.Definitions.Select(def => (decl.VariableType, def.Name)));
+
+            sb.Append($"public {o.Name}(");
+            sb.Append(string.Join(", ", fields.Select(field => $"{field.VariableType.Content} {field.Name}_")));
+            sb.AppendLine(") {");
+            foreach (var field in fields)
+            {
+                if (field.VariableType.IsVector() || field.VariableType.IsMatrix() || field.VariableType.IsStruct())
+                    sb.AppendLine($"{field.Name} = Clone(ref {field.Name}_);");
+                else
+                    sb.AppendLine($"{field.Name} = {field.Name}_;");
+            }
+            
+            sb.AppendLine("}");
+
+            declarations.ForEach(decl => sb.AppendLine($"public {decl.UiName}"));
+        }
     }
 }

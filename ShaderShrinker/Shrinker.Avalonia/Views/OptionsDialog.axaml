@@ -1,0 +1,247 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ViewModels="clr-namespace:Shrinker.Avalonia.ViewModels"
+             xmlns:Avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:Converters="clr-namespace:Shrinker.Avalonia.Converters"
+             xmlns:AvaloniaHtml="clr-namespace:TheArtOfDev.HtmlRenderer.Avalonia;assembly=Avalonia.HtmlRenderer"
+             xmlns:DialogHostAvalonia="clr-namespace:DialogHostAvalonia;assembly=DialogHost.Avalonia"
+             xmlns:Controls="clr-namespace:Material.Styles.Controls;assembly=Material.Styles"
+             mc:Ignorable="d" d:DesignWidth="780" d:DesignHeight="450"
+             x:DataType="ViewModels:PresetsViewModel"
+             x:Class="Shrinker.Avalonia.Views.OptionsDialog">
+    <UserControl.Resources>
+        <Converters:MarkdownToHtmlConverter x:Key="MarkdownToHtmlControlConverter" />
+    </UserControl.Resources>
+    
+    <Grid Margin="8,0" RowDefinitions="Auto,*,Auto">
+        <Controls:ColorZone Mode="PrimaryMid" Padding="16,8">
+            <!-- ReSharper disable once Xaml.StyleClassNotFound -->
+            <TextBlock Classes="Body1" Text="Custom Preset" Foreground="White" />
+        </Controls:ColorZone>
+        
+        <Grid Grid.Row="1" ColumnDefinitions="*,*"
+              Background="#30000000">
+            <StackPanel Grid.Row="0" Grid.Column="0"
+                        Margin="8">
+                <CheckBox x:Name="removeCommentsCheck" Content="Remove comments"
+                          IsChecked="{Binding CustomOptions.RemoveComments}">
+                    <ToolTip.Tip>
+                        <AvaloniaHtml:HtmlLabel
+                            Text="{Binding Source={StaticResource RemoveCommentsCheckSetTip}, Converter={StaticResource MarkdownToHtmlControlConverter}}" />
+                    </ToolTip.Tip>
+                </CheckBox>
+
+                <CheckBox Content="Keep header comments" IsChecked="{Binding CustomOptions.KeepHeaderComments}"
+                          Margin="16,4" IsEnabled="{Binding IsChecked, ElementName=removeCommentsCheck}">
+                    <ToolTip.Tip>
+                        <AvaloniaHtml:HtmlLabel
+                            Text="{Binding Source={StaticResource KeepHeaderCommentsTip}, Converter={StaticResource MarkdownToHtmlControlConverter}}" />
+                    </ToolTip.Tip>
+                </CheckBox>
+
+                <CheckBox Content="Remove unused functions" IsChecked="{Binding CustomOptions.RemoveUnusedFunctions}">
+                    <ToolTip.Tip>
+                        <AvaloniaHtml:HtmlLabel
+                            Text="{Binding Source={StaticResource RemovedUnusedFunctionsTip}, Converter={StaticResource MarkdownToHtmlControlConverter}}" />
+                    </ToolTip.Tip>
+                </CheckBox>
+
+                <CheckBox Content="Remove unused variables" IsChecked="{Binding CustomOptions.RemoveUnusedVariables}">
+                    <ToolTip.Tip>
+                        <AvaloniaHtml:HtmlLabel
+                            Text="{Binding Source={StaticResource RemoveUnusedVarsTip}, Converter={StaticResource MarkdownToHtmlControlConverter}}" />
+                    </ToolTip.Tip>
+                </CheckBox>
+
+                <CheckBox Content="Remove unreachable code" IsChecked="{Binding CustomOptions.RemoveUnreachableCode}">
+                    <ToolTip.Tip>
+                        <AvaloniaHtml:HtmlLabel
+                            Text="{Binding Source={StaticResource RemoveUnreachableCodeTip}, Converter={StaticResource MarkdownToHtmlControlConverter}}" />
+                    </ToolTip.Tip>
+                </CheckBox>
+
+                <CheckBox Content="Remove disabled code" IsChecked="{Binding CustomOptions.RemoveDisabledCode}">
+                    <ToolTip.Tip>
+                        <AvaloniaHtml:HtmlLabel
+                            Text="{Binding Source={StaticResource RemoveDisabledCodeTip}, Converter={StaticResource MarkdownToHtmlControlConverter}}" />
+                    </ToolTip.Tip>
+                </CheckBox>
+
+                <CheckBox Content="Simplify function declarations"
+                          IsChecked="{Binding CustomOptions.SimplifyFunctionDeclarations}">
+                    <ToolTip.Tip>
+                        <AvaloniaHtml:HtmlLabel
+                            Text="{Binding Source={StaticResource SimplifyFunctionDeclsTip}, Converter={StaticResource MarkdownToHtmlControlConverter}}" />
+                    </ToolTip.Tip>
+                </CheckBox>
+
+                <CheckBox Content="Simplify function parameters"
+                          IsChecked="{Binding CustomOptions.SimplifyFunctionParams}">
+                    <ToolTip.Tip>
+                        <AvaloniaHtml:HtmlLabel
+                            Text="{Binding Source={StaticResource SimplifyFunctionParamsTip}, Converter={StaticResource MarkdownToHtmlControlConverter}}" />
+                    </ToolTip.Tip>
+                </CheckBox>
+
+                <CheckBox Content="Group variable declarations"
+                          IsChecked="{Binding CustomOptions.GroupVariableDeclarations}">
+                    <ToolTip.Tip>
+                        <AvaloniaHtml:HtmlLabel
+                            Text="{Binding Source={StaticResource GroupVariableDeclsTip}, Converter={StaticResource MarkdownToHtmlControlConverter}}" />
+                    </ToolTip.Tip>
+                </CheckBox>
+
+                <CheckBox Content="Join variable declarations and assignments"
+                          IsChecked="{Binding CustomOptions.JoinVariableDeclarationsWithAssignments}">
+                    <ToolTip.Tip>
+                        <AvaloniaHtml:HtmlLabel
+                            Text="{Binding Source={StaticResource JoinVariableDeclsTip}, Converter={StaticResource MarkdownToHtmlControlConverter}}" />
+                    </ToolTip.Tip>
+                </CheckBox>
+
+                <CheckBox Content="Detect new constants" IsChecked="{Binding CustomOptions.DetectConstants}">
+                    <ToolTip.Tip>
+                        <AvaloniaHtml:HtmlLabel
+                            Text="{Binding Source={StaticResource DetectConstantsTip}, Converter={StaticResource MarkdownToHtmlControlConverter}}" />
+                    </ToolTip.Tip>
+                </CheckBox>
+
+                <CheckBox Content="Inline constant variables"
+                          IsChecked="{Binding CustomOptions.InlineConstantVariables}">
+                    <ToolTip.Tip>
+                        <AvaloniaHtml:HtmlLabel
+                            Text="{Binding Source={StaticResource InlineConstantVariablesTip}, Converter={StaticResource MarkdownToHtmlControlConverter}}" />
+                    </ToolTip.Tip>
+                </CheckBox>
+
+                <CheckBox Content="Inline constant #defines" IsChecked="{Binding CustomOptions.InlineDefines}">
+                    <ToolTip.Tip>
+                        <AvaloniaHtml:HtmlLabel
+                            Text="{Binding Source={StaticResource InlineConstDefinesTip}, Converter={StaticResource MarkdownToHtmlControlConverter}}" />
+                    </ToolTip.Tip>
+                </CheckBox>
+            </StackPanel>
+
+            <StackPanel Grid.Row="0" Grid.Column="1"
+                        Margin="8">
+                <CheckBox Content="Simplify float number format"
+                          IsChecked="{Binding CustomOptions.SimplifyNumberFormat}">
+                    <ToolTip.Tip>
+                        <AvaloniaHtml:HtmlLabel
+                            Text="{Binding Source={StaticResource SimplifyFloatFormatTip}, Converter={StaticResource MarkdownToHtmlControlConverter}}" />
+                    </ToolTip.Tip>
+                </CheckBox>
+
+                <CheckBox Content="Simplify vector construction"
+                          IsChecked="{Binding CustomOptions.SimplifyVectorConstructors}">
+                    <ToolTip.Tip>
+                        <AvaloniaHtml:HtmlLabel
+                            Text="{Binding Source={StaticResource SimplifyVectorConstructionTip}, Converter={StaticResource MarkdownToHtmlControlConverter}}" />
+                    </ToolTip.Tip>
+                </CheckBox>
+
+                <CheckBox Content="Simplify vector references"
+                          IsChecked="{Binding CustomOptions.SimplifyVectorReferences}">
+                    <ToolTip.Tip>
+                        <AvaloniaHtml:HtmlLabel
+                            Text="{Binding Source={StaticResource SimplifyVectorRefsTip}, Converter={StaticResource MarkdownToHtmlControlConverter}}" />
+                    </ToolTip.Tip>
+                </CheckBox>
+
+                <CheckBox Content="Simplify branching" IsChecked="{Binding CustomOptions.SimplifyBranching}">
+                    <ToolTip.Tip>
+                        <AvaloniaHtml:HtmlLabel
+                            Text="{Binding Source={StaticResource SimplifyBranchingTip}, Converter={StaticResource MarkdownToHtmlControlConverter}}" />
+                    </ToolTip.Tip>
+                </CheckBox>
+
+                <CheckBox Content="Combine consecutive assignments"
+                          IsChecked="{Binding CustomOptions.CombineConsecutiveAssignments}">
+                    <ToolTip.Tip>
+                        <AvaloniaHtml:HtmlLabel
+                            Text="{Binding Source={StaticResource CombineConsecutiveAssignmentsTip}, Converter={StaticResource MarkdownToHtmlControlConverter}}" />
+                    </ToolTip.Tip>
+                </CheckBox>
+
+                <CheckBox Content="Combine assignment with single use"
+                          IsChecked="{Binding CustomOptions.CombineAssignmentWithSingleUse}">
+                    <ToolTip.Tip>
+                        <AvaloniaHtml:HtmlLabel
+                            Text="{Binding Source={StaticResource CombineAssignmentWithSingleUseTip}, Converter={StaticResource MarkdownToHtmlControlConverter}}" />
+                    </ToolTip.Tip>
+                </CheckBox>
+
+                <CheckBox Content="Introduce +=, -=, /=, *=" IsChecked="{Binding CustomOptions.IntroduceMathOperators}">
+                    <ToolTip.Tip>
+                        <AvaloniaHtml:HtmlLabel
+                            Text="{Binding Source={StaticResource IntroduceOperatorsTip}, Converter={StaticResource MarkdownToHtmlControlConverter}}" />
+                    </ToolTip.Tip>
+                </CheckBox>
+
+                <CheckBox Content="Simplify mathematical expressions"
+                          IsChecked="{Binding CustomOptions.SimplifyArithmetic}">
+                    <ToolTip.Tip>
+                        <AvaloniaHtml:HtmlLabel
+                            Text="{Binding Source={StaticResource SimplifyMathExpressionsTip}, Converter={StaticResource MarkdownToHtmlControlConverter}}" />
+                    </ToolTip.Tip>
+                </CheckBox>
+
+                <CheckBox Content="Perform simple arithmetic" IsChecked="{Binding CustomOptions.PerformArithmetic}">
+                    <ToolTip.Tip>
+                        <AvaloniaHtml:HtmlLabel
+                            Text="{Binding Source={StaticResource PerformArithmeticTip}, Converter={StaticResource MarkdownToHtmlControlConverter}}" />
+                    </ToolTip.Tip>
+                </CheckBox>
+
+                <CheckBox Content="Replace functions calls with result"
+                          IsChecked="{Binding CustomOptions.ReplaceFunctionCallsWithResult}">
+                    <ToolTip.Tip>
+                        <AvaloniaHtml:HtmlLabel
+                            Text="{Binding Source={StaticResource ReplaceFunctionCallsWithResultTip}, Converter={StaticResource MarkdownToHtmlControlConverter}}" />
+                    </ToolTip.Tip>
+                </CheckBox>
+
+                <CheckBox Content="Move constant parameters to within called functions."
+                          IsChecked="{Binding CustomOptions.MoveConstantParametersIntoCalledFunctions}">
+                    <ToolTip.Tip>
+                        <AvaloniaHtml:HtmlLabel
+                            Text="{Binding Source={StaticResource MoveConstantParamsToFunctionTip}, Converter={StaticResource MarkdownToHtmlControlConverter}}" />
+                    </ToolTip.Tip>
+                </CheckBox>
+
+                <TextBlock Text="Code Golf (Experimental)" Margin="0,8,0,0" />
+                <StackPanel Margin="16,0,0,0">
+                    <CheckBox Content="Rename functions/variables" IsChecked="{Binding CustomOptions.GolfNames}">
+                        <ToolTip.Tip>
+                            <AvaloniaHtml:HtmlLabel
+                                Text="{Binding Source={StaticResource GolfRenameFunctionsTip}, Converter={StaticResource MarkdownToHtmlControlConverter}}" />
+                        </ToolTip.Tip>
+                    </CheckBox>
+
+                    <CheckBox Content="Define common terms" IsChecked="{Binding CustomOptions.GolfDefineCommonTerms}">
+                        <ToolTip.Tip>
+                            <AvaloniaHtml:HtmlLabel
+                                Text="{Binding Source={StaticResource GolfDefineCommonTermsTip}, Converter={StaticResource MarkdownToHtmlControlConverter}}" />
+                        </ToolTip.Tip>
+                    </CheckBox>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+
+        <Grid Grid.Row="2" ColumnDefinitions="Auto,*,Auto">
+            <Avalonia:MaterialIcon Grid.Column="0"
+                                   Kind="InfoCircle" Width="16" Height="16"
+                                   Foreground="{DynamicResource MaterialPrimaryLightBrush}" />
+            <TextBlock Grid.Column="1"
+                       Text="See tooltips for more information" Margin="4,0" VerticalAlignment="Center" />
+
+            <Button Grid.Column="2"
+                    Content="APPLY"
+                    HorizontalAlignment="Right"
+                    Margin="0,16,0,0" Foreground="White"
+                    Command="{Binding CloseDialogCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=DialogHostAvalonia:DialogHost}}"/>
+        </Grid>
+    </Grid>
+</UserControl>

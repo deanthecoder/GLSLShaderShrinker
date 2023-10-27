@@ -15,7 +15,7 @@ namespace Shrinker.Parser.Hints
 {
     public class FunctionCalledWithAllConstParamsHint : CodeHint
     {
-        public FunctionCalledWithAllConstParamsHint(SyntaxNode function) : base(function.ToCode(), "Function called with all-constant arguments. Consider replacing with the result.")
+        public FunctionCalledWithAllConstParamsHint(SyntaxNode function) : base(function.ToCode(), "Function called with all-constant arguments. Consider replacing with the result.", HintPriority.Medium)
         {
         }
     }

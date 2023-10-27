@@ -20,6 +20,8 @@ namespace Shrinker.Lexer
     public class TypeToken : IToken
     {
         private readonly string m_content;
+        // ReSharper disable once InconsistentNaming
+        private static readonly List<string> s_userStructs = new();
 
         public enum InOutType
         {
@@ -93,6 +95,10 @@ namespace Shrinker.Lexer
             "iSampleRate"
         };
 
+        public static IEnumerable<string> UserStructs => s_userStructs;
+
+        public static void RegisterUserStruct(string structName) => s_userStructs.Add(structName);
+
         public IToken TryJoin(List<IToken> tokens, int tokenIndex, out int deletePrevious, out int deleteTotal)
         {
             deletePrevious = 0;
@@ -139,5 +145,7 @@ namespace Shrinker.Lexer
         }
 
         public bool IsVector() => m_content.StartsWith("vec") && MultiValueTypes.Contains(m_content);
+        public bool IsMatrix() => m_content.StartsWith("mat") && MultiValueTypes.Contains(m_content);
+        public bool IsStruct() => UserStructs.Contains(m_content);
     }
 }

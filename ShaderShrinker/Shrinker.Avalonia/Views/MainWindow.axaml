@@ -1,0 +1,284 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ViewModels="using:Shrinker.Avalonia.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:Avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+        xmlns:Views="clr-namespace:Shrinker.Avalonia.Views"
+        xmlns:DialogHostAvalonia="clr-namespace:DialogHostAvalonia;assembly=DialogHost.Avalonia"
+        xmlns:Controls="clr-namespace:Material.Styles.Controls;assembly=Material.Styles"
+        xmlns:Assists="clr-namespace:Material.Styles.Assists;assembly=Material.Styles"
+        xmlns:Models="clr-namespace:Shrinker.Avalonia.Models"
+        mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="620"
+        MinWidth="800" MinHeight="600"
+        x:Class="Shrinker.Avalonia.Views.MainWindow"
+        x:DataType="ViewModels:MainWindowViewModel"
+        Icon="/Assets/App.ico"
+        Background="{DynamicResource MaterialPaperBrush}"
+        Padding="4"
+        Title="GLSL Shader Shrinker">
+    <Design.DataContext>
+        <ViewModels:MainWindowViewModel/>
+    </Design.DataContext>
+
+    <Window.KeyBindings>
+        <KeyBinding Command="{Binding ImportGlslClipboardCommand}" Gesture="{OnPlatform 'ctrl+v', macOS='⌘+v'}" />
+        <KeyBinding Command="{Binding ImportGlslFileCommand}" Gesture="{OnPlatform 'ctrl+o', macOS='⌘+o'}" />
+        <KeyBinding Command="{Binding ExportGlslClipboardCommand}" Gesture="{OnPlatform 'ctrl+c', macOS='⌘+c'}" />
+        <KeyBinding Command="{Binding ExportGlslFileCommand}" Gesture="{OnPlatform 'ctrl+s', macOS='⌘+s'}" />
+        <KeyBinding Command="{Binding ShrinkCommand}" Gesture="{OnPlatform 'alt+enter', macOS='⌘+enter'}" />
+    </Window.KeyBindings>
+    
+    <Window.Styles>
+        <Style Selector="Avalonia|MaterialIcon">
+            <Setter Property="Width" Value="24" />
+            <Setter Property="Height" Value="24" />
+        </Style>
+        <Style Selector="Button">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="16,6"/>
+        </Style>
+        <Style Selector="Border.class">
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource MaterialPrimaryLightBrush}" />
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="Margin" Value="4" />
+            <Setter Property="Padding" Value="4" />
+        </Style>
+    </Window.Styles>
+
+    <DialogHostAvalonia:DialogHost OverlayBackground="Black">
+        <Controls:SnackbarHost HostName="Root" SnackbarHorizontalAlignment="Center">
+            <Grid RowDefinitions="*,Auto" ColumnDefinitions="Auto,*">
+                <StackPanel Grid.Column="0" Grid.Row="0" VerticalAlignment="Top">
+                    <!-- Import Options -->
+                    <Border Classes="class" Margin="4,8,4,4">
+                        <StackPanel>
+                            <TextBlock Text="Shader Import" FontSize="10" Margin="4"/>
+                            <Button ToolTip.Tip="{Binding ModifierKeyString, StringFormat=From Clipboard ({0} + V)}"
+                                    Margin="16,2"
+                                    Command="{Binding ImportGlslClipboardCommand}">
+                                <Avalonia:MaterialIcon Kind="ClipboardArrowDown" />
+                            </Button>
+                            <Button ToolTip.Tip="{Binding ModifierKeyString, StringFormat=From File ({0} + O)}"
+                                    Margin="16,2"
+                                    Command="{Binding ImportGlslFileCommand}">
+                                <Avalonia:MaterialIcon Kind="FileDownload" />
+                            </Button>
+                            <Button ToolTip.Tip="From Shadertoy..." Margin="16,2"
+                                    Command="{Binding OpenDialogCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=DialogHostAvalonia:DialogHost}}">
+                                <Button.CommandParameter>
+                                    <!-- Shadertoy import options -->
+                                    <StackPanel Orientation="Horizontal" Margin="8">
+                                        <TextBox Text="{Binding ShadertoyId}"
+                                                 Watermark="Shadertoy ID (E.g. tt3yRH)"
+                                                 Width="200"
+                                                 VerticalAlignment="Center"
+                                                 Loaded="GiveFocus"
+                                                 Margin="0,0,8,0" />
+                                        <Button Command="{Binding ImportGlslShadertoyCommand}"
+                                                IsDefault="True"
+                                                Margin="4" ToolTip.Tip="Download">
+                                            <Avalonia:MaterialIcon Kind="Download" Width="20" Height="20"/>
+                                        </Button>
+                                        <Button
+                                            Command="{Binding CloseDialogCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=DialogHostAvalonia:DialogHost}}"
+                                            IsCancel="True"
+                                            Margin="4" ToolTip.Tip="Cancel">
+                                            <Avalonia:MaterialIcon Kind="Cancel" Width="20" Height="20" />
+                                        </Button>
+                                    </StackPanel>
+                                </Button.CommandParameter>
+                                
+                                <Avalonia:MaterialIcon Kind="CloudDownload" />
+                            </Button>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Export Options -->
+                    <Border Classes="class">
+                        <StackPanel>
+                            <TextBlock Text="Shader Export" FontSize="10" Margin="4" />
+                            <StackPanel Margin="8">
+                                <RadioButton Content="GLSL" IsChecked="{Binding IsOutputGlsl}"/>
+                                <RadioButton Content="C-Style" IsChecked="{Binding !IsOutputGlsl}" />
+                            </StackPanel>
+
+                            <Button ToolTip.Tip="{Binding ModifierKeyString, StringFormat=To Clipboard ({0} + C)}" Margin="16,2"
+                                    Command="{Binding ExportGlslClipboardCommand}">
+                                <Avalonia:MaterialIcon Kind="ClipboardArrowRight" />
+                            </Button>
+                            <Button x:Name="ToFileButton" Margin="16,2"
+                                    ToolTip.Tip="{Binding ModifierKeyString, StringFormat=To File... ({0} + S)}"
+                                    Command="{Binding ExportGlslFileCommand}">
+                                <Avalonia:MaterialIcon Kind="FileSend" />
+                            </Button>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+
+                <!-- Diff area -->
+                <Border Grid.Row="0" Grid.Column="1"
+                        BorderThickness="1" BorderBrush="{DynamicResource MaterialPrimaryLightBrush}"
+                        Margin="8" Padding="8">
+                    <Grid RowDefinitions="Auto,*" ColumnDefinitions="*,*">
+                        <Grid.Styles>
+                            <Style Selector="ListBox ListBoxItem">
+                                <Setter Property="Padding" Value="0" />
+                            </Style>
+                            <Style Selector="TextBlock.Title">
+                                <Setter Property="Background" Value="#1E1E1E"/>
+                                <Setter Property="TextAlignment" Value="Center"/>
+                                <Setter Property="Padding" Value="2"/>
+                            </Style>
+                            <Style Selector="TextBlock.LineNumber">
+                                <Setter Property="Background" Value="{x:Null}"/>
+                                <Setter Property="Foreground" Value="DarkCyan"/>
+                                <Setter Property="FontSize" Value="10"/>
+                                <Setter Property="TextAlignment" Value="Left"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                <Setter Property="Width" Value="26"/>
+                                <Setter Property="Padding" Value="0"/>
+                                <Setter Property="Margin" Value="6,0,0,6"/>
+                            </Style>
+                            <Style Selector="Button.SmallButton">
+                                <Setter Property="Width" Value="16"/>
+                                <Setter Property="Height" Value="16"/>
+                                <Setter Property="Margin" Value="4,0,4,2"/>
+                                <Setter Property="Padding" Value="0"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                            </Style>
+                        </Grid.Styles>
+
+                        <TextBlock Grid.Column="0" Grid.Row="0" Classes="Title" Text="Original" Margin="0,0,1,4"/>
+                        <Button Grid.Column="0" Grid.Row="0" Classes="SmallButton"
+                                HorizontalAlignment="Left"
+                                Command="{Binding EditCodeCommand}">
+                            <Avalonia:MaterialIcon Kind="FileTextEdit" Width="16" Height="16" />
+                        </Button>
+                        
+                        <TextBlock Grid.Column="1" Grid.Row="0" Classes="Title" Text="Output" Margin="1,0,0,4" />
+                        <Button Grid.Column="1" Grid.Row="0" Classes="SmallButton"
+                                HorizontalAlignment="Left"
+                                ToolTip.Tip="Copy to Left Pane"
+                                Command="{Binding CopyLeftCommand}">
+                            <Avalonia:MaterialIcon Kind="ChevronDoubleLeft" Width="16" Height="16"/>
+                        </Button>
+                        
+                        <ScrollViewer Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1"
+                                      VerticalScrollBarVisibility="Visible">
+                            <ItemsControl ItemsSource="{Binding Diffs}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid ColumnDefinitions="*,2,*">
+                                            <Grid ColumnDefinitions="30,*">
+                                                <TextBlock Classes="LineNumber"
+                                                           Text="{Binding LeftLineNumber}"/>
+                                                <Views:CodeLineControl Grid.Column="1"
+                                                                       Diff="{Binding LeftDiff}"/>
+                                            </Grid>
+                                            <Border Grid.Column="1" Background="#30000000"></Border>
+                                            <Grid Grid.Column="2" ColumnDefinitions="30,*">
+                                                <TextBlock Classes="LineNumber"
+                                                           Text="{Binding RightLineNumber}" />
+                                                <Views:CodeLineControl Grid.Column="1"
+                                                                       Diff="{Binding RightDiff}" />
+                                            </Grid>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+
+                        <Grid Grid.Row="1" Grid.Column="1"
+                              HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                              IsEnabled="{Binding HasHints}">
+                            <Button ToolTip.Tip="Hints and Tips..."
+                                    Command="{Binding OpenDialogCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=DialogHostAvalonia:DialogHost}}">
+                                <Button.CommandParameter>
+                                    <Views:HintDialog />
+                                </Button.CommandParameter>
+
+                                <Avalonia:MaterialIcon Kind="MessageBulleted" />
+                            </Button>
+
+                            <Border Background="Red" CornerRadius="10" MinWidth="20" Height="20"
+                                    HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,-6,-6,0"
+                                    IsVisible="{Binding HasHints}">
+                                <TextBlock Text="{Binding HintCount}"
+                                           Foreground="White" Margin="0"
+                                           VerticalAlignment="Center" HorizontalAlignment="Center"
+                                           FontSize="12" />
+                            </Border>
+                        </Grid>
+                    </Grid>
+                </Border>
+
+                <Grid Grid.Row="1" Grid.Column="1" Margin="8,0" ColumnDefinitions="Auto,*,Auto">
+                    <TextBlock Grid.Column="0"
+                               Text="{Binding OriginalSize, StringFormat=Original: {0:N0} characters}"/>
+                    
+                    <StackPanel Grid.Column="1"
+                                Orientation="Horizontal"
+                                HorizontalAlignment="Center">
+                        <ComboBox Width="220"
+                                  Padding="12,0"
+                                  HorizontalAlignment="Left"
+                                  Theme="{DynamicResource MaterialOutlineComboBox}"
+                                  Assists:ComboBoxAssist.Label="Preset"
+                                  ItemsSource="{Binding Presets.All}"
+                                  SelectedItem="{Binding Presets.Selected}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate x:DataType="Models:NameAndFileInfo">
+                                    <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+
+                        <Button VerticalAlignment="Center"
+                                Margin="8,0,0,0"
+                                Height="{Binding Bounds.Height, ElementName=ShrinkButton}"
+                                IsVisible="{Binding Presets.Selected.Name, Converter={StaticResource IsEqualConverter}, ConverterParameter=Custom}"
+                                Command="{Binding OpenDialogCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=DialogHostAvalonia:DialogHost}}">
+                            <Button.CommandParameter>
+                                <Views:OptionsDialog DataContext="{Binding Presets}"/>
+                            </Button.CommandParameter>
+                            
+                            <Avalonia:MaterialIcon Kind="FormatListChecks" />
+                        </Button>
+
+                        <Button x:Name="ShrinkButton"
+                                Margin="8,0"
+                                VerticalAlignment="Center"
+                                Command="{Binding ShrinkCommand}"
+                                Content="Apply"/>
+                    </StackPanel>
+
+                    <TextBlock Grid.Column="2"
+                               Text="{Binding ProcessedSize, StringFormat=Output: {0:N0} characters}" />
+                </Grid>
+
+                <Border Grid.Row="0" Grid.Column="0"
+                        Grid.RowSpan="2" Grid.ColumnSpan="2"
+                        IsVisible="{Binding IsBusy}" Background="#A0000000">
+                    <Controls:Card HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <StackPanel Margin="16,8">
+                            <!-- ReSharper disable once Xaml.StyleClassNotFound -->
+                            <ProgressBar Classes="circular" Width="50" Height="50" IsIndeterminate="True" />
+                            <TextBlock Text="Please Wait..." Margin="0,20,0,0"/>
+                        </StackPanel>
+                    </Controls:Card>
+                </Border>
+
+                <!-- Project web link https://github.com/deanthecoder/GLSLShaderShrinker -->
+                <Button Grid.Column="0" Grid.Row="2"
+                        Margin="2" Padding="2"
+                        HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                        ToolTip.Tip="GitHub"
+                        Command="{Binding LaunchProjectPage}">
+                    <Avalonia:MaterialIcon Kind="Github"/>
+                </Button>
+            </Grid>
+        </Controls:SnackbarHost>
+    </DialogHostAvalonia:DialogHost>
+</Window>

@@ -13,7 +13,7 @@ namespace Shrinker.Parser.Hints
 {
     public class FunctionToInlineHint : CodeHint
     {
-        public FunctionToInlineHint(string function) : base(function, "Function is called only once - Consider inlining.")
+        public FunctionToInlineHint(string function) : base(function, "Function is called only once - Consider inlining.", HintPriority.Low)
         {
         }
     }

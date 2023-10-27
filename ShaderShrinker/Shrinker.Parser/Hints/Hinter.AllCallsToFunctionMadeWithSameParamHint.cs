@@ -17,7 +17,7 @@ namespace Shrinker.Parser.Hints
     public class AllCallsToFunctionMadeWithSameParamHint : CodeHint
     {
         public AllCallsToFunctionMadeWithSameParamHint(FunctionDefinitionSyntaxNode callee, int paramIndex)
-            : base($"{callee.ReturnType} {callee.Name}({string.Join(", ", callee.ParamNames.Select(o => o.UiName))})", $"All callers pass the same value for parameter '{callee.ParamNames[paramIndex].UiName}'.\nConsider hard-coding the caller's value into the target function.")
+            : base($"{callee.ReturnType} {callee.Name}({string.Join(", ", callee.ParamNames.Select(o => o.UiName))})", $"All callers pass the same value for parameter '{callee.ParamNames[paramIndex].UiName}'.\nConsider hard-coding the caller's value into the target function.", HintPriority.Medium)
         {
         }
     }

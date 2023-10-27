@@ -50,7 +50,7 @@ namespace Shrinker.Parser.SyntaxNodes
 
         public void RemoveCsvEntry(int index)
         {
-            var nodesToRemove = GetCsv().ToList()[index];
+            var nodesToRemove = GetCsv().ElementAt(index);
             var prevNode = nodesToRemove.FirstOrDefault()?.Previous as GenericSyntaxNode;
             var nextNode = nodesToRemove.LastOrDefault()?.Next as GenericSyntaxNode;
 

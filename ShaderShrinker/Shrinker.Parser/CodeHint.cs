@@ -15,11 +15,13 @@ namespace Shrinker.Parser
     {
         public string Item { get; }
         public string Suggestion { get; }
+        public HintPriority Priority { get; }
 
-        protected CodeHint(string item, string suggestion)
+        protected CodeHint(string item, string suggestion, HintPriority priority)
         {
             Item = item;
             Suggestion = suggestion;
+            Priority = priority;
         }
 
         public override string ToString() => $"{Item}|{Suggestion}";
@@ -30,7 +32,7 @@ namespace Shrinker.Parser
                 return false;
             if (ReferenceEquals(this, obj))
                 return true;
-            if (obj.GetType() != this.GetType())
+            if (obj.GetType() != GetType())
                 return false;
             var other = (CodeHint)obj;
             return Item == other.Item && Suggestion == other.Suggestion;

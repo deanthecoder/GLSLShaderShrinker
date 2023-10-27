@@ -72,7 +72,7 @@ namespace Shrinker.Lexer
             return s.Trim();
         }
 
-        public static string WithAppMessage(this string glsl, int originalSize, int optimizedSize)
+        public static string WithAppMessage(this string glsl, int originalSize = 0, int optimizedSize = 0)
         {
             const string MessageBase = "Processed by 'GLSL Shader Shrinker'";
             if (glsl.Contains(MessageBase))
@@ -91,5 +91,8 @@ namespace Shrinker.Lexer
         public static string RemoveAllWhitespace(this string s) => new string(s.Where(ch => !char.IsWhiteSpace(ch)).ToArray());
 
         public static bool IsAnyOf(this string s, params string[] choices) => choices?.Contains(s) == true;
+
+        public static string CapitalizeFirst(this string s) =>
+            string.IsNullOrWhiteSpace(s) ? s : $"{char.ToUpper(s[0])}{s[1..]}";
     }
 }

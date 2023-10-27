@@ -1,0 +1,182 @@
+<SyntaxDefinition name="GLSL" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+    <RuleSet>
+        <Color name="Comment" foreground="#6A9955" /> <!-- Green for comments -->
+        <Span color="Comment" begin="//" />
+        <Span color="Comment" multiline="true" begin="/\*" end="\*/" />
+
+        <Color name="Keyword" foreground="#569CD6" /> <!-- Bright blue for keywords -->
+        <Keywords color="Keyword">
+            <!-- Qualifiers -->
+            <Word>const</Word>
+            <Word>uniform</Word>
+            <Word>varying</Word>
+            <Word>in</Word>
+            <Word>out</Word>
+            <Word>inout</Word>
+            <Word>lowp</Word>
+            <Word>mediump</Word>
+            <Word>highp</Word>
+            <Word>precision</Word>
+        
+            <!-- Flow Control -->
+            <Word>if</Word>
+            <Word>else</Word>
+            <Word>switch</Word>
+            <Word>case</Word>
+            <Word>default</Word>
+            <Word>while</Word>
+            <Word>do</Word>
+            <Word>for</Word>
+            <Word>break</Word>
+            <Word>continue</Word>
+            <Word>return</Word>
+        
+            <!-- Other Keywords -->
+            <Word>struct</Word>
+            <Word>void</Word>
+            <Word>true</Word>
+            <Word>false</Word>
+        </Keywords>
+
+        <Color name="Type" foreground="#4EC9B0" />    <!-- Cyan-like color for types -->
+        <Keywords color="Type">
+            <Word>int</Word>
+            <Word>float</Word>
+            <Word>vec2</Word>
+            <Word>vec3</Word>
+            <Word>vec4</Word>
+            <Word>mat2</Word>
+            <Word>mat3</Word>
+            <Word>mat4</Word>
+            <Word>ivec2</Word>
+            <Word>ivec3</Word>
+            <Word>ivec4</Word>
+            <Word>bvec2</Word>
+            <Word>bvec3</Word>
+            <Word>bvec4</Word>
+            <Word>uvec2</Word>
+            <Word>uvec3</Word>
+            <Word>uvec4</Word>
+        </Keywords>
+
+        <Color name="Function" foreground="#D7BA7D" /><!-- Yellow-ish for functions -->
+        <Keywords color="Function">
+            <!-- Angle and Trigonometry Functions -->
+            <Word>radians</Word>
+            <Word>degrees</Word>
+            <Word>sin</Word>
+            <Word>cos</Word>
+            <Word>tan</Word>
+            <Word>asin</Word>
+            <Word>acos</Word>
+            <Word>atan</Word>
+        
+            <!-- Exponential Functions -->
+            <Word>pow</Word>
+            <Word>exp</Word>
+            <Word>log</Word>
+            <Word>exp2</Word>
+            <Word>log2</Word>
+            <Word>sqrt</Word>
+            <Word>inversesqrt</Word>
+        
+            <!-- Common Functions -->
+            <Word>abs</Word>
+            <Word>sign</Word>
+            <Word>floor</Word>
+            <Word>ceil</Word>
+            <Word>fract</Word>
+            <Word>mod</Word>
+            <Word>min</Word>
+            <Word>max</Word>
+            <Word>clamp</Word>
+            <Word>mix</Word>
+            <Word>step</Word>
+            <Word>smoothstep</Word>
+        
+            <!-- Geometric Functions -->
+            <Word>length</Word>
+            <Word>distance</Word>
+            <Word>dot</Word>
+            <Word>cross</Word>
+            <Word>normalize</Word>
+            <Word>faceforward</Word>
+            <Word>reflect</Word>
+            <Word>refract</Word>
+        
+            <!-- Vector Relational Functions -->
+            <Word>lessThan</Word>
+            <Word>lessThanEqual</Word>
+            <Word>greaterThan</Word>
+            <Word>greaterThanEqual</Word>
+            <Word>equal</Word>
+            <Word>notEqual</Word>
+            <Word>any</Word>
+            <Word>all</Word>
+            <Word>not</Word>
+        
+            <!-- Texture Lookup Functions -->
+            <Word>texture</Word>
+            <Word>texture2D</Word>
+            <Word>texture3D</Word>
+            <Word>textureCube</Word>
+        
+            <!-- Derivative Functions (useful in fragment shaders) -->
+            <Word>dFdx</Word>
+            <Word>dFdy</Word>
+            <Word>fwidth</Word>
+        </Keywords>
+        
+        <!-- Numbers -->
+        <Color name="Number" foreground="#B5CEA8" />  <!-- Light green for numbers -->
+        <Rule color="Number">\b\d+\b</Rule>
+
+        <!-- Brackets/Braces -->
+        <Color name="Brackets" foreground="#F7D83E" />
+        <Rule color="Brackets">[{}\[\]()]</Rule>
+        
+        <!-- Preprocessor Directives -->
+        <Color name="Preprocessor" foreground="#FFAFEF" />
+        <Rule color="Preprocessor">\#if\b</Rule>
+        <Rule color="Preprocessor">\#ifdef</Rule>
+        <Rule color="Preprocessor">\#else</Rule>
+        <Rule color="Preprocessor">\#endif</Rule>
+        <Rule color="Preprocessor">\#define</Rule>
+        
+        <Color name="PredefinedSymbols" foreground="#B552D1" />
+        <Keywords color="PredefinedSymbols">
+            <!-- Shadertoy Inputs -->
+            <Word>iTime</Word>
+            <Word>iResolution</Word>
+            <Word>iChannel0</Word>
+            <Word>iChannel1</Word>
+            <Word>iChannel2</Word>
+            <Word>iChannel3</Word>
+            <Word>iChannel4</Word>
+            <Word>iChannel5</Word>
+            <Word>iChannel6</Word>
+            <Word>iChannel7</Word>
+            <Word>iFrame</Word>
+            <Word>iMouse</Word>
+            <Word>iDate</Word>
+            
+            <!-- PoshBrolly Inputs -->
+            <Word>_res</Word>
+            <Word>_t</Word>
+            <Word>_tex0</Word>
+            <Word>_tex1</Word>
+            <Word>_tex2</Word>
+            <Word>_tex3</Word>
+            <Word>_s0</Word>
+            <Word>_s1</Word>
+            <Word>_s2</Word>
+            <Word>_s3</Word>
+            <Word>_s4</Word>
+            <Word>_s5</Word>
+            <Word>_s6</Word>
+            <Word>_s7</Word>
+            <Word>_m</Word>
+            <Word>_fn</Word>
+        </Keywords>
+    </RuleSet>
+</SyntaxDefinition>

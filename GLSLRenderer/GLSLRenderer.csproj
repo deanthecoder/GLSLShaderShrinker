@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net7.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <IsPackable>false</IsPackable>
+        <Title>GLSL Renderer</Title>
+        <Authors>Dean Edis</Authors>
+        <Company>Dean Edis (DeanTheCoder)</Company>
+        <Product>GLSL Renderer</Product>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\ShaderShrinker\Shrinker.Lexer\Shrinker.Lexer.csproj" />
+        <ProjectReference Include="..\ShaderShrinker\Shrinker.Parser\Shrinker.Parser.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="CommandLineParser" Version="2.9.1" />
+      <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="13.3.0" />
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    </ItemGroup>
+
+</Project>

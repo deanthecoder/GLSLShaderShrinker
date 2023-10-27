@@ -38,7 +38,7 @@ namespace UnitTests
             var toc = new List<string>();
 
             // Find options XAML.
-            var optionsXamlFile = rootDir.EnumerateFiles("OptionsDialog.xaml", SearchOption.AllDirectories).FirstOrDefault();
+            var optionsXamlFile = rootDir.EnumerateFiles("App.axaml", SearchOption.AllDirectories).FirstOrDefault();
             Assert.That(optionsXamlFile, Is.Not.Null);
 
             // Read all the Markdown tooltip content.
@@ -46,12 +46,12 @@ namespace UnitTests
             var indent = 0;
             foreach (var xamlLine in File.ReadAllLines(optionsXamlFile.FullName))
             {
-                if (xamlLine.Contains("<MdXaml:MarkdownScrollViewer"))
+                if (xamlLine.Contains("<System:String x:Key"))
                 {
                     inTooltip = true;
                     indent = xamlLine.IndexOf('<') + 4;
                 }
-                else if (xamlLine.Contains("</MdXaml:MarkdownScrollViewer"))
+                else if (xamlLine.Contains("</System:String>"))
                 {
                     inTooltip = false;
                     readmeLines.Add("\n---");
