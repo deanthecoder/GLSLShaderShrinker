@@ -3,6 +3,7 @@
 * Download from the [Releases](https://github.com/deanthecoder/GLSLShaderShrinker/releases) section.
 * May require the [.NET Desktop runtime](https://dotnet.microsoft.com/download/dotnet/thank-you/runtime-desktop-7.0.0-windows-x64-installer), if not already installed.
 * May require the [ASP.NET runtime](https://dotnet.microsoft.com/download/dotnet/thank-you/runtime-aspnetcore-7.0.0-windows-hosting-bundle-installer), if not already installed.
+* Mac users may need to run the following command to unblock the application:<br>`xattr -d com.apple.quarantine /Applications/GLSL\ Shader\ Shrinker.app`
 
 ## What Is It For?
 GLSL Shader Shrinker is a cross-platform GUI tool that attempts to reduce the size of GLSL fragment shader code, whilst keeping it _readable_ and understandable.
