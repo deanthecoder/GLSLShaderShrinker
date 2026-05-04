@@ -651,3 +651,7 @@ float f(float number, float anotherNumber) {
 ```
 
 ---
+
+## License
+
+Licensed under the MIT License. See [LICENSE](LICENSE) for details.
