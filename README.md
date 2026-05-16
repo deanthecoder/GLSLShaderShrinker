@@ -1,4 +1,5 @@
 [![Twitter URL](https://img.shields.io/twitter/url/https/twitter.com/deanthecoder.svg?style=social&label=Follow%20%40deanthecoder)](https://twitter.com/deanthecoder)
+[![GitHub Repo stars](https://img.shields.io/github/stars/deanthecoder/GLSLShaderShrinker?style=social&label=Star)](https://github.com/deanthecoder/GLSLShaderShrinker/stargazers)
 # GLSL Shader Shrinker
 * Download from the [Releases](https://github.com/deanthecoder/GLSLShaderShrinker/releases) section.
 * May require the [.NET Desktop runtime](https://dotnet.microsoft.com/download/dotnet/thank-you/runtime-desktop-7.0.0-windows-x64-installer), if not already installed.
